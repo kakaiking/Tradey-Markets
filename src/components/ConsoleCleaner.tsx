@@ -16,7 +16,7 @@ export function ConsoleCleaner() {
 
         // Suppress specific log patterns
         console.log = (...args: any[]) => {
-            const msg = args[0]?.toString() || "";
+            const msg = args.map(a => a?.toString() || "").join(" ");
             if (
                 msg.includes("[HMR]") || 
                 msg.includes("[Fast Refresh]") || 
@@ -27,20 +27,23 @@ export function ConsoleCleaner() {
 
         // Suppress specific warning patterns
         console.warn = (...args: any[]) => {
-            const msg = args[0]?.toString() || "";
+            const msg = args.map(a => a?.toString() || "").join(" ");
             if (
                 msg.includes("non-static position") ||
-                msg.includes("scroll offset is calculated correctly")
+                msg.includes("scroll offset is calculated correctly") ||
+                msg.includes("Layout was forced before the page was fully loaded") ||
+                msg.includes("Feature Policy")
             ) return;
             originalWarn(...args);
         };
 
         // Suppress uncontrollable errors (like browser extensions)
         console.error = (...args: any[]) => {
-            const msg = args[0]?.toString() || "";
+            const msg = args.map(a => a?.toString() || "").join(" ");
             if (
                 msg.includes("message channel closed") ||
-                msg.includes("asynchronous response")
+                msg.includes("asynchronous response") ||
+                msg.includes("isExternalMethodAvailable")
             ) return;
             originalError(...args);
         };

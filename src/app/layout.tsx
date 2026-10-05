@@ -1,54 +1,65 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Syne, Figtree, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { AppShell } from "@/components/layout/AppShell";
 import { ConsoleCleaner } from "@/components/ConsoleCleaner";
-import { MainWrapper } from "@/components/layout/MainWrapper";
 
-const inter = Inter({
+const syne = Syne({
     subsets: ["latin"],
-    variable: "--font-inter",
+    variable: "--font-syne",
     display: "swap",
 });
 
-const spaceGrotesk = Space_Grotesk({
+const figtree = Figtree({
     subsets: ["latin"],
-    variable: "--font-space-grotesk",
+    variable: "--font-figtree",
     display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const sourceSerif = Source_Serif_4({
     subsets: ["latin"],
-    variable: "--font-jetbrains-mono",
+    variable: "--font-source-serif",
+    display: "swap",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+    subsets: ["latin"],
+    weight: ["400", "500", "600", "700"],
+    variable: "--font-ibm-plex-mono",
     display: "swap",
 });
 
 export const metadata: Metadata = {
     title: "Tradey Markets — New to forex?",
-    description: "The ultimate forex & crypto trading education platform. Learn, practice, analyze, and grow with AI-powered tools.",
+    description: "Forex school with a structured curriculum, practice cards, and a live market calendar.",
     keywords: ["forex trading", "learn forex", "trading education", "cryptocurrency", "trading journal"],
     openGraph: {
         title: "Tradey Markets — New to forex?",
-        description: "The ultimate forex & crypto trading education platform.",
+        description: "Forex school with a structured curriculum, practice cards, and a live market calendar.",
         type: "website",
     },
 };
 
+export const viewport = {
+    width: "device-width",
+    initialScale: 1,
+    viewportFit: "cover" as const,
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" className={`scroll-smooth ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`} data-scroll-behavior="smooth">
+        <html
+            lang="en"
+            className={`scroll-smooth ${syne.variable} ${figtree.variable} ${sourceSerif.variable} ${ibmPlexMono.variable}`}
+            data-scroll-behavior="smooth"
+        >
             <head>
                 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
             </head>
-            <body className="bg-[#0a0f0d] text-[#e8f5ef] antialiased relative">
+            <body className="antialiased">
                 <ConsoleCleaner />
-                <Navbar />
-                <MainWrapper>{children}</MainWrapper>
-                <Footer />
+                <AppShell>{children}</AppShell>
             </body>
         </html>
     );
 }
-
-

@@ -1,112 +1,138 @@
 "use client";
 
-import React from "react";
-import { 
-  Video, 
-  BookOpen, 
-  HelpCircle, 
-  Users, 
-  TrendingUp, 
-  Clock, 
-  ArrowUpRight,
-  Eye,
-  MessageSquare
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { PageHead } from "@/components/layout/PageHead";
 
-const stats = [
-  { name: "Total Videos", value: "48", change: "+12%", icon: Video, color: "text-blue-400", bg: "bg-blue-400/10" },
-  { name: "Active Lessons", value: "124", change: "+5%", icon: BookOpen, color: "text-green-400", bg: "bg-green-400/10" },
-  { name: "Total Students", value: "12.2k", change: "+24%", icon: Users, color: "text-orange-400", bg: "bg-orange-400/10" },
-];
+interface StatItem {
+  name: string;
+  value: string;
+  change: string;
+  type: string;
+}
 
-const recentActivity = [
-  { id: 1, user: "John Doe", action: "Completed 'What is Forex?'", time: "2 mins ago", icon: Eye },
-  { id: 2, user: "Admin", action: "Added new video: 'Price Action Masterclass'", time: "45 mins ago", icon: Video },
-  { id: 4, user: "Mike Johnson", action: "New comment on 'EUR/USD' analysis", time: "3 hours ago", icon: MessageSquare },
-];
+interface ActivityItem {
+  id: string;
+  user: string;
+  action: string;
+  time: string;
+  type: string;
+}
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<StatItem[]>([]);
+  const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const res = await fetch("/api/admin/dashboard");
+        if (res.ok) {
+          const data = await res.json();
+          setStats(data.stats || []);
+          setRecentActivity(data.recentActivity || []);
+        } else {
+          console.error("Failed to fetch dashboard data:", res.statusText);
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Dashboard Overview</h1>
-        <p className="text-white/50">Welcome back, Admin. Here's what's happening with Tradey Markets today.</p>
-      </div>
+    <div>
+      <PageHead
+        title="Admin dashboard"
+        byline="Overview"
+        lede="What's happening across lessons, videos, and students."
+        backHref="/learn"
+      />
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <div key={stat.name} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all group">
-            <div className="flex justify-between items-start mb-4">
-              <div className={`${stat.bg} ${stat.color} p-3 rounded-xl`}>
-                <stat.icon size={24} />
+      <div className="admin-stat-grid" style={{ marginBottom: "var(--space-5)" }}>
+        {isLoading
+          ? Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="admin-stat">
+                <strong>—</strong>
+                <span>Loading</span>
               </div>
-              <div className="flex items-center gap-1 text-green-400 text-sm font-medium bg-green-400/10 px-2 py-1 rounded-lg">
-                <TrendingUp size={14} />
-                {stat.change}
-              </div>
-            </div>
-            <div>
-              <p className="text-white/50 text-sm mb-1">{stat.name}</p>
-              <h3 className="text-3xl font-bold text-white">{stat.value}</h3>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Activity Feed */}
-        <div className="lg:col-span-2 space-y-4">
-          <div className="flex justify-between items-center px-2">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <Clock size={20} className="text-green-500" /> Recent Activity
-            </h2>
-            <button className="text-green-500 hover:text-green-400 text-sm font-medium transition-colors">View All</button>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl divide-y divide-white/5 overflow-hidden">
-            {recentActivity.map((activity) => (
-              <div key={activity.id} className="p-4 hover:bg-white/[0.02] transition-colors flex items-center justify-between group">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white/40">
-                    <activity.icon size={18} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-white group-hover:text-green-400 transition-colors">
-                      <span className="text-white/60 font-normal">{activity.user}</span> {activity.action}
-                    </p>
-                    <p className="text-xs text-white/30">{activity.time}</p>
-                  </div>
-                </div>
-                <ArrowUpRight size={18} className="text-white/20 group-hover:text-white transition-colors" />
+            ))
+          : stats.map((stat) => (
+              <div key={stat.name} className="admin-stat">
+                <strong>{stat.value}</strong>
+                <span>{stat.name}</span>
+                <p className="choice-meta" style={{ marginTop: "0.4rem", color: "var(--chalk)" }}>{stat.change}</p>
               </div>
             ))}
+      </div>
+
+      <div className="split">
+        <div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+            <p className="kicker" style={{ margin: 0 }}>Recent activity</p>
+            <Link href="/admin/users" className="choice-meta" style={{ color: "var(--chalk)" }}>View all</Link>
           </div>
+          {isLoading ? (
+            <div className="card status">Loading activity…</div>
+          ) : recentActivity.length === 0 ? (
+            <div className="card status">No recent activity recorded.</div>
+          ) : (
+            <ul className="choice-list">
+              {recentActivity.map((activity) => (
+                <li key={activity.id}>
+                  <div className="choice-card" style={{ cursor: "default" }}>
+                    <div className="choice-copy">
+                      <strong style={{ fontWeight: 600 }}>
+                        <span style={{ color: "var(--muted)", fontWeight: 500 }}>{activity.user}</span> {activity.action}
+                      </strong>
+                      <span className="choice-meta">{activity.time}</span>
+                    </div>
+                    <span className="choice-trail">{activity.type}</span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        {/* Quick Actions */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-white px-2">Quick Actions</h2>
-          <div className="grid grid-cols-1 gap-3">
-            {[
-              { label: "New Video", href: "/admin/videos", color: "bg-blue-500" },
-              { label: "New Lesson", href: "/admin/lessons", color: "bg-green-500" },
-            ].map((action) => (
-              <a 
-                key={action.label} 
-                href={action.href}
-                className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all group"
-              >
-                <span className="font-medium">{action.label}</span>
-                <div className={`${action.color} w-8 h-8 rounded-lg flex items-center justify-center text-black`}>
-                  <ArrowUpRight size={18} />
+        <div>
+          <p className="kicker" style={{ marginBottom: "0.75rem", textAlign: "left" }}>Quick actions</p>
+          <ul className="choice-list">
+            <li>
+              <Link href="/admin/videos" className="choice-card">
+                <div className="choice-copy">
+                  <strong>New video</strong>
+                  <span className="choice-meta">Add to library</span>
                 </div>
-              </a>
-            ))}
-          </div>
+                <span className="choice-trail">→</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/lessons" className="choice-card">
+                <div className="choice-copy">
+                  <strong>New lesson</strong>
+                  <span className="choice-meta">Curriculum</span>
+                </div>
+                <span className="choice-trail">→</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin/events" className="choice-card">
+                <div className="choice-copy">
+                  <strong>Schedule event</strong>
+                  <span className="choice-meta">Community</span>
+                </div>
+                <span className="choice-trail">→</span>
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
   );
 }
-
-

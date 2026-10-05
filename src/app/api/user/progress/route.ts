@@ -7,14 +7,24 @@ export async function GET() {
     try {
         const user = await getUserFromSession();
         if (!user) {
-            // Default 0 progress for anonymous / logged out
+            const gradesFromDb = prisma
+                ? await prisma.grade.findMany({ select: { id: true } })
+                : [];
+
+            const progress: Record<string, number> = {};
+            gradesFromDb.forEach((g: any) => {
+                progress[g.id] = 0;
+            });
+
+            if (Object.keys(progress).length === 0) {
+                progress.preschool = 0;
+                progress.kindergarten = 0;
+                progress.elementary = 0;
+            }
+
             return NextResponse.json({
                 completedLessons: [],
-                progress: {
-                    preschool: 0,
-                    kindergarten: 0,
-                    elementary: 0,
-                }
+                progress
             });
         }
 
@@ -25,20 +35,18 @@ export async function GET() {
             );
         }
 
-        const [completed, lessonsFromDb] = await Promise.all([
-            prisma.completedLesson.findMany({
-                where: { userId: user.id },
-                select: { lessonSlug: true, gradeId: true }
-            }),
-            prisma.lesson.findMany({
-                select: { slug: true, gradeId: true }
-            })
-        ]);
+        const completed = await prisma.completedLesson.findMany({
+            where: { userId: user.id },
+            select: { lessonSlug: true, gradeId: true }
+        });
+        const lessonsFromDb = await prisma.lesson.findMany({
+            select: { slug: true, gradeId: true }
+        });
 
-        const completedSlugs = completed.map(c => c.lessonSlug);
+        const completedSlugs = completed.map((c: any) => c.lessonSlug);
 
         const lessonsByGrade: Record<string, string[]> = {};
-        lessonsFromDb.forEach(l => {
+        lessonsFromDb.forEach((l: any) => {
             if (!lessonsByGrade[l.gradeId]) {
                 lessonsByGrade[l.gradeId] = [];
             }
@@ -126,14 +134,14 @@ export async function POST(req: Request) {
             select: { lessonSlug: true }
         });
 
-        const completedSlugs = completed.map(c => c.lessonSlug);
+        const completedSlugs = completed.map((c: any) => c.lessonSlug);
 
         const lessonsFromDb = await prisma.lesson.findMany({
             select: { slug: true, gradeId: true }
         });
 
         const lessonsByGrade: Record<string, string[]> = {};
-        lessonsFromDb.forEach(l => {
+        lessonsFromDb.forEach((l: any) => {
             if (!lessonsByGrade[l.gradeId]) {
                 lessonsByGrade[l.gradeId] = [];
             }

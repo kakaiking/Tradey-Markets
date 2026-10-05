@@ -26,6 +26,7 @@ export default function VideosPage() {
     const [activeHearts, setActiveHearts] = useState<Record<string, { id: number; x: number; y: number }[]>>({});
     const [isMuted, setIsMuted] = useState(true);
     const [playingStates, setPlayingStates] = useState<Record<string, boolean>>({});
+    const [readyVideos, setReadyVideos] = useState<Record<string, boolean>>({});
     
     // Simulated Commentary Database
     const [commentsStore, setCommentsStore] = useState<Record<string, { id: string; user: string; text: string; time: string }[]>>({
@@ -62,6 +63,7 @@ export default function VideosPage() {
     }, [activeVideoId]);
 
     const togglePlay = (id: string) => {
+        if (!readyVideos[id]) return;
         const iframe = document.getElementById(`youtube-iframe-${id}`) as HTMLIFrameElement | null;
         if (!iframe || !iframe.contentWindow) return;
 
@@ -107,10 +109,38 @@ export default function VideosPage() {
         };
     }, []);
 
+    // Listen for YouTube Iframe API ready messages
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (!event.origin.includes("youtube") && !event.origin.includes("youtube-nocookie")) return;
+            try {
+                const data = JSON.parse(event.data);
+                if (data.event === "onReady" || data.event === "initialDelivery") {
+                    const iframes = document.querySelectorAll("iframe");
+                    for (let i = 0; i < iframes.length; i++) {
+                        if (iframes[i].contentWindow === event.source) {
+                            const idAttr = iframes[i].id;
+                            if (idAttr) {
+                                const id = idAttr.replace("youtube-iframe-", "");
+                                setReadyVideos((prev) => ({ ...prev, [id]: true }));
+                            }
+                            break;
+                        }
+                    }
+                }
+            } catch (e) {
+                // Ignore parsing errors for other messages
+            }
+        };
+        window.addEventListener("message", handleMessage);
+        return () => window.removeEventListener("message", handleMessage);
+    }, []);
+
     // Handle Mute/Unmute state using YouTube postMessage API to avoid reloading/restarting the video
     useEffect(() => {
         const activeVidId = activeVideoId;
         if (!activeVidId) return;
+        if (!readyVideos[activeVidId]) return;
 
         const toggleSound = () => {
             const iframe = document.getElementById(`youtube-iframe-${activeVidId}`) as HTMLIFrameElement | null;
@@ -145,20 +175,8 @@ export default function VideosPage() {
             }
         };
 
-        // Trigger immediately
         toggleSound();
-
-        // Trigger with slight delays to catch iframe initialization when scrolling between videos
-        const t1 = setTimeout(toggleSound, 300);
-        const t2 = setTimeout(toggleSound, 800);
-        const t3 = setTimeout(toggleSound, 1500);
-
-        return () => {
-            clearTimeout(t1);
-            clearTimeout(t2);
-            clearTimeout(t3);
-        };
-    }, [isMuted, activeVideoId]);
+    }, [isMuted, activeVideoId, readyVideos]);
 
     // Immersive Interaction Handlers
     const handleLikeClick = (videoId: string) => {
@@ -238,7 +256,7 @@ export default function VideosPage() {
             <div className="flex justify-center items-center relative w-full" style={{ height: "100%" }}>
                 
                 {/* Snapping Scroll Area (occupies full container width & height) */}
-                <div className="w-full rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.6)] overflow-hidden relative bg-black flex flex-col" style={{ height: "100%" }}>
+                <div className="w-full rounded-[var(--radius)] border-2 border-[var(--ink)] shadow-[var(--card-shadow)] overflow-hidden relative bg-[var(--paper)] flex flex-col" style={{ height: "100%" }}>
                     <div
                         ref={containerRef}
                         className="flex-1 w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none"
@@ -258,11 +276,11 @@ export default function VideosPage() {
                                         key={video.id}
                                         data-video-card
                                         data-video-id={video.id}
-                                        className="w-full h-full snap-start snap-always relative bg-black flex flex-col items-center justify-center animate-pulse"
+                                        className="w-full h-full snap-start snap-always relative bg-[var(--sunken)] flex flex-col items-center justify-center"
                                     >
-                                        <div className="flex flex-col items-center gap-3 text-white/5">
-                                            <div className="w-8 h-8 rounded-full border-2 border-dashed border-white/5 animate-spin" />
-                                            <div className="w-16 h-2 bg-white/5 rounded" />
+                                        <div className="flex flex-col items-center gap-3 text-[var(--muted)]">
+                                            <div className="w-8 h-8 rounded-full border-2 border-dashed border-[var(--line)] animate-spin" />
+                                            <div className="w-16 h-2 bg-[var(--line)] rounded" />
                                         </div>
                                     </div>
                                 );
@@ -273,11 +291,11 @@ export default function VideosPage() {
                                         key={video.id}
                                         data-video-card
                                         data-video-id={video.id}
-                                        className="w-full h-full snap-start snap-always relative overflow-hidden flex flex-col justify-end bg-black"
+                                        className="w-full h-full snap-start snap-always relative overflow-hidden flex flex-col justify-end bg-[var(--sunken)]"
                                         onDoubleClick={(e) => handleDoubleClick(e, video.id)}
                                     >
                                         {/* Auto-playing YouTube Iframe */}
-                                        <div className="absolute inset-0 w-full h-full pointer-events-auto z-0 overflow-hidden bg-black">
+                                        <div className="absolute inset-0 w-full h-full pointer-events-auto z-0 overflow-hidden bg-[var(--sunken)]">
                                             {isActive && (
                                                 <>
                                                     {/* If paused, show the high-quality still thumbnail to hide YouTube's native pause overlay */}
@@ -295,7 +313,6 @@ export default function VideosPage() {
                                                         src={`https://www.youtube-nocookie.com/embed/${video.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&enablejsapi=1`}
                                                         title={video.title}
                                                         frameBorder="0"
-                                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                         className={`w-full h-full object-cover pointer-events-none scale-[1.3] origin-center transition-opacity duration-300 ${
                                                             playingStates[video.id] !== false ? "opacity-100" : "opacity-0 pointer-events-none"
                                                         }`}
@@ -305,8 +322,8 @@ export default function VideosPage() {
                                             {/* Custom Play Button Overlay Widget */}
                                             {playingStates[video.id] === false && (
                                                 <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                                    <div className="w-16 h-16 bg-black/45 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center shadow-2xl transition-transform duration-300 scale-100">
-                                                        <Play className="text-white fill-white ml-1.5" size={24} />
+                                                    <div className="w-16 h-16 bg-[var(--raised)] border-2 border-[var(--ink)] rounded-full flex items-center justify-center shadow-[var(--card-shadow)] transition-transform duration-300 scale-100">
+                                                        <Play className="text-[var(--ink)] fill-[var(--ink)] ml-1.5" size={24} />
                                                     </div>
                                                 </div>
                                             )}
@@ -318,16 +335,16 @@ export default function VideosPage() {
                                         </div>
 
                                         {/* Gradient Dark Overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-black/30 pointer-events-none z-10" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-[color-mix(in_srgb,var(--paper)_88%,transparent)] via-transparent to-[color-mix(in_srgb,var(--paper)_35%,transparent)] pointer-events-none z-10" />
 
                                         {/* Sidebar Actions Panel */}
                                         <div className="absolute right-6 bottom-8 flex flex-col items-center gap-5 z-20 pointer-events-auto">
                                             {/* Creator Avatar */}
                                             <div className="relative mb-1">
-                                                <div className="w-11 h-11 rounded-full border-2 border-green-400 bg-green-500/20 flex items-center justify-center font-bold text-xs text-green-400">
+                                                <div className="w-11 h-11 rounded-full border-2 border-[var(--ink)] bg-[var(--raised)] flex items-center justify-center font-bold text-xs text-[var(--chalk)] shadow-[2px_2px_0_var(--ink)]">
                                                     PA
                                                 </div>
-                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-green-400 text-black rounded-full w-4.5 h-4.5 flex items-center justify-center font-extrabold text-[10px] shadow">
+                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[var(--chalk)] text-[var(--on-chalk)] rounded-full w-4.5 h-4.5 flex items-center justify-center font-extrabold text-[10px] border border-[var(--ink)]">
                                                     +
                                                 </div>
                                             </div>
@@ -337,14 +354,14 @@ export default function VideosPage() {
                                                 onClick={() => handleLikeClick(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className={`p-3 rounded-full transition-all duration-300 ${
+                                                <div className={`p-3 rounded-full border-2 border-[var(--ink)] transition-all duration-300 shadow-[2px_2px_0_var(--ink)] ${
                                                     likedVideos[video.id]
-                                                        ? "bg-red-500/20 text-red-500 scale-110 shadow-[0_0_15px_rgba(239,68,68,0.2)]"
-                                                        : "bg-black/50 hover:bg-black/70 text-white border border-white/5"
+                                                        ? "bg-[color-mix(in_srgb,var(--pencil)_18%,var(--raised))] text-[var(--pencil)] scale-110"
+                                                        : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
                                                 }`}>
                                                     <Heart size={20} fill={likedVideos[video.id] ? "currentColor" : "none"} />
                                                 </div>
-                                                <span className="text-xs font-bold text-white/80 mt-1">
+                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">
                                                     {videoLikes[video.id] || 0}
                                                 </span>
                                             </button>
@@ -354,10 +371,10 @@ export default function VideosPage() {
                                                 onClick={() => setOpenCommentsId(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className="p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all border border-white/5">
+                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]">
                                                     <MessageCircle size={20} />
                                                 </div>
-                                                <span className="text-xs font-bold text-white/80 mt-1">
+                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">
                                                     {commentsStore[video.id]?.length || 0}
                                                 </span>
                                             </button>
@@ -368,10 +385,10 @@ export default function VideosPage() {
                                                 onClick={() => handleShareClick(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className="p-3 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all border border-white/5">
+                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]">
                                                     <Share2 size={20} />
                                                 </div>
-                                                <span className="text-xs font-bold text-white/80 mt-1">Share</span>
+                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">Share</span>
                                             </button>
 
                                             {/* Mute/Unmute Button */}
@@ -379,21 +396,21 @@ export default function VideosPage() {
                                                 onClick={() => setIsMuted((prev) => !prev)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className={`p-3 rounded-full transition-all duration-300 ${
+                                                <div className={`p-3 rounded-full border-2 border-[var(--ink)] transition-all duration-300 shadow-[2px_2px_0_var(--ink)] ${
                                                     !isMuted
-                                                        ? "bg-green-500/20 text-green-400 scale-110 shadow-[0_0_15px_rgba(74,222,128,0.2)] border border-green-500/20"
-                                                        : "bg-black/50 hover:bg-black/70 text-white border border-white/5"
+                                                        ? "bg-[color-mix(in_srgb,var(--chalk)_22%,var(--raised))] text-[var(--chalk)] scale-110"
+                                                        : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
                                                 }`}>
                                                     {!isMuted ? <Volume2 size={20} className="animate-pulse" /> : <VolumeX size={20} />}
                                                 </div>
-                                                <span className="text-xs font-bold text-white/80 mt-1 select-none">
+                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 select-none drop-shadow-[0_1px_0_var(--raised)]">
                                                     {!isMuted ? "Sound On" : "Mute"}
                                                 </span>
                                             </button>
 
                                             {/* Vinyl disc spin animation */}
-                                            <div className="w-10 h-10 rounded-full border border-white/10 bg-black/80 flex items-center justify-center animate-spin mt-1.5" style={{ animationDuration: "5s" }}>
-                                                <div className="w-6 h-6 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center font-bold text-[8px] text-green-400">
+                                            <div className="w-10 h-10 rounded-full border-2 border-[var(--ink)] bg-[var(--raised)] flex items-center justify-center animate-spin mt-1.5 shadow-[2px_2px_0_var(--ink)]" style={{ animationDuration: "5s" }}>
+                                                <div className="w-6 h-6 rounded-full bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] border border-[var(--chalk)] flex items-center justify-center font-bold text-[8px] text-[var(--chalk)]">
                                                     P
                                                 </div>
                                             </div>
@@ -402,14 +419,14 @@ export default function VideosPage() {
                                         {/* Bottom Details Panel */}
                                         <div className="absolute left-8 right-28 bottom-8 z-20 text-left pointer-events-auto max-w-2xl">
 
-                                            <h4 className="font-bold text-white text-lg md:text-xl leading-snug mb-1.5">
+                                            <h4 className="font-display font-bold text-[var(--ink)] text-lg md:text-xl leading-snug mb-1.5">
                                                 {video.title}
                                             </h4>
-                                            <p className="text-white/70 text-xs md:text-sm leading-relaxed mb-3">
+                                            <p className="font-reading text-[var(--muted)] text-xs md:text-sm leading-relaxed mb-3">
                                                 {video.description}
                                             </p>
-                                            <div className="flex items-center gap-2 text-white/50 text-[10px] md:text-xs font-semibold bg-white/5 border border-white/5 px-3 py-1.5 rounded-xl w-fit">
-                                                <Music size={12} className="text-green-400 animate-pulse" />
+                                            <div className="flex items-center gap-2 text-[var(--muted)] text-[10px] md:text-xs font-semibold bg-[var(--raised)] border-2 border-[var(--ink)] px-3 py-1.5 rounded-xl w-fit shadow-[2px_2px_0_var(--ink)]">
+                                                <Music size={12} className="text-[var(--chalk)]" />
                                                 <span>Original Sound - Pipsology Academy</span>
                                             </div>
                                         </div>
@@ -421,7 +438,7 @@ export default function VideosPage() {
                                                 initial={{ scale: 0, opacity: 1, y: 0, rotate: Math.random() * 40 - 20 }}
                                                 animate={{ scale: [1, 1.7, 1], opacity: [1, 1, 0], y: -90 }}
                                                 transition={{ duration: 0.8, ease: "easeOut" }}
-                                                className="absolute z-30 pointer-events-none text-red-500 text-6xl drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]"
+                                                className="absolute z-30 pointer-events-none text-[var(--pencil)] text-6xl"
                                                 style={{ left: heart.x - 30, top: heart.y - 30 }}
                                             >
                                                 ❤️
@@ -441,7 +458,7 @@ export default function VideosPage() {
                                         key={video.id}
                                         onClick={() => scrollToVideo(idx)}
                                         className={`w-2 rounded-full transition-all duration-300 ${
-                                            isActive ? "h-6 bg-green-400" : "h-2 bg-white/30 hover:bg-white/50"
+                                            isActive ? "h-6 bg-[var(--highlighter)] border border-[var(--ink)]" : "h-2 bg-[var(--raised)] border border-[var(--ink)] hover:bg-[var(--chalk)]"
                                         }`}
                                     />
                                 );
@@ -449,15 +466,15 @@ export default function VideosPage() {
                         </div>
 
                         {/* Swipe Indicator (Helpful UX) */}
-                        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-white/40 text-[10px] flex flex-col items-center gap-1.5 animate-pulse">
+                        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[var(--muted)] text-[10px] flex flex-col items-center gap-1.5 kicker animate-pulse">
                             <span>Scroll down for next video</span>
                             <ChevronDown size={14} className="animate-bounce" />
                         </div>
 
                         {/* Link Share Toast */}
                         {showToast && (
-                            <div className="absolute top-16 left-1/2 -translate-x-1/2 bg-green-500 text-black text-xs font-extrabold px-4 py-2 rounded-full shadow-lg z-50 flex items-center gap-1 border border-green-400">
-                                🔗 Link copied to clipboard!
+                            <div className="absolute top-16 left-1/2 -translate-x-1/2 snackbar snackbar-ok text-xs font-extrabold z-50 flex items-center gap-1">
+                                Link copied to clipboard!
                             </div>
                         )}
 
@@ -467,7 +484,7 @@ export default function VideosPage() {
                                 <>
                                     {/* Backdrop */}
                                     <div
-                                        className="absolute inset-0 bg-black/60 z-30 pointer-events-auto"
+                                        className="absolute inset-0 bg-[color-mix(in_srgb,var(--ink)_40%,transparent)] z-30 pointer-events-auto"
                                         onClick={() => setOpenCommentsId(null)}
                                     />
                                     {/* Drawer Panel */}
@@ -476,15 +493,15 @@ export default function VideosPage() {
                                         animate={{ y: 0 }}
                                         exit={{ y: "100%" }}
                                         transition={{ type: "spring", damping: 25, stiffness: 220 }}
-                                        className="absolute bottom-0 left-0 right-0 h-[65%] bg-[#080d0b] border-t border-white/10 rounded-t-[28px] z-40 flex flex-col overflow-hidden pointer-events-auto"
+                                        className="absolute bottom-0 left-0 right-0 h-[65%] bg-[var(--raised)] border-t-2 border-[var(--ink)] rounded-t-[var(--radius)] z-40 flex flex-col overflow-hidden pointer-events-auto shadow-[var(--card-shadow)]"
                                     >
-                                        <div className="px-6 py-4 border-b border-white/5 flex items-center justify-between">
-                                            <span className="font-bold text-white text-sm">
+                                        <div className="px-6 py-4 border-b-2 border-[var(--line)] flex items-center justify-between">
+                                            <span className="font-bold text-[var(--ink)] text-sm font-display">
                                                 Comments ({commentsStore[openCommentsId]?.length || 0})
                                             </span>
                                             <button
                                                 onClick={() => setOpenCommentsId(null)}
-                                                className="p-1 bg-white/5 hover:bg-white/10 rounded-full text-white/70"
+                                                className="p-1 bg-[var(--sunken)] hover:bg-[var(--highlighter)] rounded-full text-[var(--ink)] border border-[var(--ink)]"
                                             >
                                                 <X size={16} />
                                             </button>
@@ -494,19 +511,19 @@ export default function VideosPage() {
                                         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 scrollbar-thin">
                                             {commentsStore[openCommentsId]?.map((c) => (
                                                 <div key={c.id} className="flex gap-3 text-left">
-                                                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-xs text-white/80 shrink-0">
+                                                    <div className="w-8 h-8 rounded-full bg-[var(--sunken)] border border-[var(--ink)] flex items-center justify-center font-bold text-xs text-[var(--ink)] shrink-0">
                                                         {c.user.charAt(0)}
                                                     </div>
-                                                    <div className="flex-1 bg-white/[0.02] border border-white/5 rounded-xl p-3">
+                                                    <div className="flex-1 bg-[var(--paper)] border-2 border-[var(--ink)] rounded-[var(--radius-sm)] p-3">
                                                         <div className="flex items-center justify-between mb-1">
-                                                            <span className="font-bold text-xs text-white/90">
+                                                            <span className="font-bold text-xs text-[var(--ink)]">
                                                                 {c.user}
                                                             </span>
-                                                            <span className="text-[10px] text-white/40">
+                                                            <span className="text-[10px] text-[var(--muted)]">
                                                                 {c.time}
                                                             </span>
                                                         </div>
-                                                        <p className="text-white/70 text-xs md:text-sm leading-relaxed">
+                                                        <p className="text-[var(--muted)] text-xs md:text-sm leading-relaxed font-reading">
                                                             {c.text}
                                                         </p>
                                                     </div>
@@ -517,18 +534,18 @@ export default function VideosPage() {
                                         {/* Comments Submit Box */}
                                         <form
                                             onSubmit={handleCommentSubmit}
-                                            className="p-3 border-t border-white/5 bg-black/60 flex items-center gap-2"
+                                            className="p-3 border-t-2 border-[var(--line)] bg-[var(--paper)] flex items-center gap-2"
                                         >
                                             <input
                                                 type="text"
                                                 value={newCommentText}
                                                 onChange={(e) => setNewCommentText(e.target.value)}
                                                 placeholder="Add an expert comment..."
-                                                className="flex-1 bg-white/5 hover:bg-white/10 focus:bg-white/10 text-white rounded-lg px-3 py-2 text-xs md:text-sm border border-white/5 outline-none focus:border-green-500/30 transition-all font-medium"
+                                                className="flex-1 bg-[var(--raised)] hover:bg-[var(--highlighter)] focus:bg-[var(--raised)] text-[var(--ink)] rounded-lg px-3 py-2 text-xs md:text-sm border-2 border-[var(--ink)] outline-none focus:border-[var(--chalk)] transition-all font-medium"
                                             />
                                             <button
                                                 type="submit"
-                                                className="p-2 bg-green-500 hover:bg-green-400 text-black rounded-lg transition-all"
+                                                className="p-2 bg-[var(--highlighter)] hover:brightness-95 text-[var(--ink)] rounded-lg transition-all border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]"
                                             >
                                                 <Send size={14} />
                                             </button>

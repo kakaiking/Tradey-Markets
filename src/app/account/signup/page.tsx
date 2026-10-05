@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { TrendingUp, Mail, Lock, User as UserIcon } from "lucide-react";
 
 export default function SignupPage() {
     const router = useRouter();
@@ -50,7 +49,6 @@ export default function SignupPage() {
                 throw new Error(data.message || "Something went wrong during signup.");
             }
 
-            // Successfully registered and logged in
             router.push("/");
             setTimeout(() => {
                 window.location.reload();
@@ -63,142 +61,90 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-16">
-            {/* Background glow */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-3xl" />
-            </div>
-
-            <div className="w-full max-w-md relative z-10">
-                {/* Logo */}
-                <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg glow-green-sm">
-                            <TrendingUp size={18} className="text-white" />
-                        </div>
-                        <span className="font-bold text-xl font-display"><span className="text-gradient">Pip</span><span className="text-white/90">Forge</span></span>
+        <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-5) 0" }}>
+            <div style={{ width: "min(100%, 24rem)" }}>
+                <div style={{ textAlign: "center", marginBottom: "var(--space-5)" }}>
+                    <Link href="/" className="font-display" style={{ fontSize: "1.5rem", fontWeight: 700, display: "inline-block", marginBottom: "1rem" }}>
+                        Tradey Markets
                     </Link>
-                    <h1 className="text-2xl font-bold font-display text-white mb-2">Create Your Account</h1>
-                    <p className="text-white/45 text-sm">Join 4.2M+ traders learning for free</p>
+                    <h1 className="font-display" style={{ fontSize: "1.75rem", marginBottom: "0.35rem" }}>Create your account</h1>
+                    <p className="lede">Join traders learning the markets for free</p>
                 </div>
 
-                <div className="glass rounded-2xl p-7">
-                    {/* Social login */}
-                    <div className="grid grid-cols-2 gap-3 mb-5">
-                        <button 
-                            type="button"
-                            onClick={() => alert("Social login is coming soon!")}
-                            className="flex items-center justify-center gap-2 py-2.5 glass rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/8 transition-all border border-white/5"
-                        >
-                            <span>🇬</span> Google
+                <div className="card">
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1rem" }}>
+                        <button type="button" className="btn secondary" onClick={() => alert("Social login is coming soon!")}>
+                            Google
                         </button>
-                        <button 
-                            type="button"
-                            onClick={() => alert("Social login is coming soon!")}
-                            className="flex items-center justify-center gap-2 py-2.5 glass rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/8 transition-all border border-white/5"
-                        >
-                            <span>🇦</span> Apple
+                        <button type="button" className="btn secondary" onClick={() => alert("Social login is coming soon!")}>
+                            Apple
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-3 mb-5">
-                        <div className="flex-1 h-px bg-white/8" />
-                        <span className="text-xs text-white/25">or sign up with email</span>
-                        <div className="flex-1 h-px bg-white/8" />
-                    </div>
+                    <p className="kicker" style={{ textAlign: "center", marginBottom: "1rem" }}>or email</p>
 
-                    {/* Error display */}
-                    {error && (
-                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 text-center">
-                            {error}
-                        </div>
-                    )}
+                    {error && <p className="error" style={{ marginBottom: "0.75rem", textAlign: "center" }}>{error}</p>}
 
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
                         <div>
-                            <label className="block text-xs text-white/50 mb-1.5">Username</label>
-                            <div className="relative">
-                                <UserIcon size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
-                                <input 
-                                    type="text" 
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="tradingpro42" 
-                                    className="w-full pl-10 pr-4 py-3 glass rounded-xl text-sm text-white placeholder-white/20 border border-white/5 focus:border-green-500/30 focus:outline-none bg-transparent transition-all" 
-                                    required
-                                />
-                            </div>
+                            <label className="label" htmlFor="signup-user">Username</label>
+                            <input
+                                id="signup-user"
+                                type="text"
+                                className="field"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="tradingpro42"
+                                required
+                            />
                         </div>
                         <div>
-                            <label className="block text-xs text-white/50 mb-1.5">Email Address</label>
-                            <div className="relative">
-                                <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
-                                <input 
-                                    type="email" 
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="you@example.com" 
-                                    className="w-full pl-10 pr-4 py-3 glass rounded-xl text-sm text-white placeholder-white/20 border border-white/5 focus:border-green-500/30 focus:outline-none bg-transparent transition-all" 
-                                    required
-                                />
-                            </div>
+                            <label className="label" htmlFor="signup-email">Email</label>
+                            <input
+                                id="signup-email"
+                                type="email"
+                                className="field"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="you@example.com"
+                                required
+                            />
                         </div>
                         <div>
-                            <label className="block text-xs text-white/50 mb-1.5">Password</label>
-                            <div className="relative">
-                                <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
-                                <input 
-                                    type="password" 
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="Min. 8 characters" 
-                                    className="w-full pl-10 pr-4 py-3 glass rounded-xl text-sm text-white placeholder-white/20 border border-white/5 focus:border-green-500/30 focus:outline-none bg-transparent transition-all" 
-                                    required
-                                />
-                            </div>
+                            <label className="label" htmlFor="signup-pw">Password</label>
+                            <input
+                                id="signup-pw"
+                                type="password"
+                                className="field"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Min. 6 characters"
+                                required
+                            />
                         </div>
 
-                        <div className="flex items-start gap-2 pt-1">
-                            <input 
-                                type="checkbox" 
-                                id="terms" 
+                        <label style={{ display: "flex", gap: "0.65rem", alignItems: "flex-start", textAlign: "left", fontSize: "0.9rem", color: "var(--muted)", cursor: "pointer" }}>
+                            <input
+                                type="checkbox"
                                 checked={terms}
                                 onChange={(e) => setTerms(e.target.checked)}
-                                className="w-4 h-4 mt-0.5 rounded accent-green-500" 
+                                style={{ marginTop: "0.2rem", width: "1.1rem", height: "1.1rem", accentColor: "var(--chalk)" }}
                             />
-                            <label htmlFor="terms" className="text-xs text-white/40 cursor-pointer select-none">
-                                I agree to the <a href="/terms" className="text-green-400 hover:underline">Terms of Service</a> and <a href="/privacy" className="text-green-400 hover:underline">Privacy Policy</a>
-                            </label>
-                        </div>
+                            <span>
+                                I agree to the <Link href="/terms" style={{ color: "var(--chalk)", fontWeight: 700 }}>Terms</Link> and{" "}
+                                <Link href="/privacy" style={{ color: "var(--chalk)", fontWeight: 700 }}>Privacy Policy</Link>
+                            </span>
+                        </label>
 
-                        <button 
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-black font-bold text-sm hover:shadow-lg hover:shadow-green-500/20 transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? "Creating account..." : "Create Free Account"}
+                        <button type="submit" className="btn" disabled={loading}>
+                            {loading ? "Creating account..." : "Create free account"}
                         </button>
                     </form>
 
-                    <div className="text-center mt-5 text-sm text-white/40">
+                    <p className="status" style={{ textAlign: "center", marginTop: "1.25rem", fontSize: "0.95rem" }}>
                         Already have an account?{" "}
-                        <Link href="/account/signin" className="text-green-400 hover:text-green-300 font-medium">Sign in</Link>
-                    </div>
-                </div>
-
-                {/* Benefits reminder */}
-                <div className="mt-5 grid grid-cols-3 gap-2">
-                    {[
-                        { emoji: "📚", text: "Free courses" },
-                        { emoji: "🔥", text: "Streaks & XP" },
-                        { emoji: "🤖", text: "AI insights" },
-                    ].map(({ emoji, text }) => (
-                        <div key={text} className="glass rounded-xl p-2 text-center">
-                            <div className="text-lg">{emoji}</div>
-                            <div className="text-xs text-white/40 mt-0.5">{text}</div>
-                        </div>
-                    ))}
+                        <Link href="/account/signin" style={{ color: "var(--chalk)", fontWeight: 700 }}>Sign in</Link>
+                    </p>
                 </div>
             </div>
         </div>

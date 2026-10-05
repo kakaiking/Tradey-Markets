@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
-import { Search, BookOpen, ChevronRight, Zap } from "lucide-react";
 import { glossaryTerms } from "@/lib/data";
+import { PageHead } from "@/components/layout/PageHead";
 
 const categories = ["All", "Basics", "Technical Analysis", "Indicators", "Risk Management", "Trading Costs", "Account"];
 const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -19,115 +19,98 @@ export default function ForexpediaPage() {
     });
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-12">
-            {/* Header */}
-            <div className="text-center mb-10">
-                <div className="flex items-center justify-center gap-2 text-green-400 text-sm font-medium mb-3">
-                    <BookOpen size={14} />
-                    <span>Reference Library</span>
+        <div>
+            <PageHead
+                title="Forexpedia"
+                byline="Reference library"
+                lede="Your complete forex & trading glossary. Find definitions for every term you encounter."
+            />
+
+            <div className="split" style={{ marginBottom: "1.5rem" }}>
+                <div className="card">
+                    <p className="kicker" style={{ marginBottom: "0.5rem" }}>Term of the day</p>
+                    <h3 className="font-display" style={{ fontSize: "1.35rem", marginBottom: "0.5rem" }}>Fibonacci</h3>
+                    <p className="lede" style={{ fontSize: "0.95rem" }}>
+                        Retracement levels from the Fibonacci sequence (23.6%, 38.2%, 61.8%) used to spot support and resistance during pullbacks.
+                    </p>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold font-display mb-3">
-                    <span className="text-gradient">Forexpedia</span>
-                </h1>
-                <p className="text-white/50 max-w-lg mx-auto">Your complete forex & trading glossary. Find definitions for every term you encounter in the markets.</p>
+                <div className="card">
+                    <p className="kicker" style={{ marginBottom: "0.5rem" }}>Topic of the day</p>
+                    <h3 className="font-display" style={{ fontSize: "1.35rem", marginBottom: "0.5rem" }}>Technical Analysis</h3>
+                    <p className="lede" style={{ fontSize: "0.95rem" }}>
+                        Chart analysis, indicators, patterns, and price action — from candlesticks to Elliott Wave.
+                    </p>
+                    <button type="button" className="btn secondary" style={{ marginTop: "1rem" }} onClick={() => setActiveCategory("Technical Analysis")}>
+                        Browse topic
+                    </button>
+                </div>
             </div>
 
-            {/* Term + Topic of Day */}
-            <div className="grid md:grid-cols-2 gap-4 mb-8">
-                <div className="glass-brand rounded-xl p-5">
-                    <div className="text-xs text-green-400 font-semibold uppercase tracking-wider mb-2">📖 Term of the Day</div>
-                    <h3 className="text-xl font-bold text-white mb-2">Fibonacci</h3>
-                    <p className="text-sm text-white/60 leading-relaxed">Retracement levels derived from the Fibonacci sequence (23.6%, 38.2%, 61.8%) used to identify potential support and resistance zones during price pullbacks.</p>
-                    <button className="mt-3 text-xs text-green-400 hover:text-green-300">Read full definition →</button>
-                </div>
-                <div className="glass rounded-xl p-5">
-                    <div className="text-xs text-white/40 font-semibold uppercase tracking-wider mb-2">🗂 Topic of the Day</div>
-                    <h3 className="text-xl font-bold text-white mb-2">Technical Analysis</h3>
-                    <p className="text-sm text-white/60 leading-relaxed">Explore all terms related to chart analysis, indicators, patterns, and price action — from candlesticks to Elliott Wave theory.</p>
-                    <button className="mt-3 text-xs text-green-400 hover:text-green-300">Browse topic →</button>
-                </div>
-            </div>
-
-            {/* Search */}
-            <div className="relative mb-6">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" />
+            <div style={{ marginBottom: "1rem" }}>
+                <label className="label" htmlFor="forexpedia-search">Search terms</label>
                 <input
+                    id="forexpedia-search"
+                    className="field"
                     value={search}
                     onChange={e => { setSearch(e.target.value); setActiveLetter(null); }}
-                    placeholder="Search 200+ terms... (e.g., 'pip', 'leverage', 'RSI')"
-                    className="w-full pl-10 pr-4 py-3.5 glass rounded-xl text-sm text-white placeholder-white/25 border border-white/5 focus:border-green-500/30 focus:outline-none transition-all bg-transparent"
+                    placeholder="Search terms… (e.g. pip, leverage, RSI)"
                 />
             </div>
 
-            {/* Alphabet filter */}
-            <div className="flex flex-wrap gap-1 mb-6">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem", marginBottom: "0.75rem", justifyContent: "center" }}>
                 {alphabet.map(l => (
                     <button
                         key={l}
+                        type="button"
+                        className={`filter-chip ${activeLetter === l ? "is-active" : ""}`}
+                        aria-pressed={activeLetter === l}
                         onClick={() => { setActiveLetter(activeLetter === l ? null : l); setSearch(""); }}
-                        className={`w-7 h-7 rounded text-xs font-mono font-medium transition-all ${activeLetter === l ? "bg-green-500 text-black" : "glass text-white/40 hover:text-white hover:bg-white/8"}`}
+                        style={{ minWidth: 36, padding: "0.25rem 0.45rem" }}
                     >
                         {l}
                     </button>
                 ))}
             </div>
 
-            {/* Category filter */}
-            <div className="flex flex-wrap gap-2 mb-8">
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.25rem", justifyContent: "center" }}>
                 {categories.map(cat => (
                     <button
                         key={cat}
+                        type="button"
+                        className={`filter-chip ${activeCategory === cat ? "is-active" : ""}`}
+                        aria-pressed={activeCategory === cat}
                         onClick={() => setActiveCategory(cat)}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${activeCategory === cat ? "bg-green-500/20 text-green-400 border border-green-500/30" : "glass text-white/50 hover:text-white"}`}
                     >
                         {cat}
                     </button>
                 ))}
             </div>
 
-            {/* Results */}
-            <div className="space-y-3">
-                {filtered.length === 0 ? (
-                    <div className="text-center py-16 text-white/30">
-                        <div className="text-4xl mb-3">🔍</div>
-                        <p>No terms found for &quot;{search}&quot;</p>
-                    </div>
-                ) : filtered.map((t) => (
-                    <div key={t.slug} className="glass rounded-xl p-5 card-hover group cursor-pointer">
-                        <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <h3 className="font-bold text-white group-hover:text-green-400 transition-colors">{t.term}</h3>
-                                    <span className="badge-blue text-xs px-2 py-0.5 rounded-full">{t.category}</span>
-                                </div>
-                                <p className="text-sm text-white/55 leading-relaxed">{t.definition}</p>
-                            </div>
-                            <ChevronRight size={16} className="text-white/20 group-hover:text-green-400 shrink-0 mt-1 transition-colors" />
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Showing count */}
-            {filtered.length > 0 && (
-                <div className="mt-6 text-center text-xs text-white/30">
-                    Showing {filtered.length} of {glossaryTerms.length} terms
+            {filtered.length === 0 ? (
+                <div className="card status" style={{ textAlign: "center" }}>
+                    No terms found{search ? ` for “${search}”` : ""}.
                 </div>
+            ) : (
+                <ul className="choice-list">
+                    {filtered.map((t) => (
+                        <li key={t.slug}>
+                            <div className="choice-card" style={{ cursor: "default", alignItems: "start" }}>
+                                <div className="choice-copy">
+                                    <strong>{t.term}</strong>
+                                    <span className="lede" style={{ fontSize: "0.95rem" }}>{t.definition}</span>
+                                </div>
+                                <span className="badge">{t.category}</span>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
             )}
 
-            {/* Link to crypto glossary */}
-            <div className="mt-8 glass rounded-xl p-5 flex items-center justify-between">
-                <div>
-                    <div className="font-semibold text-sm text-white mb-1">Looking for crypto terms?</div>
-                    <div className="text-xs text-white/40">Explore Decryptopedia™ — our dedicated crypto glossary</div>
-                </div>
-                <a href="/crypto" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500/10 text-orange-400 border border-orange-500/20 text-sm font-medium hover:bg-orange-500/15 transition-all">
-                    <Zap size={13} />
-                    Decryptopedia
-                </a>
-            </div>
+            {filtered.length > 0 && (
+                <p className="status" style={{ textAlign: "center", marginTop: "1rem", fontSize: "0.85rem" }}>
+                    Showing {filtered.length} of {glossaryTerms.length} terms
+                </p>
+            )}
         </div>
     );
 }
-
-

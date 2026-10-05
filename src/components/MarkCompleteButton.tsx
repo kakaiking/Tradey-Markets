@@ -18,7 +18,7 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
     useEffect(() => {
         async function checkCompletion() {
             try {
-                const res = await fetch("/api/user/progress");
+                const res = await fetch("/api/user/progress/");
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.completedLessons) {
@@ -38,7 +38,7 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
         if (submitting || isCompleted) return;
         setSubmitting(true);
         try {
-            const res = await fetch("/api/user/progress", {
+            const res = await fetch("/api/user/progress/", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -62,7 +62,7 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
 
     if (loading) {
         return (
-            <button disabled className="flex items-center gap-2 px-5 py-2.5 glass rounded-xl text-sm font-medium text-white/40 cursor-not-allowed">
+            <button disabled className="btn secondary !w-auto opacity-55 cursor-not-allowed">
                 <Loader2 className="animate-spin" size={16} />
                 Loading...
             </button>
@@ -71,7 +71,7 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
 
     if (isCompleted) {
         return (
-            <button disabled className="flex items-center gap-2 px-5 py-2.5 bg-green-500/20 text-green-400 rounded-xl text-sm font-semibold border border-green-500/30 cursor-not-allowed">
+            <button disabled className="btn chalk !w-auto cursor-not-allowed opacity-90">
                 <CheckCircle size={16} />
                 Lesson Completed
             </button>
@@ -82,7 +82,7 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
         <button
             onClick={handleComplete}
             disabled={submitting}
-            className="flex items-center gap-2 px-5 py-2.5 glass rounded-xl text-sm font-medium text-green-400 hover:bg-green-500/10 active:scale-95 transition-all border border-green-500/20 cursor-pointer"
+            className="btn !w-auto"
         >
             {submitting ? (
                 <>

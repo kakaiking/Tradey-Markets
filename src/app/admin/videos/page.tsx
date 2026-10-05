@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Video, Link as LinkIcon, FileText, Type } from "lucide-react";
+import { PageHead } from "@/components/layout/PageHead";
 
 export default function AdminVideosPage() {
     const [title, setTitle] = useState("");
@@ -25,7 +25,7 @@ export default function AdminVideosPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!title || !description || !url) {
             setStatus("error");
             return;
@@ -37,8 +37,6 @@ export default function AdminVideosPage() {
             return;
         }
 
-        // In a real app, this would be an API call to save to a database.
-        // For now, we simulate success.
         console.log("New Video to Add:", {
             id: `v${Date.now()}`,
             title,
@@ -57,120 +55,89 @@ export default function AdminVideosPage() {
     };
 
     return (
-        <div className="space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
-                        Video Management
-                    </h1>
-                    <p className="text-white/50">Add and manage YouTube videos for the library.</p>
-                </div>
-            </div>
+        <div>
+            <PageHead
+                title="Videos"
+                byline="Admin"
+                lede="Add and manage YouTube videos for the library."
+                backHref="/admin"
+            />
 
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                {/* Form Section */}
-                <div className="lg:col-span-3 bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-2xl">
-                    <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="split">
+                <div className="card">
+                    <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
                         <div>
-                            <label className="block text-sm font-medium text-white/70 mb-2">YouTube URL</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <LinkIcon size={18} className="text-white/40" />
-                                </div>
-                                <input
-                                    type="text"
-                                    value={url}
-                                    onChange={handleUrlChange}
-                                    placeholder="https://www.youtube.com/watch?v=..."
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
-                                />
-                            </div>
+                            <label className="label" htmlFor="video-url">YouTube URL</label>
+                            <input
+                                id="video-url"
+                                type="text"
+                                className="field"
+                                value={url}
+                                onChange={handleUrlChange}
+                                placeholder="https://www.youtube.com/watch?v=..."
+                            />
+                        </div>
+                        <div>
+                            <label className="label" htmlFor="video-title">Video title</label>
+                            <input
+                                id="video-title"
+                                type="text"
+                                className="field"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                placeholder="e.g., Advanced Price Action Strategies"
+                            />
+                        </div>
+                        <div>
+                            <label className="label" htmlFor="video-desc">Description</label>
+                            <textarea
+                                id="video-desc"
+                                className="field"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                placeholder="Brief description of the video content..."
+                                rows={4}
+                            />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-white/70 mb-2">Video Title</label>
-                            <div className="relative">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Type size={18} className="text-white/40" />
-                                </div>
-                                <input
-                                    type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                    placeholder="e.g., Advanced Price Action Strategies"
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-white/70 mb-2">Description</label>
-                            <div className="relative">
-                                <div className="absolute top-3 left-3 pointer-events-none">
-                                    <FileText size={18} className="text-white/40" />
-                                </div>
-                                <textarea
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Provide a brief description of the video content..."
-                                    rows={4}
-                                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all resize-none"
-                                />
-                            </div>
-                        </div>
-
-                        <button
-                            type="submit"
-                            className="w-full py-4 bg-green-500 hover:bg-green-400 text-black font-bold rounded-xl transition-all flex items-center justify-center gap-2 group"
-                        >
-                            <Plus size={20} className="group-hover:rotate-90 transition-transform" />
-                            Add Video to Library
-                        </button>
+                        <button type="submit" className="btn">Add video to library</button>
 
                         {status === "success" && (
-                            <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-sm text-center">
+                            <p className="status" style={{ color: "var(--chalk)", textAlign: "center" }}>
                                 Video successfully added to the library!
-                            </div>
+                            </p>
                         )}
                         {status === "error" && (
-                            <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm text-center">
+                            <p className="error" style={{ textAlign: "center" }}>
                                 Please fill in all fields with a valid YouTube URL.
-                            </div>
+                            </p>
                         )}
                     </form>
                 </div>
 
-                {/* Preview Section */}
-                <div className="lg:col-span-2 space-y-4">
-                    <h3 className="text-sm font-medium text-white/70 uppercase tracking-widest flex items-center gap-2">
-                        <Video size={16} /> Live Preview
-                    </h3>
-                    <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden group">
-                        <div className="aspect-video w-full bg-black relative flex items-center justify-center">
+                <div>
+                    <p className="kicker" style={{ marginBottom: "0.75rem", textAlign: "left" }}>Live preview</p>
+                    <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+                        <div style={{ aspectRatio: "16 / 9", background: "var(--sunken)", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
                             {previewId ? (
                                 <iframe
                                     width="100%"
                                     height="100%"
                                     src={`https://www.youtube.com/embed/${previewId}`}
                                     title={title || "Video Preview"}
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    style={{ border: 0, position: "absolute", inset: 0 }}
                                     allowFullScreen
-                                    className="absolute inset-0"
-                                ></iframe>
+                                />
                             ) : (
-                                <div className="text-white/20 flex flex-col items-center gap-2">
-                                    <Video size={48} />
-                                    <span className="text-sm">No Video Selected</span>
-                                </div>
+                                <span className="status">No video selected</span>
                             )}
                         </div>
-                        <div className="p-4">
-                            <h4 className="text-[15px] font-semibold text-white mb-2 line-clamp-2">
-                                {title || "Video Title Preview"}
-                            </h4>
-                            <p className="text-[13px] text-white/50 line-clamp-3 leading-relaxed">
-                                {description || "The video description will appear here once you start typing. Make it engaging for the students."}
+                        <div style={{ padding: "var(--space-4)" }}>
+                            <strong className="font-display" style={{ display: "block", marginBottom: "0.35rem" }}>
+                                {title || "Video title preview"}
+                            </strong>
+                            <p className="lede" style={{ fontSize: "0.95rem" }}>
+                                {description || "The description will appear here as you type."}
                             </p>
                         </div>
                     </div>
@@ -179,5 +146,3 @@ export default function AdminVideosPage() {
         </div>
     );
 }
-
-

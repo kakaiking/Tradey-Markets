@@ -47,18 +47,19 @@ export function QuizWidget({ quiz }: { quiz: Quiz }) {
     if (done) {
         const pct = Math.round((score / quiz.questions.length) * 100);
         return (
-            <div className="glass rounded-2xl p-8 text-center">
-                <div className="text-5xl mb-4">{pct >= 75 ? "🎉" : pct >= 50 ? "👍" : "📚"}</div>
-                <h3 className="text-2xl font-bold font-display mb-2">Quiz Complete!</h3>
-                <div className="text-5xl font-bold text-gradient my-4">{pct}%</div>
-                <p className="text-white/50 mb-6">{score} of {quiz.questions.length} correct</p>
-                <div className="flex items-center justify-center gap-3">
-                    <button onClick={reset} className="flex items-center gap-2 px-5 py-2.5 glass rounded-xl text-sm font-medium text-white/70 hover:text-white transition-all">
-                        <RotateCcw size={15} />
-                        Try Again
+            <div className="card" style={{ textAlign: "center" }}>
+                <p className="kicker" style={{ marginBottom: "0.5rem" }}>Quiz complete</p>
+                <h3 className="font-display" style={{ fontSize: "1.75rem", marginBottom: "0.5rem" }}>{pct}%</h3>
+                <p className="lede" style={{ marginBottom: "1.25rem" }}>{score} of {quiz.questions.length} correct</p>
+                <div className="heat" style={{ margin: "0 auto 1.25rem" }}>
+                    <div className="heat-fill" style={{ width: `${pct}%` }} />
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "center" }}>
+                    <button type="button" onClick={reset} className="btn secondary">
+                        <RotateCcw size={15} /> Try again
                     </button>
-                    <Link href="/learn" className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-green-500 to-emerald-500 text-black rounded-xl text-sm font-semibold">
-                        Continue Learning <ArrowRight size={15} />
+                    <Link href="/learn" className="btn chalk">
+                        Continue learning <ArrowRight size={15} />
                     </Link>
                 </div>
             </div>
@@ -66,47 +67,72 @@ export function QuizWidget({ quiz }: { quiz: Quiz }) {
     }
 
     return (
-        <div className="glass rounded-2xl overflow-hidden">
-            {/* Progress */}
-            <div className="px-6 pt-5 pb-3">
-                <div className="flex justify-between text-xs text-white/40 mb-2">
-                    <span>Question {current + 1} of {quiz.questions.length}</span>
-                    <span>{score} correct so far</span>
+        <div className="card">
+            <div style={{ marginBottom: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                    <span className="choice-meta">Question {current + 1} of {quiz.questions.length}</span>
+                    <span className="choice-meta">{score} correct</span>
                 </div>
-                <div className="progress-bar"><div className="progress-fill" style={{ width: `${((current) / quiz.questions.length) * 100}%` }} /></div>
+                <div className="progress-bar">
+                    <div className="progress-fill" style={{ width: `${(current / quiz.questions.length) * 100}%` }} />
+                </div>
             </div>
 
-            <div className="px-6 pb-6">
-                <h3 className="text-lg font-semibold text-white mb-5 mt-2">{q.q}</h3>
-                <div className="space-y-3 mb-5">
-                    {q.options.map((opt, i) => {
-                        let cls = "glass border border-white/5 hover:border-white/20 text-white/75 cursor-pointer hover:bg-white/5";
-                        if (answered) {
-                            if (i === q.answer) cls = "bg-green-500/15 border border-green-500/40 text-green-400";
-                            else if (i === selected) cls = "bg-red-500/15 border border-red-500/40 text-red-400";
-                            else cls = "glass border border-white/5 text-white/30 cursor-default";
+            <h3 className="font-display" style={{ fontSize: "1.15rem", marginBottom: "1rem", textAlign: "left" }}>{q.q}</h3>
+
+            <ul className="choice-list" style={{ marginBottom: "1rem" }}>
+                {q.options.map((opt, i) => {
+                    let trail = String.fromCharCode(65 + i);
+                    let extra = "";
+                    if (answered) {
+                        if (i === q.answer) {
+                            trail = "✓";
+                            extra = " active";
+                        } else if (i === selected) {
+                            trail = "✗";
+                            extra = " locked";
+                        } else {
+                            extra = " locked";
                         }
-                        return (
-                            <button key={i} onClick={() => handleSelect(i)} className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all text-left text-sm ${cls}`}>
-                                <span className="w-6 h-6 rounded-full border border-current flex items-center justify-center text-xs font-bold shrink-0">
-                                    {answered && i === q.answer ? <CheckCircle size={14} /> : answered && i === selected && i !== q.answer ? <XCircle size={14} /> : String.fromCharCode(65 + i)}
+                    }
+                    return (
+                        <li key={i}>
+                            <button
+                                type="button"
+                                onClick={() => handleSelect(i)}
+                                className={`choice-card${answered && i !== q.answer && i !== selected ? " locked" : ""}`}
+                                disabled={answered && i !== q.answer && i !== selected}
+                            >
+                                <div className="choice-copy">
+                                    <strong style={{ fontWeight: 600 }}>{opt}</strong>
+                                    {answered && i === q.answer && (
+                                        <span className="choice-meta" style={{ color: "var(--chalk)" }}>Correct</span>
+                                    )}
+                                    {answered && i === selected && i !== q.answer && (
+                                        <span className="choice-meta" style={{ color: "var(--pencil)" }}>Your answer</span>
+                                    )}
+                                </div>
+                                <span className={`choice-trail${extra}`}>
+                                    {answered && i === q.answer ? <CheckCircle size={16} /> : answered && i === selected ? <XCircle size={16} /> : trail}
                                 </span>
-                                {opt}
                             </button>
-                        );
-                    })}
+                        </li>
+                    );
+                })}
+            </ul>
+
+            {answered && (
+                <div className="card" style={{ marginBottom: "1rem", background: "var(--sunken)", boxShadow: "none" }}>
+                    <p className="kicker" style={{ marginBottom: "0.35rem" }}>Explanation</p>
+                    <p className="lede" style={{ fontSize: "0.95rem" }}>{q.explanation}</p>
                 </div>
-                {answered && (
-                    <div className="glass-brand rounded-xl p-4 mb-4 text-sm text-white/70">
-                        💡 <strong className="text-green-400">Explanation:</strong> {q.explanation}
-                    </div>
-                )}
-                {answered && (
-                    <button onClick={next} className="w-full py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-black font-semibold text-sm hover:shadow-lg transition-all">
-                        {current < quiz.questions.length - 1 ? "Next Question →" : "See Results →"}
-                    </button>
-                )}
-            </div>
+            )}
+
+            {answered && (
+                <button type="button" onClick={next} className="btn">
+                    {current < quiz.questions.length - 1 ? "Next question" : "See results"}
+                </button>
+            )}
         </div>
     );
 }

@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
-import { Calendar, Filter, Globe, Users, Info, Plus, Clock } from "lucide-react";
-import { calendarEvents, communityEvents } from "@/lib/data";
+import { useState, useEffect } from "react";
+import { Globe, Users, Info, Clock } from "lucide-react";
+import { calendarEvents } from "@/lib/data";
+import { PageHead } from "@/components/layout/PageHead";
 
 const currencies = ["All", "USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "NZD"];
 const impacts = ["All", "high", "medium", "low"];
@@ -14,10 +15,10 @@ const allEvents = [
     { id: 8, time: "13:00", currency: "USD", event: "30-Year Bond Auction", impact: "low", forecast: "—", previous: "4.68|2.4", actual: "" },
 ];
 
-const impactStyles: Record<string, string> = {
-    high: "bg-red-500",
-    medium: "bg-yellow-500",
-    low: "bg-green-500",
+const impactDot: Record<string, string> = {
+    high: "var(--pencil)",
+    medium: "var(--highlighter)",
+    low: "var(--chalk)",
 };
 
 const flagMap: Record<string, string> = { USD: "🇺🇸", EUR: "🇪🇺", GBP: "🇬🇧", JPY: "🇯🇵", AUD: "🇦🇺", CAD: "🇨🇦", CHF: "🇨🇭", NZD: "🇳🇿" };
@@ -27,6 +28,22 @@ export default function CalendarPage() {
     const [activeCurrency, setActiveCurrency] = useState("All");
     const [activeImpact, setActiveImpact] = useState("All");
     const [activeDateFilter, setActiveDateFilter] = useState("Today");
+    const [communityEvents, setCommunityEvents] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchEvents = async () => {
+            try {
+                const response = await fetch("/api/admin/events");
+                if (response.ok) {
+                    const data = await response.json();
+                    setCommunityEvents(data.events || []);
+                }
+            } catch (error) {
+                console.error("Error fetching community events:", error);
+            }
+        };
+        fetchEvents();
+    }, []);
 
     const filtered = allEvents.filter(e =>
         (activeCurrency === "All" || e.currency === activeCurrency) &&
@@ -34,230 +51,196 @@ export default function CalendarPage() {
     );
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-12">
-            {/* Header */}
-            <div className="mb-8">
-                <div className="flex items-center gap-2 text-yellow-400 text-sm font-medium mb-3">
-                    <Calendar size={14} />
-                    <span>{view === "economic" ? "Real-Time Market Events" : "Tradey Markets Events"}</span>
-                </div>
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-                    <div>
-                        <h1 className="text-4xl font-bold font-display mb-2">
-                            {view === "economic" ? (
-                                <>Economic <span className="text-gradient">Calendar</span></>
-                            ) : (
-                                <>Scheduled <span className="text-gradient">Events</span></>
-                            )}
-                        </h1>
-                        <p className="text-white/50 text-sm">
-                            {view === "economic" 
-                                ? "Track high-impact events that move forex & crypto markets. Auto-updates on release."
-                                : "Join live sessions, webinars, and community meetups to level up your trading."
-                            }
-                        </p>
-                    </div>
-                    
-                    {/* View Switcher */}
-                    <div className="flex p-1 bg-white/5 rounded-xl border border-white/5 self-start">
-                        <button 
+        <div>
+            <PageHead
+                title={view === "economic" ? "Economic Calendar" : "Scheduled Events"}
+                byline={view === "economic" ? "Real-time market events" : "Tradey Markets events"}
+                lede={
+                    view === "economic"
+                        ? "Track high-impact releases that move forex & crypto. Filters update the list instantly."
+                        : "Join live sessions, webinars, and community meetups."
+                }
+                trail={
+                    <div style={{ display: "flex", gap: "0.35rem" }}>
+                        <button
+                            type="button"
+                            className={`filter-chip ${view === "economic" ? "is-active" : ""}`}
+                            aria-pressed={view === "economic"}
                             onClick={() => setView("economic")}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === "economic" ? "bg-green-500 text-black shadow-lg" : "text-white/50 hover:text-white"}`}
                         >
-                            <Globe size={16} />
-                            Economic
+                            <Globe size={12} /> Economic
                         </button>
-                        <button 
+                        <button
+                            type="button"
+                            className={`filter-chip ${view === "community" ? "is-active" : ""}`}
+                            aria-pressed={view === "community"}
                             onClick={() => setView("community")}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${view === "community" ? "bg-green-500 text-black shadow-lg" : "text-white/50 hover:text-white"}`}
                         >
-                            <Users size={16} />
-                            Community
+                            <Users size={12} /> Community
                         </button>
                     </div>
-                </div>
-            </div>
+                }
+            />
 
             {view === "economic" ? (
-                <>
-                    {/* Date filter */}
-                    <div className="flex gap-2 mb-5 overflow-x-auto">
+                <div className="split" style={{ gridTemplateColumns: "1fr" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1rem", justifyContent: "center" }}>
                         {dateFilters.map(d => (
-                            <button key={d} onClick={() => setActiveDateFilter(d)} className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${activeDateFilter === d ? "bg-green-500/20 text-green-400 border border-green-500/30" : "glass text-white/50 hover:text-white"}`}>
+                            <button
+                                key={d}
+                                type="button"
+                                className={`filter-chip ${activeDateFilter === d ? "is-active" : ""}`}
+                                aria-pressed={activeDateFilter === d}
+                                onClick={() => setActiveDateFilter(d)}
+                            >
                                 {d}
                             </button>
                         ))}
                     </div>
 
-                    {/* Filters */}
-                    <div className="flex flex-wrap gap-3 mb-6">
-                        <div className="flex items-center gap-2">
-                            <Filter size={13} className="text-white/40" />
-                            <span className="text-xs text-white/40">Impact:</span>
-                            {impacts.map(i => (
-                                <button key={i} onClick={() => setActiveImpact(i)} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${activeImpact === i ? "bg-white/15 text-white" : "glass text-white/40 hover:text-white"}`}>
-                                    {i === "high" ? "🔴 High" : i === "medium" ? "🟡 Medium" : i === "low" ? "🟢 Low" : "All"}
-                                </button>
-                            ))}
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <Globe size={13} className="text-white/40" />
-                            <span className="text-xs text-white/40">Currency:</span>
-                            <div className="flex flex-wrap gap-1">
-                                {currencies.map(c => (
-                                    <button key={c} onClick={() => setActiveCurrency(c)} className={`px-3 py-1 rounded-full text-xs font-medium transition-all ${activeCurrency === c ? "bg-green-500/20 text-green-400 border border-green-500/30" : "glass text-white/40 hover:text-white"}`}>
-                                        {c !== "All" && flagMap[c]} {c}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Calendar table */}
-                    <div className="glass rounded-2xl overflow-hidden">
-                        {/* Table header */}
-                        <div className="grid grid-cols-12 gap-2 px-5 py-3 border-b border-white/5 text-xs font-semibold uppercase tracking-wider text-white/30">
-                            <div className="col-span-1">Time</div>
-                            <div className="col-span-1">CCY</div>
-                            <div className="col-span-1 text-center">Impact</div>
-                            <div className="col-span-4">Event</div>
-                            <div className="col-span-2 text-right">Forecast</div>
-                            <div className="col-span-2 text-right">Previous</div>
-                            <div className="col-span-1 text-right">Actual</div>
-                        </div>
-
-                        {/* Rows */}
-                        {filtered.map((ev) => (
-                            <div key={ev.id} className={`grid grid-cols-12 gap-2 px-5 py-4 border-b border-white/5 last:border-0 hover:bg-white/2 transition-all group ${ev.impact === "high" ? "border-l-2 border-l-red-500/30" : ev.impact === "medium" ? "border-l-2 border-l-yellow-500/30" : "border-l-2 border-l-transparent"}`}>
-                                <div className="col-span-1 font-mono text-xs text-white/50 self-center">{ev.time}</div>
-                                <div className="col-span-1 self-center">
-                                    <span className="flex items-center gap-1 text-xs font-semibold text-white/70">
-                                        <span>{flagMap[ev.currency] || "🌍"}</span>
-                                        {ev.currency}
-                                    </span>
-                                </div>
-                                <div className="col-span-1 flex items-center justify-center">
-                                    <span className={`w-2.5 h-2.5 rounded-full ${impactStyles[ev.impact]}`} title={ev.impact} />
-                                </div>
-                                <div className="col-span-4 self-center">
-                                    <span className="text-sm text-white/85 group-hover:text-white transition-colors font-medium">{ev.event}</span>
-                                </div>
-                                <div className="col-span-2 text-right self-center font-mono text-xs text-white/45">{ev.forecast}</div>
-                                <div className="col-span-2 text-right self-center font-mono text-xs text-white/35">{ev.previous}</div>
-                                <div className="col-span-1 text-right self-center">
-                                    {ev.actual ? (
-                                        <span className="font-mono text-xs font-bold text-green-400">{ev.actual}</span>
-                                    ) : (
-                                        <span className="text-xs text-white/20">—</span>
-                                    )}
-                                </div>
-                            </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.75rem", justifyContent: "center" }}>
+                        {impacts.map(i => (
+                            <button
+                                key={i}
+                                type="button"
+                                className={`filter-chip ${activeImpact === i ? "is-active" : ""}`}
+                                aria-pressed={activeImpact === i}
+                                onClick={() => setActiveImpact(i)}
+                            >
+                                {i === "high" ? "High" : i === "medium" ? "Medium" : i === "low" ? "Low" : "All impact"}
+                            </button>
                         ))}
                     </div>
 
-                    {/* Legend & Tips */}
-                    <div className="mt-6 glass rounded-xl p-5">
-                        <h3 className="font-semibold text-sm mb-3">📘 How to Use the Economic Calendar</h3>
-                        <div className="grid sm:grid-cols-3 gap-4 text-xs text-white/50">
-                            <div className="flex items-start gap-2">
-                                <span className="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0 mt-0.5" />
-                                <div><strong className="text-white/70">High Impact</strong> — Major market-moving events (NFP, CPI, central bank decisions). Expect significant volatility and wide spreads.</div>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 shrink-0 mt-0.5" />
-                                <div><strong className="text-white/70">Medium Impact</strong> — Notable data releases that may cause moderate market movement. Keep an eye on these.</div>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <span className="w-2.5 h-2.5 rounded-full bg-green-500 shrink-0 mt-0.5" />
-                                <div><strong className="text-white/70">Low Impact</strong> — Minor releases with typically limited market reaction. Usually safe to trade around.</div>
-                            </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "1.5rem", justifyContent: "center" }}>
+                        {currencies.map(c => (
+                            <button
+                                key={c}
+                                type="button"
+                                className={`filter-chip ${activeCurrency === c ? "is-active" : ""}`}
+                                aria-pressed={activeCurrency === c}
+                                onClick={() => setActiveCurrency(c)}
+                            >
+                                {c !== "All" && flagMap[c]} {c}
+                            </button>
+                        ))}
+                    </div>
+
+                    <ul className="choice-list">
+                        {filtered.map((ev) => (
+                            <li key={ev.id}>
+                                <div className="choice-card" style={{ cursor: "default" }}>
+                                    <div className="choice-copy">
+                                        <strong>{ev.event}</strong>
+                                        <span className="choice-meta">
+                                            {ev.time} · {flagMap[ev.currency] || "🌍"} {ev.currency} · {ev.impact} impact
+                                        </span>
+                                        <span className="choice-meta" style={{ marginTop: "0.35rem", textTransform: "none", letterSpacing: 0 }}>
+                                            Forecast {ev.forecast} · Previous {ev.previous}
+                                            {ev.actual ? ` · Actual ${ev.actual}` : ""}
+                                        </span>
+                                    </div>
+                                    <span
+                                        className="choice-trail"
+                                        style={{ color: impactDot[ev.impact] }}
+                                        title={ev.impact}
+                                    >
+                                        ●
+                                    </span>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className="card" style={{ marginTop: "1.5rem" }}>
+                        <p className="kicker" style={{ marginBottom: "0.75rem" }}>How to read impact</p>
+                        <div style={{ display: "grid", gap: "0.75rem", textAlign: "left" }}>
+                            <p className="lede" style={{ fontSize: "0.95rem" }}>
+                                <span className="impact-high">High</span> — NFP, CPI, central banks. Expect volatility.
+                            </p>
+                            <p className="lede" style={{ fontSize: "0.95rem" }}>
+                                <span className="impact-medium">Medium</span> — Notable data; watch for moderate moves.
+                            </p>
+                            <p className="lede" style={{ fontSize: "0.95rem" }}>
+                                <span className="impact-low">Low</span> — Usually limited reaction; safer around the print.
+                            </p>
                         </div>
                     </div>
-                </>
+                </div>
             ) : (
-                <div className="grid gap-6">
-                    {/* Community Events View */}
-                    <div className="grid md:grid-cols-7 gap-6">
-                        {/* Calendar Sidebar */}
-                        <div className="md:col-span-2 space-y-6">
-                            <div className="glass-brand p-5 rounded-2xl border border-white/5">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-bold">May 2026</h3>
-                                    <div className="flex gap-1">
-                                        <button className="p-1 hover:bg-white/5 rounded">←</button>
-                                        <button className="p-1 hover:bg-white/5 rounded">→</button>
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-white/30 uppercase mb-2">
-                                    <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
-                                </div>
-                                <div className="grid grid-cols-7 gap-1 text-center text-sm">
-                                    {Array.from({ length: 31 }).map((_, i) => {
-                                        const day = i + 1;
-                                        const hasEvent = communityEvents.some(e => e.date.endsWith(`-${day < 10 ? '0' + day : day}`));
-                                        return (
-                                            <div key={i} className={`py-1.5 rounded-lg cursor-pointer transition-all ${hasEvent ? "bg-green-500/20 text-green-400 font-bold border border-green-500/30" : "hover:bg-white/5 text-white/50"}`}>
-                                                {day}
-                                            </div>
-                                        );
-                                    })}
+                <div className="split">
+                    <div style={{ display: "grid", gap: "1rem" }}>
+                        <div className="card">
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                                <h3 className="font-display" style={{ fontSize: "1.15rem", margin: 0 }}>May 2026</h3>
+                                <div style={{ display: "flex", gap: "0.35rem" }}>
+                                    <button type="button" className="btn ghost" style={{ minHeight: 36, minWidth: 36, padding: "0.25rem 0.6rem", width: "auto" }}>←</button>
+                                    <button type="button" className="btn ghost" style={{ minHeight: 36, minWidth: 36, padding: "0.25rem 0.6rem", width: "auto" }}>→</button>
                                 </div>
                             </div>
-
-                            <div className="glass-brand p-5 rounded-2xl border border-white/5">
-                                <h3 className="font-bold mb-4 flex items-center gap-2">
-                                    <Info size={16} className="text-green-500" />
-                                    About Events
-                                </h3>
-                                <p className="text-xs text-white/50 leading-relaxed">
-                                    Community events are scheduled by the Tradey Markets team to help you navigate the markets together. Registered users get notifications 15 minutes before the start.
-                                </p>
+                            <div className="choice-meta" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem", textAlign: "center", marginBottom: "0.5rem" }}>
+                                {"SMTWTFS".split("").map((d, i) => <div key={i}>{d}</div>)}
+                            </div>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "0.25rem", textAlign: "center" }}>
+                                {Array.from({ length: 31 }).map((_, i) => {
+                                    const day = i + 1;
+                                    const hasEvent = communityEvents.some(e => e.date?.endsWith(`-${day < 10 ? "0" + day : day}`));
+                                    return (
+                                        <div
+                                            key={i}
+                                            className={hasEvent ? "badge badge-chalk" : ""}
+                                            style={{
+                                                padding: "0.4rem 0",
+                                                borderRadius: "0.65rem",
+                                                fontWeight: hasEvent ? 700 : 500,
+                                                color: hasEvent ? undefined : "var(--muted)",
+                                            }}
+                                        >
+                                            {day}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
 
-                        {/* Events List */}
-                        <div className="md:col-span-5 space-y-4">
-                            {communityEvents.map((event) => (
-                                <div key={event.id} className="glass-brand p-6 rounded-2xl border border-white/5 hover:border-green-500/30 transition-all group">
-                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-3">
-                                                <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
-                                                    event.impact === "high" ? "bg-red-500/20 text-red-400" : 
-                                                    event.impact === "medium" ? "bg-yellow-500/20 text-yellow-400" : 
-                                                    "bg-green-500/20 text-green-400"
-                                                }`}>
+                        <div className="card">
+                            <p className="kicker" style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.5rem" }}>
+                                <Info size={14} /> About events
+                            </p>
+                            <p className="lede" style={{ fontSize: "0.95rem" }}>
+                                Community events are scheduled by the Tradey Markets team. Registered users get a reminder 15 minutes before start.
+                            </p>
+                        </div>
+                    </div>
+
+                    <ul className="choice-list">
+                        {communityEvents.length === 0 ? (
+                            <li className="card status" style={{ textAlign: "center" }}>No community events scheduled yet.</li>
+                        ) : (
+                            communityEvents.map((event) => (
+                                <li key={event.id}>
+                                    <div className="choice-card" style={{ gridTemplateColumns: "1fr", alignItems: "stretch", gap: "0.85rem" }}>
+                                        <div className="choice-copy">
+                                            <span className="choice-meta" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                                <span className={`badge ${event.impact === "high" ? "badge-pencil" : event.impact === "medium" ? "badge-mark" : "badge-chalk"}`}>
                                                     {event.type}
                                                 </span>
-                                                <span className="text-xs text-white/30">•</span>
-                                                <div className="flex items-center gap-1.5 text-xs text-white/50">
-                                                    <Clock size={12} className="text-green-500" />
-                                                    {event.time}
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <h3 className="text-xl font-bold text-white group-hover:text-green-400 transition-colors mb-1">{event.title}</h3>
-                                                <p className="text-sm text-white/50">{event.description}</p>
-                                            </div>
-                                            <div className="flex items-center gap-4 text-xs font-medium text-white/30">
-                                                <div className="flex items-center gap-1.5">
-                                                    <Calendar size={12} />
-                                                    {new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                                                </div>
-                                            </div>
+                                                <Clock size={12} /> {event.time}
+                                            </span>
+                                            <strong style={{ fontSize: "1.1rem" }}>{event.title}</strong>
+                                            <span className="lede" style={{ fontSize: "0.95rem" }}>{event.description}</span>
+                                            <span className="choice-meta">
+                                                {event.date ? new Date(event.date).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) : ""}
+                                            </span>
                                         </div>
-                                        <button className="px-6 py-2.5 bg-green-500 hover:bg-green-600 text-black font-bold rounded-xl transition-all shadow-[0_0_15px_rgba(34,197,94,0.2)] whitespace-nowrap">
-                                            Add to Calendar
-                                        </button>
+                                        <button type="button" className="btn secondary">Add to Calendar</button>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                                </li>
+                            ))
+                        )}
+                    </ul>
                 </div>
             )}
         </div>
     );
 }
-
-

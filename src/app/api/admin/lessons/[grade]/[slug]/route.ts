@@ -21,6 +21,9 @@ export async function GET(
             },
             include: {
                 sections: {
+                    include: {
+                        questionCards: true
+                    },
                     orderBy: { order: "asc" }
                 }
             }
@@ -103,6 +106,15 @@ export async function PUT(
             if (content && Array.isArray(content)) {
                 for (let i = 0; i < content.length; i++) {
                     const sec = content[i];
+                    const questionCardsData = sec.questionCards && Array.isArray(sec.questionCards)
+                        ? sec.questionCards.map((card: any) => ({
+                            description: card.description || "",
+                            question: card.question || "",
+                            options: Array.isArray(card.options) ? card.options : ["", "", "", ""],
+                            correctIndex: typeof card.correctIndex === "number" ? card.correctIndex : 0
+                        }))
+                        : [];
+
                     await tx.lessonSection.create({
                         data: {
                             lessonId: lesson.id,
@@ -110,7 +122,10 @@ export async function PUT(
                             text: Array.isArray(sec.text) ? sec.text : [sec.text || ""],
                             visualType: sec.visualType || "default",
                             videoUrl: sec.videoUrl || null,
-                            order: i
+                            order: i,
+                            questionCards: {
+                                create: questionCardsData
+                            }
                         }
                     });
                 }
@@ -118,7 +133,14 @@ export async function PUT(
 
             return tx.lesson.findUnique({
                 where: { id: lesson.id },
-                include: { sections: true }
+                include: {
+                    sections: {
+                        include: {
+                            questionCards: true
+                        },
+                        orderBy: { order: "asc" }
+                    }
+                }
             });
         });
 

@@ -2,7 +2,10 @@ const { Pool } = require("pg");
 const { PrismaClient } = require("@prisma/client");
 const { PrismaPg } = require("@prisma/adapter-pg");
 const assert = require("assert");
+const dns = require("dns");
 require("dotenv").config();
+
+dns.setDefaultResultOrder("ipv4first");
 
 async function runComprehensiveTests() {
     const connectionString =
@@ -17,7 +20,10 @@ async function runComprehensiveTests() {
         process.exit(1);
     }
 
-    const pool = new Pool({ connectionString });
+    const pool = new Pool({
+        connectionString,
+        connectionTimeoutMillis: 15000
+    });
     const adapter = new PrismaPg(pool);
     const prisma = new PrismaClient({ adapter });
 

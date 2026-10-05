@@ -1,21 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
-import { LearnSidebar } from "@/components/layout/LearnSidebar";
+import React from "react";
+import { usePathname } from "next/navigation";
 
 export default function LearnLayout({ children }: { children: React.ReactNode }) {
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const pathname = usePathname();
+    const cleanPathname = pathname.replace(/\/$/, "");
+    const pathParts = cleanPathname.split("/").filter(Boolean);
 
-    return (
-        <div className="flex bg-[#0a0f0d] h-screen overflow-hidden">
-            <LearnSidebar isCollapsed={isCollapsed} onToggle={() => setIsCollapsed(!isCollapsed)} />
+    const isVideosPage = cleanPathname === "/learn/videos";
+    const isLessonPage = pathParts.length === 3 && pathParts[0] === "learn";
+    const isFullscreenPage = isVideosPage || isLessonPage;
 
-            <main className={`flex-1 transition-all duration-300 overflow-hidden relative ${isCollapsed ? "pl-16" : "pl-72"}`}>
-                <div className="pt-[40px] px-4 md:px-8 w-full max-w-[1600px]">
-                    {children}
-                </div>
-            </main>
-        </div>
-    );
+    if (isFullscreenPage) {
+        return (
+            <div className="relative h-[calc(100dvh-var(--header-h))] md:h-full min-h-[60vh] w-full overflow-hidden">
+                {children}
+            </div>
+        );
+    }
+
+    return <>{children}</>;
 }
-

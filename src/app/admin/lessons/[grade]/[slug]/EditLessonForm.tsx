@@ -16,7 +16,8 @@ import {
   X,
   ArrowLeft,
   Video,
-  Settings
+  Settings,
+  HelpCircle
 } from "lucide-react";
 import { useFeedback } from "@/components/admin/FeedbackProvider";
 const getYouTubeId = (url?: string) => {
@@ -96,7 +97,8 @@ export default function EditLessonForm() {
       title: "",
       text: [""],
       visualType: "default",
-      videoUrl: ""
+      videoUrl: "",
+      questionCards: []
     }]);
   };
 
@@ -112,6 +114,46 @@ export default function EditLessonForm() {
 
   const removeContentBlock = (index: number) => {
     setContent(content.filter((_, i) => i !== index));
+  };
+
+  const addQuestionToBlock = (blockIndex: number) => {
+    const newContent = [...content];
+    const block = newContent[blockIndex];
+    if (!block.questionCards) {
+      block.questionCards = [];
+    }
+    block.questionCards.push({
+      id: `q-${Date.now()}-${Math.random()}`,
+      question: "",
+      description: "",
+      options: ["", "", "", ""],
+      correctIndex: 0
+    });
+    setContent(newContent);
+  };
+
+  const updateQuestionInBlock = (blockIndex: number, qIndex: number, field: string, value: any) => {
+    const newContent = [...content];
+    const block = newContent[blockIndex];
+    if (!block.questionCards) block.questionCards = [];
+    const question = block.questionCards[qIndex];
+    if (field === "options") {
+      const newOptions = [...question.options];
+      newOptions[value.index] = value.optionVal;
+      question.options = newOptions;
+    } else {
+      question[field] = value;
+    }
+    setContent(newContent);
+  };
+
+  const removeQuestionFromBlock = (blockIndex: number, qIndex: number) => {
+    const newContent = [...content];
+    const block = newContent[blockIndex];
+    if (block.questionCards) {
+      block.questionCards = block.questionCards.filter((_: any, i: number) => i !== qIndex);
+    }
+    setContent(newContent);
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -377,6 +419,110 @@ export default function EditLessonForm() {
                         </div>
                       </div>
                     )}
+                  </div>
+
+                  {/* Question Cards Section */}
+                  <div className="border-t border-white/5 pt-4 mt-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h5 className="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
+                        <HelpCircle size={14} className="text-green-400" />
+                        Question Cards ({(block.questionCards || []).length})
+                      </h5>
+                      <button
+                        type="button"
+                        onClick={() => addQuestionToBlock(index)}
+                        className="px-3 py-1.5 border border-green-500/30 text-green-400 bg-green-500/5 hover:bg-green-500/10 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                      >
+                        <Plus size={12} /> Add Question Card
+                      </button>
+                    </div>
+
+                    <div className="space-y-4">
+                      {(block.questionCards || []).map((card: any, qIdx: number) => (
+                        <div key={card.id || qIdx} className="p-4 bg-black/30 border border-white/5 rounded-xl space-y-3 relative group/q-card">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-extrabold text-green-400/80 bg-green-500/5 px-2 py-0.5 rounded border border-green-500/10">
+                              Question Card {qIdx + 1}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeQuestionFromBlock(index, qIdx)}
+                              className="p-1.5 text-white/20 hover:text-red-400 hover:bg-red-500/10 rounded transition-all"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+
+                          <div className="space-y-3">
+                            {/* Question Input */}
+                            <div>
+                              <label className="block text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Question Text</label>
+                              <input
+                                type="text"
+                                required
+                                value={card.question}
+                                onChange={(e) => updateQuestionInBlock(index, qIdx, "question", e.target.value)}
+                                placeholder="e.g., What is the primary purpose of a Stop Loss?"
+                                className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-green-500"
+                              />
+                            </div>
+
+                            {/* Description / Explanation Input */}
+                            <div>
+                              <label className="block text-[10px] font-bold text-white/30 uppercase tracking-wider mb-1">Description / Card Explanation</label>
+                              <textarea
+                                required
+                                value={card.description}
+                                onChange={(e) => updateQuestionInBlock(index, qIdx, "description", e.target.value)}
+                                placeholder="Write the details shown on the card face or the explanation for correct/incorrect choices..."
+                                rows={2}
+                                className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-green-500 resize-none"
+                              />
+                            </div>
+
+                            {/* Choices Options */}
+                            <div className="space-y-2">
+                              <label className="block text-[10px] font-bold text-white/30 uppercase tracking-wider">Answer Options & Correct Key</label>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                {[0, 1, 2, 3].map((optIdx) => {
+                                  const optionLabel = ["A", "B", "C", "D"][optIdx];
+                                  const isCorrect = card.correctIndex === optIdx;
+                                  return (
+                                    <div key={optIdx} className="flex items-center gap-2 bg-black/20 border border-white/5 rounded-lg px-2 py-1.5">
+                                      <button
+                                        type="button"
+                                        onClick={() => updateQuestionInBlock(index, qIdx, "correctIndex", optIdx)}
+                                        className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${
+                                          isCorrect
+                                            ? "bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]"
+                                            : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white"
+                                        }`}
+                                      >
+                                        {optionLabel}
+                                      </button>
+                                      <input
+                                        type="text"
+                                        required
+                                        value={card.options[optIdx] || ""}
+                                        onChange={(e) => updateQuestionInBlock(index, qIdx, "options", { index: optIdx, optionVal: e.target.value })}
+                                        placeholder={`Option ${optionLabel}`}
+                                        className="bg-transparent text-xs text-white placeholder-white/20 focus:outline-none w-full"
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {(block.questionCards || []).length === 0 && (
+                        <div className="text-center py-6 bg-black/10 border border-dashed border-white/5 rounded-xl">
+                          <p className="text-xs text-white/30">No custom question cards configured for this section.</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

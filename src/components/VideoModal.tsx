@@ -39,7 +39,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/90 backdrop-blur-md"
+                        className="absolute inset-0 bg-[color-mix(in_srgb,var(--ink)_50%,transparent)] backdrop-blur-sm"
                     />
 
                     {/* Modal Content */}
@@ -47,17 +47,16 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="relative w-full max-w-5xl bg-[#0d1411] border border-white/10 rounded-[32px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] overflow-y-auto custom-scrollbar max-h-[90vh] z-[101]"
+                        className="relative w-full max-w-5xl card !p-0 overflow-y-auto max-h-[90vh] z-[101]"
                     >
                         {/* Video Container */}
-                        <div className="aspect-video w-full bg-black relative group">
+                        <div className="aspect-video w-full bg-[var(--sunken)] relative group border-b-2 border-[var(--ink)]">
                             <iframe
                                 width="100%"
                                 height="100%"
                                 src={`https://www.youtube.com/embed/${video.videoId}?autoplay=1&rel=0&modestbranding=1`}
                                 title={video.title}
                                 frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
                                 className="w-full h-full"
                             ></iframe>
@@ -65,33 +64,31 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }
                             {/* Close Button - Floats on top of video, but scrolls with it */}
                             <button
                                 onClick={onClose}
-                                className="absolute top-6 right-6 p-3 bg-black/40 hover:bg-black/60 backdrop-blur-md rounded-full transition-all text-white/70 hover:text-white z-[102] border border-white/10 hover:scale-110 active:scale-95"
+                                className="absolute top-6 right-6 p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] rounded-full transition-all text-[var(--ink)] z-[102] border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)] hover:scale-105 active:scale-95"
                             >
                                 <X size={20} />
                             </button>
                         </div>
 
                         {/* Info Body */}
-                        <div className="p-8 md:p-12 bg-gradient-to-b from-transparent to-black/20">
+                        <div className="p-8 md:p-12 bg-[var(--raised)]">
                             <div className="max-w-4xl">
-                                <div className="flex items-center gap-2 mb-4 text-green-400 font-semibold text-sm tracking-widest uppercase">
-                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                <div className="kicker flex items-center gap-2 mb-4 text-[var(--chalk)]">
+                                    <div className="w-2 h-2 rounded-full bg-[var(--chalk)]" />
                                     Trading Education
                                 </div>
-                                <h2 className="text-3xl md:text-5xl font-bold font-display text-white mb-8 leading-tight">
+                                <h2 className="text-3xl md:text-5xl font-bold font-display text-[var(--ink)] mb-8 leading-tight">
                                     {video.title}
                                 </h2>
-                                <div className="h-px w-20 bg-green-500/30 mb-8" />
-                                <div className="prose prose-invert max-w-none">
-                                    <p className="text-white/70 leading-relaxed text-xl md:text-2xl font-light">
-                                        {video.description}
-                                    </p>
+                                <div className="h-1 w-20 bg-[var(--highlighter)] border border-[var(--ink)] mb-8" />
+                                <div className="lesson-prose !text-xl md:!text-2xl">
+                                    <p>{video.description}</p>
                                 </div>
                                 
-                                <div className="mt-12 pt-8 border-t border-white/5 flex flex-wrap gap-4">
+                                <div className="mt-12 pt-8 border-t-2 border-[var(--line)] flex flex-wrap gap-4">
                                     <button 
                                         onClick={onClose}
-                                        className="px-10 py-4 bg-green-500 hover:bg-green-600 text-black font-bold rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-lg shadow-green-500/20"
+                                        className="btn chalk !w-auto"
                                     >
                                         Back to Library
                                     </button>
@@ -105,6 +102,3 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }
         </AnimatePresence>
     );
 };
-
-
-

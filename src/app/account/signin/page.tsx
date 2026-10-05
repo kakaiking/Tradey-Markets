@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { TrendingUp, Mail, Lock } from "lucide-react";
 
 export default function SigninPage() {
     const router = useRouter();
@@ -38,8 +37,6 @@ export default function SigninPage() {
                 throw new Error(data.message || "Invalid credentials. Please try again.");
             }
 
-            // Successfully authenticated
-            // Trigger home/learn navigation and full page refresh to sync state
             router.push("/");
             setTimeout(() => {
                 window.location.reload();
@@ -52,119 +49,93 @@ export default function SigninPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center px-4 py-16">
-            {/* Background glow */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-green-500/5 rounded-full blur-3xl" />
-            </div>
-
-            <div className="w-full max-w-md relative z-10">
-                {/* Logo */}
-                <div className="text-center mb-8">
-                    <Link href="/" className="inline-flex items-center gap-2 mb-6">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg glow-green-sm">
-                            <TrendingUp size={18} className="text-white" />
-                        </div>
-                        <span className="font-bold text-xl font-display"><span className="text-gradient">Pip</span><span className="text-white/90">Forge</span></span>
+        <div style={{ display: "flex", justifyContent: "center", padding: "var(--space-5) 0" }}>
+            <div style={{ width: "min(100%, 24rem)" }}>
+                <div style={{ textAlign: "center", marginBottom: "var(--space-5)" }}>
+                    <Link href="/" className="font-display" style={{ fontSize: "1.5rem", fontWeight: 700, display: "inline-block", marginBottom: "1rem" }}>
+                        Tradey Markets
                     </Link>
-                    <h1 className="text-2xl font-bold font-display text-white mb-2">Welcome Back</h1>
-                    <p className="text-white/45 text-sm">Sign in to continue your trading journey</p>
+                    <h1 className="font-display" style={{ fontSize: "1.75rem", marginBottom: "0.35rem" }}>Welcome back</h1>
+                    <p className="lede">Sign in to continue your trading journey</p>
                 </div>
 
-                <div className="glass rounded-2xl p-7">
-                    {/* Social login */}
-                    <div className="grid grid-cols-2 gap-3 mb-5">
-                        <button 
-                            type="button"
-                            onClick={() => alert("Social login is coming soon!")}
-                            className="flex items-center justify-center gap-2 py-2.5 glass rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/8 transition-all border border-white/5"
-                        >
-                            <span>🇬</span> Google
+                <div className="card">
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "1rem" }}>
+                        <button type="button" className="btn secondary" onClick={() => alert("Social login is coming soon!")}>
+                            Google
                         </button>
-                        <button 
-                            type="button"
-                            onClick={() => alert("Social login is coming soon!")}
-                            className="flex items-center justify-center gap-2 py-2.5 glass rounded-xl text-sm text-white/70 hover:text-white hover:bg-white/8 transition-all border border-white/5"
-                        >
-                            <span>🇦</span> Apple
+                        <button type="button" className="btn secondary" onClick={() => alert("Social login is coming soon!")}>
+                            Apple
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-3 mb-5">
-                        <div className="flex-1 h-px bg-white/8" />
-                        <span className="text-xs text-white/25">or sign in with email</span>
-                        <div className="flex-1 h-px bg-white/8" />
-                    </div>
+                    <p className="kicker" style={{ textAlign: "center", marginBottom: "1rem" }}>or email</p>
 
-                    {/* Error display */}
-                    {error && (
-                        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 text-center">
-                            {error}
-                        </div>
-                    )}
+                    {error && <p className="error" style={{ marginBottom: "0.75rem", textAlign: "center" }}>{error}</p>}
 
-                    {/* Form */}
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} style={{ display: "grid", gap: "1rem" }}>
                         <div>
-                            <label className="block text-xs text-white/50 mb-1.5">Email or Username</label>
-                            <div className="relative">
-                                <Mail size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
-                                <input 
-                                    type="text" 
-                                    value={identifier}
-                                    onChange={(e) => setIdentifier(e.target.value)}
-                                    placeholder="you@example.com" 
-                                    className="w-full pl-10 pr-4 py-3 glass rounded-xl text-sm text-white placeholder-white/20 border border-white/5 focus:border-green-500/30 focus:outline-none bg-transparent transition-all" 
-                                    required
-                                />
-                            </div>
+                            <label className="label" htmlFor="signin-id">Email or username</label>
+                            <input
+                                id="signin-id"
+                                type="text"
+                                className="field"
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
+                                placeholder="you@example.com"
+                                required
+                            />
                         </div>
                         <div>
-                            <div className="flex justify-between items-center mb-1.5">
-                                <label className="block text-xs text-white/50">Password</label>
-                                <a href="#" onClick={(e) => { e.preventDefault(); alert("Password reset is coming soon!"); }} className="text-xs text-green-400 hover:underline">Forgot?</a>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+                                <label className="label" htmlFor="signin-pw">Password</label>
+                                <a
+                                    href="#"
+                                    className="choice-meta"
+                                    onClick={(e) => { e.preventDefault(); alert("Password reset is coming soon!"); }}
+                                    style={{ color: "var(--chalk)" }}
+                                >
+                                    Forgot?
+                                </a>
                             </div>
-                            <div className="relative">
-                                <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/30" />
-                                <input 
-                                    type="password" 
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••" 
-                                    className="w-full pl-10 pr-4 py-3 glass rounded-xl text-sm text-white placeholder-white/20 border border-white/5 focus:border-green-500/30 focus:outline-none bg-transparent transition-all" 
-                                    required
-                                />
-                            </div>
+                            <input
+                                id="signin-pw"
+                                type="password"
+                                className="field"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="••••••••"
+                                required
+                            />
                         </div>
 
-                        <button 
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-black font-bold text-sm hover:shadow-lg hover:shadow-green-500/20 transition-all mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? "Signing in..." : "Sign In"}
+                        <button type="submit" className="btn" disabled={loading}>
+                            {loading ? "Signing in..." : "Sign in"}
                         </button>
                     </form>
 
-                    <div className="text-center mt-5 text-sm text-white/40">
-                        Don't have an account?{" "}
-                        <Link href="/account/signup" className="text-green-400 hover:text-green-300 font-medium">Create Account</Link>
-                    </div>
+                    <p className="status" style={{ textAlign: "center", marginTop: "1.25rem", fontSize: "0.95rem" }}>
+                        Don&apos;t have an account?{" "}
+                        <Link href="/account/signup" style={{ color: "var(--chalk)", fontWeight: 700 }}>Create account</Link>
+                    </p>
                 </div>
 
-                {/* Benefits reminder */}
-                <div className="mt-5 grid grid-cols-3 gap-2">
+                <ul className="choice-list" style={{ marginTop: "1rem" }}>
                     {[
-                        { emoji: "📚", text: "Free courses" },
-                        { emoji: "🔥", text: "Streaks & XP" },
-                        { emoji: "🤖", text: "AI insights" },
-                    ].map(({ emoji, text }) => (
-                        <div key={text} className="glass rounded-xl p-2 text-center">
-                            <div className="text-lg">{emoji}</div>
-                            <div className="text-xs text-white/40 mt-0.5">{text}</div>
-                        </div>
+                        { title: "Free courses", meta: "Full curriculum" },
+                        { title: "Streaks & XP", meta: "Stay consistent" },
+                        { title: "AI insights", meta: "Journal coaching" },
+                    ].map((item) => (
+                        <li key={item.title}>
+                            <div className="choice-card" style={{ cursor: "default" }}>
+                                <div className="choice-copy">
+                                    <strong>{item.title}</strong>
+                                    <span className="choice-meta">{item.meta}</span>
+                                </div>
+                            </div>
+                        </li>
                     ))}
-                </div>
+                </ul>
             </div>
         </div>
     );

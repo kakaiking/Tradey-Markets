@@ -1,173 +1,146 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
-  Settings, 
-  Globe, 
-  Shield, 
-  Bell, 
-  Lock, 
-  Save,
-  Mail,
-  Smartphone,
-  Eye,
-  CreditCard,
-  Zap
-} from "lucide-react";
+import { PageHead } from "@/components/layout/PageHead";
 
 export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState("general");
 
   const tabs = [
-    { id: "general", label: "General", icon: Globe },
-    { id: "security", label: "Security", icon: Shield },
-    { id: "notifications", label: "Notifications", icon: Bell },
-    { id: "integrations", label: "Integrations", icon: Zap },
+    { id: "general", label: "General" },
+    { id: "security", label: "Security" },
+    { id: "notifications", label: "Notifications" },
+    { id: "integrations", label: "Integrations" },
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
-            Platform Settings
-          </h1>
-          <p className="text-white/50">Configure global site preferences, security, and API integrations.</p>
-        </div>
-        <button className="flex items-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-400 text-black font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)]">
-          <Save size={20} />
-          Save Changes
-        </button>
-      </div>
+    <div>
+      <PageHead
+        title="Settings"
+        byline="Admin"
+        lede="Configure site preferences, security, and integrations."
+        backHref="/admin"
+        trail={
+          <button type="button" className="btn" style={{ width: "auto", minHeight: 44, padding: "0.5rem 1rem" }}>
+            Save changes
+          </button>
+        }
+      />
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Navigation Sidebar */}
-        <div className="space-y-1">
+      <div className="split">
+        <ul className="choice-list">
           {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 p-4 rounded-xl transition-all ${
-                activeTab === tab.id 
-                  ? "bg-green-500/10 text-green-400 border border-green-500/20" 
-                  : "text-white/40 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              <tab.icon size={20} />
-              <span className="font-medium">{tab.label}</span>
-            </button>
+            <li key={tab.id}>
+              <button
+                type="button"
+                className={`choice-card${activeTab === tab.id ? "" : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+                style={activeTab === tab.id ? { background: "var(--highlighter)" } : undefined}
+              >
+                <div className="choice-copy">
+                  <strong>{tab.label}</strong>
+                </div>
+                <span className={`choice-trail${activeTab === tab.id ? " active" : ""}`}>
+                  {activeTab === tab.id ? "On" : "→"}
+                </span>
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        {/* Settings Form */}
-        <div className="lg:col-span-3 space-y-6">
+        <div>
           {activeTab === "general" && (
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-8 backdrop-blur-xl">
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Globe size={20} className="text-green-500" /> General Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm text-white/60 font-medium">Site Name</label>
-                    <input type="text" defaultValue="Tradey Markets" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-green-500 transition-all" />
+            <div className="card" style={{ display: "grid", gap: "1.25rem" }}>
+              <div>
+                <p className="kicker" style={{ marginBottom: "0.75rem" }}>General information</p>
+                <div style={{ display: "grid", gap: "1rem" }}>
+                  <div>
+                    <label className="label">Site name</label>
+                    <input type="text" defaultValue="Tradey Markets" className="field" />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-sm text-white/60 font-medium">Admin Contact Email</label>
-                    <input type="email" defaultValue="admin@Tradey Markets.com" className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-green-500 transition-all" />
+                  <div>
+                    <label className="label">Admin contact email</label>
+                    <input type="email" defaultValue="admin@tradeymarkets.com" className="field" />
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-4 pt-6 border-t border-white/5">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Eye size={20} className="text-blue-500" /> Platform Visibility
-                </h3>
-                <div className="space-y-4">
+              <div>
+                <p className="kicker" style={{ marginBottom: "0.75rem" }}>Platform visibility</p>
+                <ul className="choice-list">
                   {[
-                    { label: "Maintenance Mode", desc: "Only admins can access the site when active.", default: false },
-                    { label: "Public Registration", desc: "Allow new students to sign up without an invite.", default: true },
-                    { label: "Beta Features", desc: "Enable experimental features for all users.", default: false },
+                    { label: "Maintenance mode", desc: "Only admins can access the site when active.", on: false },
+                    { label: "Public registration", desc: "Allow new students to sign up.", on: true },
+                    { label: "Beta features", desc: "Enable experimental features for all users.", on: false },
                   ].map((toggle) => (
-                    <div key={toggle.label} className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                      <div>
-                        <p className="font-medium">{toggle.label}</p>
-                        <p className="text-xs text-white/30">{toggle.desc}</p>
+                    <li key={toggle.label}>
+                      <div className="choice-card" style={{ cursor: "default" }}>
+                        <div className="choice-copy">
+                          <strong>{toggle.label}</strong>
+                          <span className="choice-meta" style={{ textTransform: "none", letterSpacing: 0 }}>{toggle.desc}</span>
+                        </div>
+                        <span className={`badge ${toggle.on ? "badge-chalk" : ""}`}>{toggle.on ? "On" : "Off"}</span>
                       </div>
-                      <div className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors ${toggle.default ? "bg-green-500" : "bg-white/10"}`}>
-                        <div className={`w-4 h-4 bg-white rounded-full transition-transform ${toggle.default ? "translate-x-6" : "translate-x-0"}`} />
-                      </div>
-                    </div>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </div>
           )}
 
           {activeTab === "security" && (
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-8 backdrop-blur-xl">
-              <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Lock size={20} className="text-red-500" /> Password Requirements
-                </h3>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                    <div>
-                      <p className="font-medium">Enforce Strong Passwords</p>
-                      <p className="text-xs text-white/30">Require uppercase, numbers, and special characters.</p>
+            <div className="card" style={{ display: "grid", gap: "1.25rem" }}>
+              <div>
+                <p className="kicker" style={{ marginBottom: "0.75rem" }}>Password requirements</p>
+                <ul className="choice-list">
+                  <li>
+                    <div className="choice-card" style={{ cursor: "default" }}>
+                      <div className="choice-copy">
+                        <strong>Enforce strong passwords</strong>
+                        <span className="choice-meta" style={{ textTransform: "none", letterSpacing: 0 }}>Require uppercase, numbers, and symbols.</span>
+                      </div>
+                      <span className="badge badge-chalk">On</span>
                     </div>
-                    <div className="w-12 h-6 bg-green-500 rounded-full p-1 cursor-pointer">
-                      <div className="w-4 h-4 bg-white rounded-full translate-x-6" />
+                  </li>
+                  <li>
+                    <div className="choice-card" style={{ cursor: "default" }}>
+                      <div className="choice-copy">
+                        <strong>Two-factor authentication</strong>
+                        <span className="choice-meta" style={{ textTransform: "none", letterSpacing: 0 }}>Recommend 2FA for all users.</span>
+                      </div>
+                      <span className="badge">Off</span>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/5">
-                    <div>
-                      <p className="font-medium">Two-Factor Authentication</p>
-                      <p className="text-xs text-white/30">Strongly recommend 2FA for all users.</p>
-                    </div>
-                    <div className="w-12 h-6 bg-white/10 rounded-full p-1 cursor-pointer">
-                      <div className="w-4 h-4 bg-white rounded-full translate-x-0" />
-                    </div>
-                  </div>
-                </div>
+                  </li>
+                </ul>
               </div>
-
-              <div className="space-y-4 pt-6 border-t border-white/5">
-                <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                  <Shield size={20} className="text-orange-500" /> API Access
-                </h3>
-                <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-medium text-white/60">Main API Key</span>
-                    <button className="text-xs text-green-400 hover:text-green-300">Regenerate</button>
-                  </div>
-                  <div className="bg-black/60 p-3 rounded-lg font-mono text-sm text-white/40 overflow-hidden text-ellipsis">
+              <div>
+                <p className="kicker" style={{ marginBottom: "0.75rem" }}>API access</p>
+                <div className="card" style={{ background: "var(--sunken)", boxShadow: "none" }}>
+                  <span className="choice-meta">Main API key</span>
+                  <p className="font-tape" style={{ marginTop: "0.5rem", wordBreak: "break-all" }}>
                     pk_live_51Msz34Lkjf98Hjksd9823Hkjfd8...
-                  </div>
+                  </p>
+                  <button type="button" className="btn secondary" style={{ marginTop: "0.75rem" }}>Regenerate</button>
                 </div>
               </div>
             </div>
           )}
 
           {activeTab === "notifications" && (
-             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[300px] text-center">
-                <Bell size={48} className="text-white/10 mb-4" />
-                <h3 className="text-xl font-bold">Notification Settings</h3>
-                <p className="text-white/30 max-w-sm mt-2">Configure how you receive system alerts, user messages, and platform updates.</p>
-             </div>
+            <div className="card" style={{ textAlign: "center" }}>
+              <h3 className="font-display" style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>Notification settings</h3>
+              <p className="lede">Configure system alerts, user messages, and platform updates.</p>
+            </div>
           )}
 
           {activeTab === "integrations" && (
-             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[300px] text-center">
-                <Zap size={48} className="text-white/10 mb-4" />
-                <h3 className="text-xl font-bold">App Integrations</h3>
-                <p className="text-white/30 max-w-sm mt-2">Connect Tradey Markets with 3rd-party services like Stripe, Slack, or Mailchimp.</p>
-             </div>
+            <div className="card" style={{ textAlign: "center" }}>
+              <h3 className="font-display" style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>App integrations</h3>
+              <p className="lede">Connect Tradey Markets with Stripe, Slack, Mailchimp, and more.</p>
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 }
-
-

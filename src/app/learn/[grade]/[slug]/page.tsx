@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BookOpen, ChevronRight } from "lucide-react";
 import { ScrollytellingLesson, SectionContent } from "@/components/ScrollytellingLesson";
+import MarkCompleteButton from "@/components/MarkCompleteButton";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -36,19 +37,21 @@ export default async function LessonPage({ params }: { params: Promise<{ grade: 
     const sections = currentLesson?.sections || defaultSections;
 
     return (
-        <div style={{ height: "calc(100vh - 40px)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            {/* Breadcrumb */}
-            <div className="flex items-center gap-2 text-sm text-white/40 mb-3 flex-shrink-0">
-                <Link href="/learn" className="hover:text-white transition-colors flex items-center gap-1"><BookOpen size={13} /> Learn</Link>
+        <div style={{ height: "100%", display: "flex", flexDirection: "column", overflow: "hidden", minHeight: "60vh" }}>
+            <div className="flex items-center gap-2 text-sm text-[var(--muted)] mb-3 flex-shrink-0 px-1">
+                <Link href="/learn" className="hover:text-[var(--ink)] transition-colors flex items-center gap-1"><BookOpen size={13} /> Learn</Link>
                 <ChevronRight size={13} />
-                <Link href={`/learn/${grade}`} className="hover:text-white transition-colors">{currentGrade?.title || grade}</Link>
+                <Link href={`/learn/${grade}`} className="hover:text-[var(--ink)] transition-colors">{currentGrade?.title || grade}</Link>
                 <ChevronRight size={13} />
-                <span className="text-white/60">{currentLesson?.title || slug.replace(/-/g, ' ')}</span>
+                <span className="text-[var(--ink)] font-semibold">{currentLesson?.title || slug.replace(/-/g, ' ')}</span>
             </div>
 
-            {/* Video fills remaining space */}
             <div style={{ flex: 1, overflow: "hidden", minHeight: 0 }}>
                 <ScrollytellingLesson sections={sections} grade={grade} slug={slug} />
+            </div>
+
+            <div className="step-footer" style={{ marginTop: 0, flexShrink: 0 }}>
+                <MarkCompleteButton gradeId={grade} lessonSlug={slug} />
             </div>
         </div>
     );

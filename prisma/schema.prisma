@@ -101,16 +101,42 @@ model Lesson {
 }
 
 model LessonSection {
-  id         String   @id @default(cuid())
-  lessonId   String
-  title      String
-  text       String[] // Supported on PostgreSQL
-  visualType String   @default("default")
-  videoUrl   String?
-  order      Int      @default(0)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id            String         @id @default(cuid())
+  lessonId      String
+  title         String
+  text          String[] // Supported on PostgreSQL
+  visualType    String         @default("default")
+  videoUrl      String?
+  order         Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
-  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lesson        Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  questionCards QuestionCard[]
+}
+
+model QuestionCard {
+  id           String        @id @default(cuid())
+  sectionId    String
+  description  String
+  question     String
+  options      String[]
+  correctIndex Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  section      LessonSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  date        String
+  time        String
+  type        String
+  description String
+  impact      String   @default("medium")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
