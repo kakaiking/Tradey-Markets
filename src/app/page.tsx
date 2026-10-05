@@ -57,7 +57,7 @@ const highlights = [
     },
 ];
 
-/** Desk-stamp glyphs — chalkboard cuts, not generic line icons. */
+/** Flat colorful glyphs for explore circles. */
 function ExploreGlyph({ kind }: { kind: ExploreKind }) {
     const common = {
         viewBox: "0 0 32 32",
@@ -71,71 +71,45 @@ function ExploreGlyph({ kind }: { kind: ExploreKind }) {
             return (
                 <svg {...common}>
                     <path
-                        d="M5 7.5h9.2c.7 0 1.3.3 1.8.8L17 9.5l1-1.2c.5-.5 1.1-.8 1.8-.8H29v16.2c0 1-.8 1.8-1.8 1.8H18.8c-.7 0-1.3-.3-1.8-.8L17 24l-1 1.2c-.5.5-1.1.8-1.8.8H6.8c-1 0-1.8-.8-1.8-1.8V7.5Z"
-                        fill="currentColor"
-                        fillOpacity="0.14"
+                        d="M5 8h9c.8 0 1.5.4 2 1l1 1.2 1-1.2c.5-.6 1.2-1 2-1h9v15.5c0 1.1-.9 2-2 2H19c-.8 0-1.5-.4-2-1l-1-1.2-1 1.2c-.5.6-1.2 1-2 1H7c-1.1 0-2-.9-2-2V8Z"
+                        fill="var(--chalk)"
+                        fillOpacity="0.2"
                     />
                     <path
-                        d="M16 9.2v15.3M6.2 8.2h8.4c.6 0 1.1.2 1.4.6L17 10.2l1-1.4c.3-.4.8-.6 1.4-.6h8.4"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
+                        d="M16 9.5v14.5M6.5 9h8c.6 0 1.1.2 1.5.6L17 11l1-1.4c.4-.4.9-.6 1.5-.6h8"
+                        stroke="var(--chalk)"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
                     <path
-                        d="M8.2 13.5h5.2M8.2 17h4.2M8.2 20.5h5.6"
+                        d="M8.5 14h4.5M8.5 17.5h3.5M8.5 21h4.8"
                         stroke="var(--chalk)"
-                        strokeWidth="1.6"
+                        strokeWidth="1.8"
                         strokeLinecap="round"
                     />
                     <path
-                        d="M18.6 13.5h5.2M18.6 17h4.2M18.6 20.5h5.6"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
+                        d="M19 14h4.5M19 17.5h3.5M19 21h4.8"
+                        stroke="#5b8def"
+                        strokeWidth="1.8"
                         strokeLinecap="round"
-                        opacity="0.45"
                     />
                 </svg>
             );
         case "quizzes":
             return (
                 <svg {...common}>
-                    <rect
-                        x="6.2"
-                        y="5.5"
-                        width="19.6"
-                        height="21"
-                        rx="3.2"
-                        fill="currentColor"
-                        fillOpacity="0.12"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                    />
+                    <rect x="7" y="5" width="18" height="22" rx="3.5" fill="var(--highlighter)" fillOpacity="0.35" />
+                    <rect x="7" y="5" width="18" height="22" rx="3.5" stroke="#d4a40a" strokeWidth="1.8" />
+                    <path d="M12.5 5v3M19.5 5v3" stroke="#d4a40a" strokeWidth="1.8" strokeLinecap="round" />
+                    <circle cx="12.2" cy="14.2" r="1.5" fill="var(--chalk)" />
+                    <path d="M15.5 14.2h6" stroke="var(--ink)" strokeWidth="1.7" strokeLinecap="round" opacity="0.55" />
+                    <circle cx="12.2" cy="19" r="1.5" fill="var(--pencil)" />
+                    <path d="M15.5 19h4.5" stroke="var(--ink)" strokeWidth="1.7" strokeLinecap="round" opacity="0.4" />
                     <path
-                        d="M12.2 5.5v3.2M19.8 5.5v3.2"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        strokeLinecap="round"
-                    />
-                    <circle cx="12.2" cy="14.8" r="1.35" fill="var(--highlighter)" />
-                    <path
-                        d="M15.4 14.8h6.2"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                    />
-                    <circle cx="12.2" cy="19.4" r="1.35" fill="currentColor" fillOpacity="0.35" />
-                    <path
-                        d="M15.4 19.4h4.6"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        opacity="0.45"
-                    />
-                    <path
-                        d="M11.1 23.6l1.5 1.4 3.2-3.4"
+                        d="M11.2 23.8l1.6 1.5 3.4-3.6"
                         stroke="var(--chalk)"
-                        strokeWidth="1.7"
+                        strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
@@ -146,45 +120,32 @@ function ExploreGlyph({ kind }: { kind: ExploreKind }) {
                 <svg {...common}>
                     <rect
                         x="5"
-                        y="9.5"
-                        width="14"
+                        y="10"
+                        width="13.5"
                         height="14"
-                        rx="2.4"
-                        fill="currentColor"
-                        fillOpacity="0.1"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        transform="rotate(-12 12 16.5)"
+                        rx="2.5"
+                        fill="#8b6bc9"
+                        fillOpacity="0.55"
+                        transform="rotate(-14 11.75 17)"
                     />
                     <rect
-                        x="8.5"
+                        x="9"
                         y="8"
-                        width="14"
+                        width="13.5"
                         height="14"
-                        rx="2.4"
-                        fill="currentColor"
-                        fillOpacity="0.14"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        transform="rotate(4 15.5 15)"
+                        rx="2.5"
+                        fill="#5b8def"
+                        fillOpacity="0.7"
+                        transform="rotate(6 15.75 15)"
                     />
-                    <rect
-                        x="11.5"
-                        y="7"
-                        width="14"
-                        height="14"
-                        rx="2.4"
-                        fill="var(--raised)"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                    />
+                    <rect x="12" y="6.5" width="13.5" height="14" rx="2.5" fill="var(--highlighter)" />
                     <text
-                        x="18.5"
-                        y="16.2"
+                        x="18.75"
+                        y="16"
                         textAnchor="middle"
-                        fill="var(--highlighter)"
-                        fontSize="9"
-                        fontWeight="700"
+                        fill="var(--on-highlighter)"
+                        fontSize="10"
+                        fontWeight="800"
                         fontFamily="var(--font-tape)"
                     >
                         ?
@@ -194,120 +155,40 @@ function ExploreGlyph({ kind }: { kind: ExploreKind }) {
         case "charts":
             return (
                 <svg {...common}>
-                    <path
-                        d="M8 22.5V12.2M12.4 22.5V9.5M16.8 22.5V14.2M21.2 22.5V11"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        strokeLinecap="round"
-                        opacity="0.28"
-                    />
-                    <path
-                        d="M10.2 8.2v11.2"
-                        stroke="var(--chalk)"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                    />
-                    <rect x="8.4" y="11.5" width="3.6" height="5.4" rx="0.7" fill="var(--chalk)" />
-                    <path
-                        d="M18.4 10.5v11"
-                        stroke="var(--pencil)"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                    />
-                    <rect x="16.6" y="14.2" width="3.6" height="4.6" rx="0.7" fill="var(--pencil)" />
-                    <path
-                        d="M6.5 24.2h19"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        opacity="0.35"
-                    />
+                    <path d="M7.5 24.5h17" stroke="var(--ink)" strokeWidth="1.5" strokeLinecap="round" opacity="0.25" />
+                    <path d="M10 9v13" stroke="var(--chalk)" strokeWidth="2" strokeLinecap="round" />
+                    <rect x="8" y="12.5" width="4" height="6" rx="0.8" fill="var(--chalk)" />
+                    <path d="M16.5 7.5v16" stroke="var(--pencil)" strokeWidth="2" strokeLinecap="round" />
+                    <rect x="14.5" y="11" width="4" height="7.5" rx="0.8" fill="var(--pencil)" />
+                    <path d="M23 10.5v13" stroke="#5b8def" strokeWidth="2" strokeLinecap="round" />
+                    <rect x="21" y="14" width="4" height="5.5" rx="0.8" fill="#5b8def" />
                 </svg>
             );
         case "calendar":
             return (
                 <svg {...common}>
-                    <rect
-                        x="6"
-                        y="8"
-                        width="20"
-                        height="17.5"
-                        rx="3"
-                        fill="currentColor"
-                        fillOpacity="0.1"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                    />
-                    <path
-                        d="M6 12.8h20"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                    />
-                    <path
-                        d="M11.2 6.2v3.4M20.8 6.2v3.4"
-                        stroke="currentColor"
-                        strokeWidth="1.7"
-                        strokeLinecap="round"
-                    />
-                    <circle cx="11.2" cy="17.2" r="1.2" fill="currentColor" opacity="0.35" />
-                    <circle cx="16" cy="17.2" r="1.2" fill="currentColor" opacity="0.35" />
-                    <circle cx="20.8" cy="17.2" r="1.55" fill="var(--highlighter)" />
-                    <circle cx="11.2" cy="21.4" r="1.2" fill="currentColor" opacity="0.25" />
-                    <circle cx="16" cy="21.4" r="1.2" fill="var(--chalk)" />
+                    <rect x="5.5" y="8" width="21" height="18" rx="3.5" fill="#c47a2b" fillOpacity="0.2" />
+                    <rect x="5.5" y="8" width="21" height="5.5" rx="3.5" fill="#c47a2b" />
+                    <path d="M5.5 13.5h21" stroke="#c47a2b" strokeWidth="1.4" />
+                    <path d="M11 6v4.5M21 6v4.5" stroke="#c47a2b" strokeWidth="2" strokeLinecap="round" />
+                    <circle cx="11" cy="18" r="1.4" fill="var(--chalk)" />
+                    <circle cx="16" cy="18" r="1.4" fill="var(--highlighter)" />
+                    <circle cx="21" cy="18" r="1.4" fill="var(--pencil)" />
+                    <circle cx="11" cy="22.5" r="1.4" fill="#5b8def" />
+                    <circle cx="16" cy="22.5" r="1.4" fill="#8b6bc9" />
                 </svg>
             );
         case "more":
             return (
                 <svg {...common}>
-                    <rect
-                        x="6.2"
-                        y="6.2"
-                        width="8.2"
-                        height="8.2"
-                        rx="2.2"
-                        fill="currentColor"
-                        fillOpacity="0.12"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                    />
-                    <rect
-                        x="17.6"
-                        y="6.2"
-                        width="8.2"
-                        height="8.2"
-                        rx="2.2"
-                        fill="currentColor"
-                        fillOpacity="0.12"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                    />
-                    <rect
-                        x="6.2"
-                        y="17.6"
-                        width="8.2"
-                        height="8.2"
-                        rx="2.2"
-                        fill="currentColor"
-                        fillOpacity="0.12"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                    />
-                    <rect
-                        x="17.6"
-                        y="17.6"
-                        width="8.2"
-                        height="8.2"
-                        rx="2.2"
-                        fill="var(--highlighter)"
-                        fillOpacity="0.85"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                    />
+                    <rect x="6" y="6" width="8.5" height="8.5" rx="2.4" fill="var(--chalk)" />
+                    <rect x="17.5" y="6" width="8.5" height="8.5" rx="2.4" fill="#5b8def" />
+                    <rect x="6" y="17.5" width="8.5" height="8.5" rx="2.4" fill="var(--pencil)" />
+                    <rect x="17.5" y="17.5" width="8.5" height="8.5" rx="2.4" fill="var(--highlighter)" />
                     <path
-                        d="M20.2 21.7h3M21.7 20.2v3"
+                        d="M20.2 21.75h3.1M21.75 20.2v3.1"
                         stroke="var(--on-highlighter)"
-                        strokeWidth="1.5"
+                        strokeWidth="1.7"
                         strokeLinecap="round"
                     />
                 </svg>
