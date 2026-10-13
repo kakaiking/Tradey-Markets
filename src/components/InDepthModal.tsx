@@ -63,7 +63,7 @@ export const InDepthModal: React.FC<InDepthModalProps> = ({ isOpen, onClose, tit
                         {/* Header */}
                         <div className="p-6 border-b-2 border-[var(--line)] flex items-center justify-between bg-[var(--raised)]">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] border-2 border-[var(--ink)] rounded-[var(--radius-sm)]">
+                                <div className="p-2 bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] border border-[var(--line)] rounded-[var(--radius-sm)]">
                                     <BookOpen className="text-[var(--chalk)]" size={20} />
                                 </div>
                                 <h2 className="text-xl md:text-2xl font-bold font-display text-[var(--ink)]">
@@ -87,7 +87,7 @@ export const InDepthModal: React.FC<InDepthModalProps> = ({ isOpen, onClose, tit
                                             <div className="w-1.5 h-1.5 rounded-full bg-[var(--chalk)]" />
                                             Watch Video Lesson
                                         </div>
-                                        <div className="rounded-[var(--radius-sm)] overflow-hidden aspect-video border-2 border-[var(--ink)] bg-[var(--sunken)] shadow-[var(--card-shadow)]">
+                                        <div className="rounded-[var(--radius-sm)] overflow-hidden aspect-video border border-[var(--line)] bg-[var(--sunken)] shadow-[var(--card-shadow)]">
                                             <iframe
                                                 width="100%"
                                                 height="100%"

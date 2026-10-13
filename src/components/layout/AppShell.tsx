@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, HelpCircle, Home, UserRound } from "lucide-react";
+import { BarChart3, BookOpen, HelpCircle, Home, UserRound } from "lucide-react";
 
 type ShellMode = "school" | "admin" | "auth" | "bare";
 
@@ -21,16 +21,23 @@ function isPracticeActive(pathname: string) {
     return (
         pathname.startsWith("/quizzes") ||
         pathname.startsWith("/learn/question-cards") ||
-        pathname.startsWith("/learn/videos") ||
+        pathname.startsWith("/learn/videos")
+    );
+}
+
+function isAnalyzeActive(pathname: string) {
+    return (
+        pathname.startsWith("/analyze") ||
         pathname.startsWith("/tools") ||
         pathname.startsWith("/journal") ||
+        pathname.startsWith("/charts") ||
         pathname.startsWith("/backtester") ||
-        pathname.startsWith("/charts")
+        pathname.startsWith("/calendar")
     );
 }
 
 function isLearnActive(pathname: string) {
-    if (isPracticeActive(pathname) || isHomeActive(pathname)) return false;
+    if (isPracticeActive(pathname) || isHomeActive(pathname) || isAnalyzeActive(pathname)) return false;
     return (
         pathname.startsWith("/learn") ||
         pathname.startsWith("/forexpedia") ||
@@ -52,6 +59,7 @@ const schoolLinks = [
     { href: "/", label: "Home", match: isHomeActive, icon: Home },
     { href: "/learn", label: "Learn", match: isLearnActive, icon: BookOpen },
     { href: "/quizzes", label: "Practice", match: isPracticeActive, icon: HelpCircle },
+    { href: "/analyze", label: "Analyze", match: isAnalyzeActive, icon: BarChart3 },
     { href: "/account/signin", label: "You", match: isYouActive, icon: UserRound },
 ];
 
@@ -73,14 +81,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const pathname = usePathname() || "/";
     const mode = resolveMode(pathname);
     const onHome = pathname === "/" || pathname === "";
-    const wide =
-        onHome ||
-        pathname.startsWith("/learn") ||
-        pathname.startsWith("/admin") ||
-        pathname.startsWith("/calendar") ||
-        pathname.startsWith("/charts") ||
-        pathname.startsWith("/journal") ||
-        pathname.startsWith("/backtester");
+    const wide = pathname.startsWith("/admin");
 
     if (mode === "bare") {
         return (
@@ -105,7 +106,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <div className="wrap">
                         <Link href="/" className="brand">
                             <span className="brand-mark">Tradey Markets</span>
-                            <span className="brand-tag">Chart paper</span>
                         </Link>
                     </div>
                 </header>
@@ -126,7 +126,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <div className="wrap">
                         <Link href="/admin" className="brand">
                             <span className="brand-mark">Tradey Admin</span>
-                            <span className="brand-tag">Desk</span>
                         </Link>
                         <nav className="nav nav-desktop" aria-label="Admin">
                             {adminLinks.map((link) => (
@@ -165,31 +164,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         );
     }
 
-    // school — home uses an in-page mobile header; desktop keeps the site header
     return (
         <div className={`app-shell${onHome ? " app-shell--home" : ""}`}>
             <a className="skip" href="#main">
                 Skip to main content
             </a>
-            <header className={onHome ? "site-header site-header--desktop-only" : "site-header"}>
-                <div className="wrap">
-                    <Link href="/" className="brand">
-                        <span className="brand-mark">Tradey Markets</span>
-                        <span className="brand-tag">Forex school</span>
-                    </Link>
-                    <nav className="nav nav-desktop" aria-label="Primary">
-                        {schoolLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                aria-current={link.match(pathname) ? "page" : undefined}
-                            >
-                                {link.label}
-                            </Link>
-                        ))}
-                    </nav>
-                </div>
-            </header>
+            {onHome ? null : (
+                <header className="site-header">
+                    <div className="wrap">
+                        <Link href="/" className="brand">
+                            <span className="brand-mark">Tradey Markets</span>
+                        </Link>
+                    </div>
+                </header>
+            )}
             <main id="main" className="app-main">
                 <div
                     className={`wrap ${onHome ? "wrap--flush" : wide ? "wrap--wide" : ""}`}

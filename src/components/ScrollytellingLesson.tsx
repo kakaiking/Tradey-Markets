@@ -269,7 +269,7 @@ export const ScrollytellingLesson: React.FC<ScrollytellingLessonProps> = ({ sect
     return (
         <div className="w-full h-full relative flex flex-col items-center">
             {/* Snapping Scroll Area (occupies full container width & height) */}
-            <div className="w-full h-full rounded-[var(--radius)] border-2 border-[var(--ink)] shadow-[var(--card-shadow)] overflow-hidden relative bg-[var(--paper)] flex flex-col">
+            <div className="w-full h-full rounded-[var(--radius)] border border-[var(--line)] shadow-[var(--card-shadow)] overflow-hidden relative bg-[var(--paper)] flex flex-col">
                 <div
                     ref={containerRef}
                     className="flex-1 w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none"
@@ -318,7 +318,7 @@ export const ScrollytellingLesson: React.FC<ScrollytellingLessonProps> = ({ sect
                                         {/* Custom Play Button Overlay Widget */}
                                         {playingStates[section.id] === false && (
                                             <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                                <div className="w-16 h-16 bg-[var(--raised)] border-2 border-[var(--ink)] rounded-full flex items-center justify-center shadow-[var(--card-shadow)] transition-transform duration-300 scale-100">
+                                                <div className="w-16 h-16 bg-[var(--raised)] border border-[var(--line)] rounded-full flex items-center justify-center shadow-[var(--card-shadow)] transition-transform duration-300 scale-100">
                                                     <Play className="text-[var(--ink)] fill-[var(--ink)] ml-1.5" size={24} />
                                                 </div>
                                             </div>
@@ -356,7 +356,7 @@ export const ScrollytellingLesson: React.FC<ScrollytellingLessonProps> = ({ sect
                                     {/* Academy Avatar */}
                                     {!isFullscreen && (
                                         <div className="relative mb-1">
-                                            <div className="w-11 h-11 rounded-full border-2 border-[var(--ink)] bg-[var(--raised)] flex items-center justify-center font-bold text-xs text-[var(--chalk)] select-none shadow-[2px_2px_0_var(--ink)]">
+                                            <div className="w-11 h-11 rounded-full border border-[var(--line)] bg-[var(--raised)] flex items-center justify-center font-bold text-xs text-[var(--chalk)] select-none">
                                                 PA
                                             </div>
                                             <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[var(--chalk)] text-[var(--on-chalk)] rounded-full w-4.5 h-4.5 flex items-center justify-center font-extrabold text-[10px] border border-[var(--ink)] select-none">
@@ -371,7 +371,7 @@ export const ScrollytellingLesson: React.FC<ScrollytellingLessonProps> = ({ sect
                                             onClick={() => handleLikeClick(section.id)}
                                             className="flex flex-col items-center group"
                                         >
-                                            <div className={`p-3 rounded-full border-2 border-[var(--ink)] transition-all duration-300 shadow-[2px_2px_0_var(--ink)] ${
+                                            <div className={`p-3 rounded-full border border-[var(--line)] transition-all duration-300 ${
                                                 likedSections[section.id]
                                                     ? "bg-[color-mix(in_srgb,var(--pencil)_18%,var(--raised))] text-[var(--pencil)] scale-110"
                                                     : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
@@ -391,7 +391,7 @@ export const ScrollytellingLesson: React.FC<ScrollytellingLessonProps> = ({ sect
                                             onClick={() => handleShareClick(section.id)}
                                             className="flex flex-col items-center group"
                                         >
-                                            <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]">
+                                            <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border border-[var(--line)]">
                                                 <Share2 size={20} />
                                             </div>
                                             <span className="text-xs font-bold text-[var(--ink)] mt-1 select-none drop-shadow-[0_1px_0_var(--raised)]">Share</span>
@@ -404,7 +404,7 @@ export const ScrollytellingLesson: React.FC<ScrollytellingLessonProps> = ({ sect
                                             onClick={() => setIsMuted((prev) => !prev)}
                                             className="flex flex-col items-center group"
                                         >
-                                            <div className={`p-3 rounded-full border-2 border-[var(--ink)] transition-all duration-300 shadow-[2px_2px_0_var(--ink)] ${
+                                            <div className={`p-3 rounded-full border border-[var(--line)] transition-all duration-300 ${
                                                 !isMuted
                                                     ? "bg-[color-mix(in_srgb,var(--chalk)_22%,var(--raised))] text-[var(--chalk)] scale-110"
                                                     : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
@@ -422,7 +422,7 @@ export const ScrollytellingLesson: React.FC<ScrollytellingLessonProps> = ({ sect
                                         onClick={() => setIsFullscreen((prev) => !prev)}
                                         className="flex flex-col items-center group"
                                     >
-                                        <div className={`p-3 rounded-full border-2 border-[var(--ink)] transition-all duration-300 shadow-[2px_2px_0_var(--ink)] ${
+                                        <div className={`p-3 rounded-full border border-[var(--line)] transition-all duration-300 ${
                                             isFullscreen
                                                 ? "bg-[var(--highlighter)] text-[var(--ink)] scale-110"
                                                 : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"

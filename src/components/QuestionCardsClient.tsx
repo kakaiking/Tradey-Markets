@@ -159,7 +159,7 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                                 setIsFlipped(false);
                                 setCurrentCardIndex(index);
                             }}
-                            className="w-full bg-[var(--raised)] hover:bg-[var(--highlighter)] border-2 border-[var(--ink)] rounded-[var(--radius-sm)] px-5 py-3.5 pr-10 text-xs md:text-sm font-bold text-[var(--ink)] transition-all focus:outline-none cursor-pointer appearance-none shadow-[var(--card-shadow)] text-center"
+                            className="w-full bg-[var(--raised)] hover:bg-[var(--highlighter)] border border-[var(--line)] rounded-[var(--radius-sm)] px-5 py-3.5 pr-10 text-xs md:text-sm font-bold text-[var(--ink)] transition-all focus:outline-none cursor-pointer appearance-none text-center"
                             style={{
                                 textAlignLast: "center"
                             }}
@@ -199,7 +199,7 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                             animate={{ opacity: 1, scale: 1 }}
                             className="w-full card text-center relative overflow-hidden"
                         >
-                            <div className="w-20 h-20 bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] text-[var(--chalk)] border-2 border-[var(--ink)] rounded-full flex items-center justify-center mx-auto mb-6">
+                            <div className="w-20 h-20 bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] text-[var(--chalk)] border border-[var(--line)] rounded-full flex items-center justify-center mx-auto mb-6">
                                 <Sparkles size={36} />
                             </div>
                             
@@ -208,7 +208,7 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                                 {activeLesson?.title}
                             </p>
                             
-                            <div className="bg-[var(--sunken)] border-2 border-[var(--ink)] rounded-[var(--radius-sm)] p-6 max-w-sm mx-auto mb-8">
+                            <div className="bg-[var(--sunken)] border border-[var(--line)] rounded-[var(--radius-sm)] p-6 max-w-sm mx-auto mb-8">
                                 <div className="kicker mb-1">Your Score</div>
                                 <div className="text-5xl font-black text-[var(--chalk)] font-display">
                                     {totalCorrect} <span className="text-[var(--muted)] text-3xl">/</span> {cards.length}
@@ -254,7 +254,7 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                             <button
                                 onClick={handlePrev}
                                 disabled={currentCardIndex === 0}
-                                className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--ink)] bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)] transition-all active:scale-90 disabled:opacity-0 disabled:pointer-events-none shrink-0 shadow-[2px_2px_0_var(--ink)]"
+                                className="flex items-center justify-center w-12 h-12 rounded-full border border-[var(--line)] bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)] transition-all active:scale-90 disabled:opacity-0 disabled:pointer-events-none shrink-0"
                             >
                                 <ChevronLeft size={24} />
                             </button>
@@ -383,7 +383,7 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                             <button
                                 onClick={handleNext}
                                 disabled={answers[currentCardIndex] === undefined}
-                                className="flex items-center justify-center w-12 h-12 rounded-full border-2 border-[var(--ink)] bg-[var(--highlighter)] text-[var(--ink)] hover:brightness-95 disabled:bg-[var(--sunken)] disabled:text-[var(--muted)] transition-all active:scale-90 disabled:pointer-events-none shrink-0 shadow-[2px_2px_0_var(--ink)]"
+                                className="flex items-center justify-center w-12 h-12 rounded-full border border-[var(--line)] bg-[var(--highlighter)] text-[var(--ink)] hover:brightness-95 disabled:bg-[var(--sunken)] disabled:text-[var(--muted)] transition-all active:scale-90 disabled:pointer-events-none shrink-0"
                             >
                                 <ChevronRight size={24} />
                             </button>

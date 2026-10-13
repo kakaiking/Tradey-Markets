@@ -57,7 +57,7 @@ export default function ChartsPage() {
                     </div>
                 </div>
 
-                <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ background: "var(--sunken)", borderRadius: "var(--radius-sm)", border: "2px solid var(--ink)" }}>
+                <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ background: "var(--sunken)", borderRadius: "var(--radius-sm)", border: "1px solid var(--line)" }}>
                     {[0, 0.25, 0.5, 0.75, 1].map(pos => (
                         <line key={pos} x1={0} x2={W} y1={H * pos} y2={H * pos} stroke="var(--line)" strokeWidth={1} />
                     ))}

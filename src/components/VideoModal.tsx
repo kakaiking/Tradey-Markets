@@ -64,7 +64,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ isOpen, onClose, video }
                             {/* Close Button - Floats on top of video, but scrolls with it */}
                             <button
                                 onClick={onClose}
-                                className="absolute top-6 right-6 p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] rounded-full transition-all text-[var(--ink)] z-[102] border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)] hover:scale-105 active:scale-95"
+                                className="absolute top-6 right-6 p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] rounded-full transition-all text-[var(--ink)] z-[102] border border-[var(--line)] hover:scale-105 active:scale-95"
                             >
                                 <X size={20} />
                             </button>

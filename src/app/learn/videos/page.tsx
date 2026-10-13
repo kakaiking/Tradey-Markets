@@ -256,7 +256,7 @@ export default function VideosPage() {
             <div className="flex justify-center items-center relative w-full" style={{ height: "100%" }}>
                 
                 {/* Snapping Scroll Area (occupies full container width & height) */}
-                <div className="w-full rounded-[var(--radius)] border-2 border-[var(--ink)] shadow-[var(--card-shadow)] overflow-hidden relative bg-[var(--paper)] flex flex-col" style={{ height: "100%" }}>
+                <div className="w-full rounded-[var(--radius)] border border-[var(--line)] shadow-[var(--card-shadow)] overflow-hidden relative bg-[var(--paper)] flex flex-col" style={{ height: "100%" }}>
                     <div
                         ref={containerRef}
                         className="flex-1 w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none"
@@ -322,7 +322,7 @@ export default function VideosPage() {
                                             {/* Custom Play Button Overlay Widget */}
                                             {playingStates[video.id] === false && (
                                                 <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-                                                    <div className="w-16 h-16 bg-[var(--raised)] border-2 border-[var(--ink)] rounded-full flex items-center justify-center shadow-[var(--card-shadow)] transition-transform duration-300 scale-100">
+                                                    <div className="w-16 h-16 bg-[var(--raised)] border border-[var(--line)] rounded-full flex items-center justify-center shadow-[var(--card-shadow)] transition-transform duration-300 scale-100">
                                                         <Play className="text-[var(--ink)] fill-[var(--ink)] ml-1.5" size={24} />
                                                     </div>
                                                 </div>
@@ -341,7 +341,7 @@ export default function VideosPage() {
                                         <div className="absolute right-6 bottom-8 flex flex-col items-center gap-5 z-20 pointer-events-auto">
                                             {/* Creator Avatar */}
                                             <div className="relative mb-1">
-                                                <div className="w-11 h-11 rounded-full border-2 border-[var(--ink)] bg-[var(--raised)] flex items-center justify-center font-bold text-xs text-[var(--chalk)] shadow-[2px_2px_0_var(--ink)]">
+                                                <div className="w-11 h-11 rounded-full border border-[var(--line)] bg-[var(--raised)] flex items-center justify-center font-bold text-xs text-[var(--chalk)]">
                                                     PA
                                                 </div>
                                                 <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[var(--chalk)] text-[var(--on-chalk)] rounded-full w-4.5 h-4.5 flex items-center justify-center font-extrabold text-[10px] border border-[var(--ink)]">
@@ -354,7 +354,7 @@ export default function VideosPage() {
                                                 onClick={() => handleLikeClick(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className={`p-3 rounded-full border-2 border-[var(--ink)] transition-all duration-300 shadow-[2px_2px_0_var(--ink)] ${
+                                                <div className={`p-3 rounded-full border border-[var(--line)] transition-all duration-300 ${
                                                     likedVideos[video.id]
                                                         ? "bg-[color-mix(in_srgb,var(--pencil)_18%,var(--raised))] text-[var(--pencil)] scale-110"
                                                         : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
@@ -371,7 +371,7 @@ export default function VideosPage() {
                                                 onClick={() => setOpenCommentsId(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]">
+                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border border-[var(--line)]">
                                                     <MessageCircle size={20} />
                                                 </div>
                                                 <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">
@@ -385,7 +385,7 @@ export default function VideosPage() {
                                                 onClick={() => handleShareClick(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]">
+                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border border-[var(--line)]">
                                                     <Share2 size={20} />
                                                 </div>
                                                 <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">Share</span>
@@ -396,7 +396,7 @@ export default function VideosPage() {
                                                 onClick={() => setIsMuted((prev) => !prev)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className={`p-3 rounded-full border-2 border-[var(--ink)] transition-all duration-300 shadow-[2px_2px_0_var(--ink)] ${
+                                                <div className={`p-3 rounded-full border border-[var(--line)] transition-all duration-300 ${
                                                     !isMuted
                                                         ? "bg-[color-mix(in_srgb,var(--chalk)_22%,var(--raised))] text-[var(--chalk)] scale-110"
                                                         : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
@@ -409,7 +409,7 @@ export default function VideosPage() {
                                             </button>
 
                                             {/* Vinyl disc spin animation */}
-                                            <div className="w-10 h-10 rounded-full border-2 border-[var(--ink)] bg-[var(--raised)] flex items-center justify-center animate-spin mt-1.5 shadow-[2px_2px_0_var(--ink)]" style={{ animationDuration: "5s" }}>
+                                            <div className="w-10 h-10 rounded-full border border-[var(--line)] bg-[var(--raised)] flex items-center justify-center animate-spin mt-1.5" style={{ animationDuration: "5s" }}>
                                                 <div className="w-6 h-6 rounded-full bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] border border-[var(--chalk)] flex items-center justify-center font-bold text-[8px] text-[var(--chalk)]">
                                                     P
                                                 </div>
@@ -425,7 +425,7 @@ export default function VideosPage() {
                                             <p className="font-reading text-[var(--muted)] text-xs md:text-sm leading-relaxed mb-3">
                                                 {video.description}
                                             </p>
-                                            <div className="flex items-center gap-2 text-[var(--muted)] text-[10px] md:text-xs font-semibold bg-[var(--raised)] border-2 border-[var(--ink)] px-3 py-1.5 rounded-xl w-fit shadow-[2px_2px_0_var(--ink)]">
+                                            <div className="flex items-center gap-2 text-[var(--muted)] text-[10px] md:text-xs font-semibold bg-[var(--raised)] border border-[var(--line)] px-3 py-1.5 rounded-xl w-fit">
                                                 <Music size={12} className="text-[var(--chalk)]" />
                                                 <span>Original Sound - Pipsology Academy</span>
                                             </div>
@@ -514,7 +514,7 @@ export default function VideosPage() {
                                                     <div className="w-8 h-8 rounded-full bg-[var(--sunken)] border border-[var(--ink)] flex items-center justify-center font-bold text-xs text-[var(--ink)] shrink-0">
                                                         {c.user.charAt(0)}
                                                     </div>
-                                                    <div className="flex-1 bg-[var(--paper)] border-2 border-[var(--ink)] rounded-[var(--radius-sm)] p-3">
+                                                    <div className="flex-1 bg-[var(--paper)] border border-[var(--line)] rounded-[var(--radius-sm)] p-3">
                                                         <div className="flex items-center justify-between mb-1">
                                                             <span className="font-bold text-xs text-[var(--ink)]">
                                                                 {c.user}
@@ -541,11 +541,11 @@ export default function VideosPage() {
                                                 value={newCommentText}
                                                 onChange={(e) => setNewCommentText(e.target.value)}
                                                 placeholder="Add an expert comment..."
-                                                className="flex-1 bg-[var(--raised)] hover:bg-[var(--highlighter)] focus:bg-[var(--raised)] text-[var(--ink)] rounded-lg px-3 py-2 text-xs md:text-sm border-2 border-[var(--ink)] outline-none focus:border-[var(--chalk)] transition-all font-medium"
+                                                className="flex-1 bg-[var(--raised)] hover:bg-[var(--highlighter)] focus:bg-[var(--raised)] text-[var(--ink)] rounded-lg px-3 py-2 text-xs md:text-sm border border-[var(--line)] outline-none focus:border-[var(--chalk)] transition-all font-medium"
                                             />
                                             <button
                                                 type="submit"
-                                                className="p-2 bg-[var(--highlighter)] hover:brightness-95 text-[var(--ink)] rounded-lg transition-all border-2 border-[var(--ink)] shadow-[2px_2px_0_var(--ink)]"
+                                                className="p-2 bg-[var(--highlighter)] hover:brightness-95 text-[var(--ink)] rounded-lg transition-all border border-[var(--line)]"
                                             >
                                                 <Send size={14} />
                                             </button>

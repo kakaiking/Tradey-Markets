@@ -91,7 +91,7 @@ export default function JournalPage() {
                             <CartesianGrid strokeDasharray="3 3" stroke="var(--line)" />
                             <XAxis dataKey="day" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
                             <YAxis tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} domain={["dataMin - 100", "dataMax + 100"]} />
-                            <Tooltip contentStyle={{ background: "var(--raised)", border: "2px solid var(--ink)", borderRadius: "12px", color: "var(--ink)" }} />
+                            <Tooltip contentStyle={{ background: "var(--raised)", border: "1px solid var(--line)", borderRadius: "12px", color: "var(--ink)" }} />
                             <Line type="monotone" dataKey="balance" stroke="var(--chalk)" strokeWidth={2.5} dot={{ fill: "var(--chalk)", strokeWidth: 0, r: 3 }} />
                         </LineChart>
                     </ResponsiveContainer>

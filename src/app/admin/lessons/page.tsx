@@ -241,7 +241,7 @@ export default function AdminLessonsPage() {
             <div>
               <label className="label">Accent color</label>
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <input type="color" value={gradeColor} onChange={(e) => setGradeColor(e.target.value)} style={{ width: 48, height: 48, border: "2px solid var(--ink)", borderRadius: "0.65rem", background: "transparent", cursor: "pointer" }} />
+                <input type="color" value={gradeColor} onChange={(e) => setGradeColor(e.target.value)} style={{ width: 48, height: 48, border: "1px solid var(--line)", borderRadius: "0.65rem", background: "transparent", cursor: "pointer" }} />
                 <span className="font-tape status">{gradeColor}</span>
               </div>
             </div>
@@ -326,7 +326,7 @@ export default function AdminLessonsPage() {
         <div style={{ display: "grid", gap: "1.25rem" }}>
           {filteredGrades.map((grade) => (
             <div key={grade.id} className="card" style={{ padding: 0, overflow: "hidden", borderLeft: `6px solid ${grade.color || "var(--chalk)"}` }}>
-              <div style={{ padding: "var(--space-4)", borderBottom: "2px solid var(--ink)", display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "space-between", alignItems: "center" }}>
+              <div style={{ padding: "var(--space-4)", borderBottom: "1px solid var(--line)", display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ textAlign: "left" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
                     <h3 className="font-display" style={{ fontSize: "1.2rem", margin: 0 }}>{grade.title}</h3>

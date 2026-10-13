@@ -29,7 +29,7 @@ function CandleChart({ candles, currentIndex, trades }: { candles: typeof allCan
     const candleWidth = Math.floor(w / visible.length) - 2;
 
     return (
-        <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--sunken)", border: "2px solid var(--ink)" }}>
+        <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ borderRadius: "var(--radius-sm)", overflow: "hidden", background: "var(--sunken)", border: "1px solid var(--line)" }}>
             {[0, 0.25, 0.5, 0.75, 1].map(pos => (
                 <g key={pos}>
                     <line x1={0} x2={w} y1={h * pos} y2={h * pos} stroke="var(--line)" strokeWidth={1} />

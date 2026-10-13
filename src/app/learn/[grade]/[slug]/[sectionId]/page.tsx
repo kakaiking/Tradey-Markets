@@ -168,7 +168,7 @@ export default async function SectionPage({ params }: { params: Promise<{ grade:
                                 <Youtube size={14} className="text-[var(--pencil)]" />
                                 Watch Video Lesson
                             </div>
-                            <div className="rounded-[var(--radius-sm)] overflow-hidden aspect-video border-2 border-[var(--ink)] bg-[var(--sunken)]">
+                            <div className="rounded-[var(--radius-sm)] overflow-hidden aspect-video border border-[var(--line)] bg-[var(--sunken)]">
                                 <iframe
                                     width="100%"
                                     height="100%"
@@ -223,7 +223,7 @@ export default async function SectionPage({ params }: { params: Promise<{ grade:
                     {/* Takeaway Card */}
                     <div className="card bg-[color-mix(in_srgb,var(--chalk)_10%,var(--raised))]">
                         <div className="flex items-start gap-3">
-                            <div className="p-2 bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] rounded-[var(--radius-sm)] text-[var(--chalk)] border-2 border-[var(--ink)] mt-0.5">
+                            <div className="p-2 bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] rounded-[var(--radius-sm)] text-[var(--chalk)] border border-[var(--line)] mt-0.5">
                                 <Lightbulb size={16} />
                             </div>
                             <div>
