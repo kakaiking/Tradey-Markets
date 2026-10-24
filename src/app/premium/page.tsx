@@ -71,7 +71,7 @@ export default function PremiumPage() {
         <div>
             <PageHead
                 title="Premium"
-                byline="Tradey Markets Premium"
+                byline="Pipsology Premium"
                 lede="Unlock the full platform — advanced curriculum, AI journal, backtesting, and weekly guides."
             />
 

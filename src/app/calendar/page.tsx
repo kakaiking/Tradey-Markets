@@ -54,7 +54,7 @@ export default function CalendarPage() {
         <div>
             <PageHead
                 title={view === "economic" ? "Economic Calendar" : "Scheduled Events"}
-                byline={view === "economic" ? "Real-time market events" : "Tradey Markets events"}
+                byline={view === "economic" ? "Real-time market events" : "Pipsology events"}
                 lede={
                     view === "economic"
                         ? "Track high-impact releases that move forex & crypto. Filters update the list instantly."
@@ -208,7 +208,7 @@ export default function CalendarPage() {
                                 <Info size={14} /> About events
                             </p>
                             <p className="lede" style={{ fontSize: "0.95rem" }}>
-                                Community events are scheduled by the Tradey Markets team. Registered users get a reminder 15 minutes before start.
+                                Community events are scheduled by the Pipsology team. Registered users get a reminder 15 minutes before start.
                             </p>
                         </div>
                     </div>

@@ -9,9 +9,9 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['var(--font-figtree)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                display: ['var(--font-syne)', 'ui-sans-serif', 'sans-serif'],
-                reading: ['var(--font-source-serif)', 'ui-serif', 'Georgia', 'serif'],
+                sans: ['var(--font-nunito)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                display: ['var(--font-nunito)', 'ui-sans-serif', 'sans-serif'],
+                reading: ['var(--font-nunito)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
                 mono: ['var(--font-ibm-plex-mono)', 'ui-monospace', 'monospace'],
             },
             colors: {

@@ -65,7 +65,7 @@ export default function SignupPage() {
             <div style={{ width: "min(100%, 24rem)" }}>
                 <div style={{ textAlign: "center", marginBottom: "var(--space-5)" }}>
                     <Link href="/" className="font-display" style={{ fontSize: "1.5rem", fontWeight: 700, display: "inline-block", marginBottom: "1rem" }}>
-                        Tradey Markets
+                        Pipsology
                     </Link>
                     <h1 className="font-display" style={{ fontSize: "1.75rem", marginBottom: "0.35rem" }}>Create your account</h1>
                     <p className="lede">Join traders learning the markets for free</p>

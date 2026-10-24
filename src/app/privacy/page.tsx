@@ -20,7 +20,7 @@ export default function PrivacyPolicy() {
         {
             icon: Lock,
             title: "2. How We Use Your Information",
-            content: `Tradey Markets uses the collected data for various purposes:
+            content: `Pipsology uses the collected data for various purposes:
             
 • To provide and maintain our Service
 • To notify you about changes to our Service
@@ -36,7 +36,7 @@ export default function PrivacyPolicy() {
             
 • With service providers to monitor and analyze the use of our Service
 • To comply with legal obligations
-• To protect and defend the rights or property of Tradey Markets
+• To protect and defend the rights or property of Pipsology
 • With your explicit consent`,
         },
         {
@@ -72,14 +72,14 @@ While we strive to use commercially acceptable means to protect your Personal Da
             <PageHead
                 title="Privacy Policy"
                 byline="Legal & compliance"
-                lede={`How we protect your data at Tradey Markets. Last updated ${lastUpdated}.`}
+                lede={`How we protect your data at Pipsology. Last updated ${lastUpdated}.`}
                 backHref="/"
             />
             <LegalAccordion sections={sections} />
             <div className="card" style={{ textAlign: "center", marginTop: "1.5rem" }}>
                 <h2 className="font-display" style={{ fontSize: "1.35rem", marginBottom: "0.5rem" }}>Questions about privacy?</h2>
                 <p className="lede" style={{ marginBottom: "1rem" }}>Reach our Data Protection Officer anytime.</p>
-                <a href="mailto:privacy@tradeymarkets.com" className="btn">Contact privacy team</a>
+                <a href="mailto:privacy@pipsology.com" className="btn">Contact privacy team</a>
             </div>
         </div>
     );

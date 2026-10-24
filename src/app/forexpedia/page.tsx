@@ -21,9 +21,9 @@ export default function ForexpediaPage() {
     return (
         <div>
             <PageHead
-                title="Forexpedia"
-                byline="Reference library"
-                lede="Your complete forex & trading glossary. Find definitions for every term you encounter."
+                title="Word book"
+                byline="What does that word mean?"
+                lede="Plain definitions for the words you'll meet in lessons — no jargon wall."
             />
 
             <div className="split" style={{ marginBottom: "1.5rem" }}>

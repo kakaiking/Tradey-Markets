@@ -1,24 +1,12 @@
 import type { Metadata } from "next";
-import { Syne, Figtree, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
+import { Nunito, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { ConsoleCleaner } from "@/components/ConsoleCleaner";
 
-const syne = Syne({
+const nunito = Nunito({
     subsets: ["latin"],
-    variable: "--font-syne",
-    display: "swap",
-});
-
-const figtree = Figtree({
-    subsets: ["latin"],
-    variable: "--font-figtree",
-    display: "swap",
-});
-
-const sourceSerif = Source_Serif_4({
-    subsets: ["latin"],
-    variable: "--font-source-serif",
+    variable: "--font-nunito",
     display: "swap",
 });
 
@@ -30,12 +18,14 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "Tradey Markets — New to forex?",
-    description: "Forex school with a structured curriculum, practice cards, and a live market calendar.",
-    keywords: ["forex trading", "learn forex", "trading education", "cryptocurrency", "trading journal"],
+    title: "Pipsology — Learn how money markets work",
+    description:
+        "Short lessons, practice quizzes, and a personal coach. Practice money only — not financial advice.",
+    keywords: ["forex", "learn forex", "currency exchange", "trading education", "Pipsology"],
     openGraph: {
-        title: "Tradey Markets — New to forex?",
-        description: "Forex school with a structured curriculum, practice cards, and a live market calendar.",
+        title: "Pipsology — Learn how money markets work",
+        description:
+            "Short lessons, practice quizzes, and a personal coach. Practice money only — not financial advice.",
         type: "website",
     },
 };
@@ -50,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html
             lang="en"
-            className={`scroll-smooth ${syne.variable} ${figtree.variable} ${sourceSerif.variable} ${ibmPlexMono.variable}`}
+            className={`scroll-smooth ${nunito.variable} ${ibmPlexMono.variable}`}
             data-scroll-behavior="smooth"
         >
             <head>

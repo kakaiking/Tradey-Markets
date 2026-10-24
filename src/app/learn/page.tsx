@@ -15,11 +15,11 @@ export default async function LearnPage() {
     return (
         <div>
             <PageHead
-                title="Learn"
+                title="All lessons"
                 lede={
                     gradeCount > 0
-                        ? "Pick a grade. Finish it before the next one unlocks."
-                        : "Grades will show here once they are published."
+                        ? "Start with the first grade. Finish it before the next one unlocks."
+                        : "Lessons will show here once they are published."
                 }
                 backHref="/"
             />

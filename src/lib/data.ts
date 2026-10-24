@@ -1,4 +1,4 @@
-// Shared mock data for the entire Tradey Markets platform
+// Shared mock data for the entire Pipsology platform
 
 export const latestArticles = [
     { id: 1, slug: "eurusd-retests-range-support", title: "EUR/USD Retests Range Support After Sharp Losses", category: "Chart Art", tag: "chart-art", date: "Mar 5, 2026", readTime: "4 min", excerpt: "Price has retested the 1.0450 range support after a sharp 200-pip drop. Watch for bounce confirmation.", image: "/api/placeholder/400/220" },
@@ -108,7 +108,7 @@ export const achievements = [
     { id: 4, title: "Trade Logger", icon: "📓", desc: "Log your first 10 trades", xp: 150, earned: false },
     { id: 5, title: "Chart Master", icon: "📈", desc: "Complete 20 backtesting sessions", xp: 300, earned: false },
     { id: 6, title: "Community Voice", icon: "💬", desc: "Make 25 forum posts", xp: 200, earned: false },
-    { id: 7, title: "Tradey Markets Graduate", icon: "🏆", desc: "Complete all free courses", xp: 500, earned: false },
+    { id: 7, title: "Pipsology Graduate", icon: "🏆", desc: "Complete all free courses", xp: 500, earned: false },
     { id: 8, title: "Idea Publisher", icon: "🌐", desc: "Post 10 trade ideas to social feed", xp: 250, earned: false },
     { id: 9, title: "Risk Guardian", icon: "🛡️", desc: "Complete Risk Management module", xp: 200, earned: true },
     { id: 10, title: "30-Day Warrior", icon: "⚡", desc: "30-day consecutive study streak", xp: 750, earned: false },

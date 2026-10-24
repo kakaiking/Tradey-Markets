@@ -12,9 +12,9 @@ export default function PsychologyPage() {
     return (
         <div>
             <PageHead
-                title="Trading Psychology"
-                byline="The mindset edge"
-                lede="Most traders fail from mindset, not strategy. Master emotions, master your trading."
+                title="Mindset with Coach"
+                byline="Ask Coach"
+                lede="Emotions move money faster than charts. Learn the habits that keep practice calm."
             />
 
             <div className="card" style={{ marginBottom: "1.5rem" }}>

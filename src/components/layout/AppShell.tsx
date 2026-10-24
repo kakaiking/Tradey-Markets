@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, BookOpen, HelpCircle, Home, UserRound } from "lucide-react";
+import { BookOpen, CheckCircle2, MessageCircle, UserRound } from "lucide-react";
 
 type ShellMode = "school" | "admin" | "auth" | "bare";
 
@@ -13,8 +13,34 @@ function resolveMode(pathname: string): ShellMode {
     return "school";
 }
 
-function isHomeActive(pathname: string) {
-    return pathname === "/" || pathname === "";
+function isLearnActive(pathname: string) {
+    if (
+        pathname.startsWith("/quizzes") ||
+        pathname.startsWith("/learn/question-cards") ||
+        pathname.startsWith("/learn/videos") ||
+        pathname.startsWith("/coach") ||
+        pathname.startsWith("/psychology") ||
+        pathname.startsWith("/me") ||
+        pathname.startsWith("/account") ||
+        pathname.startsWith("/achievements") ||
+        pathname.startsWith("/premium") ||
+        pathname.startsWith("/about") ||
+        pathname.startsWith("/analyze") ||
+        pathname.startsWith("/tools") ||
+        pathname.startsWith("/journal") ||
+        pathname.startsWith("/charts") ||
+        pathname.startsWith("/backtester") ||
+        pathname.startsWith("/calendar")
+    ) {
+        return false;
+    }
+    return (
+        pathname === "/" ||
+        pathname === "" ||
+        pathname.startsWith("/learn") ||
+        pathname.startsWith("/forexpedia") ||
+        pathname.startsWith("/paths")
+    );
 }
 
 function isPracticeActive(pathname: string) {
@@ -25,42 +51,32 @@ function isPracticeActive(pathname: string) {
     );
 }
 
-function isAnalyzeActive(pathname: string) {
+function isCoachActive(pathname: string) {
+    return pathname.startsWith("/coach") || pathname.startsWith("/psychology");
+}
+
+function isMeActive(pathname: string) {
     return (
+        pathname.startsWith("/me") ||
+        pathname.startsWith("/account") ||
+        pathname.startsWith("/achievements") ||
+        pathname.startsWith("/premium") ||
+        pathname.startsWith("/about") ||
         pathname.startsWith("/analyze") ||
         pathname.startsWith("/tools") ||
         pathname.startsWith("/journal") ||
         pathname.startsWith("/charts") ||
         pathname.startsWith("/backtester") ||
-        pathname.startsWith("/calendar")
-    );
-}
-
-function isLearnActive(pathname: string) {
-    if (isPracticeActive(pathname) || isHomeActive(pathname) || isAnalyzeActive(pathname)) return false;
-    return (
-        pathname.startsWith("/learn") ||
-        pathname.startsWith("/forexpedia") ||
-        pathname.startsWith("/paths") ||
-        pathname.startsWith("/psychology")
-    );
-}
-
-function isYouActive(pathname: string) {
-    return (
-        pathname.startsWith("/account") ||
-        pathname.startsWith("/achievements") ||
-        pathname.startsWith("/premium") ||
-        pathname.startsWith("/about")
+        pathname.startsWith("/calendar") ||
+        pathname.startsWith("/alerts")
     );
 }
 
 const schoolLinks = [
-    { href: "/", label: "Home", match: isHomeActive, icon: Home },
-    { href: "/learn", label: "Learn", match: isLearnActive, icon: BookOpen },
-    { href: "/quizzes", label: "Practice", match: isPracticeActive, icon: HelpCircle },
-    { href: "/analyze", label: "Analyze", match: isAnalyzeActive, icon: BarChart3 },
-    { href: "/account/signin", label: "You", match: isYouActive, icon: UserRound },
+    { href: "/", label: "Learn", match: isLearnActive, icon: BookOpen },
+    { href: "/quizzes", label: "Practice", match: isPracticeActive, icon: CheckCircle2 },
+    { href: "/coach", label: "Coach", match: isCoachActive, icon: MessageCircle },
+    { href: "/me", label: "Me", match: isMeActive, icon: UserRound },
 ];
 
 const adminLinks = [
@@ -105,7 +121,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <header className="site-header">
                     <div className="wrap">
                         <Link href="/" className="brand">
-                            <span className="brand-mark">Tradey Markets</span>
+                            <span className="brand-mark">Pipsology</span>
                         </Link>
                     </div>
                 </header>
@@ -125,7 +141,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <header className="site-header">
                     <div className="wrap">
                         <Link href="/admin" className="brand">
-                            <span className="brand-mark">Tradey Admin</span>
+                            <span className="brand-mark">Pipsology Admin</span>
                         </Link>
                         <nav className="nav nav-desktop" aria-label="Admin">
                             {adminLinks.map((link) => (
@@ -147,7 +163,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <main id="main" className="app-main">
                     <div className={`wrap ${wide ? "wrap--wide" : ""}`}>{children}</div>
                 </main>
-                <nav className="dock" aria-label="Admin">
+                <nav className="dock" aria-label="Admin" style={{ gridTemplateColumns: "repeat(6, minmax(0, 1fr))" }}>
                     {adminLinks.map((link) => (
                         <Link
                             key={link.href}
@@ -173,7 +189,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <header className="site-header">
                     <div className="wrap">
                         <Link href="/" className="brand">
-                            <span className="brand-mark">Tradey Markets</span>
+                            <span className="brand-mark">Pipsology</span>
                         </Link>
                     </div>
                 </header>

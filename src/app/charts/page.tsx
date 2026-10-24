@@ -34,7 +34,7 @@ export default function ChartsPage() {
             <PageHead
                 title="Chart Classroom"
                 byline="Practice arena"
-                lede="Practice reading charts with drawing tools — without leaving Tradey Markets."
+                lede="Practice reading charts with drawing tools — without leaving Pipsology."
             />
 
             <div className="card" style={{ marginBottom: "1rem" }}>

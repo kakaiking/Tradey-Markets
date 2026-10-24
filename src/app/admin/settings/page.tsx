@@ -56,11 +56,11 @@ export default function AdminSettingsPage() {
                 <div style={{ display: "grid", gap: "1rem" }}>
                   <div>
                     <label className="label">Site name</label>
-                    <input type="text" defaultValue="Tradey Markets" className="field" />
+                    <input type="text" defaultValue="Pipsology" className="field" />
                   </div>
                   <div>
                     <label className="label">Admin contact email</label>
-                    <input type="email" defaultValue="admin@tradeymarkets.com" className="field" />
+                    <input type="email" defaultValue="admin@pipsology.com" className="field" />
                   </div>
                 </div>
               </div>
@@ -136,7 +136,7 @@ export default function AdminSettingsPage() {
           {activeTab === "integrations" && (
             <div className="card" style={{ textAlign: "center" }}>
               <h3 className="font-display" style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>App integrations</h3>
-              <p className="lede">Connect Tradey Markets with Stripe, Slack, Mailchimp, and more.</p>
+              <p className="lede">Connect Pipsology with Stripe, Slack, Mailchimp, and more.</p>
             </div>
           )}
         </div>

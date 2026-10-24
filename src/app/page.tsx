@@ -1,264 +1,143 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import {
-    Bell,
-    BookOpen,
-    Calculator,
-    CalendarDays,
-    CandlestickChart,
-    Clock3,
-    Compass,
-    Eye,
-    EyeOff,
-    HelpCircle,
-    Layers,
-    NotebookPen,
-    Sparkles,
-    UserRound,
-    Wrench,
-    X,
-} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { BookOpen, CheckCircle2, Star } from "lucide-react";
 
-type ExploreKind = "lessons" | "quizzes" | "cards" | "charts" | "calendar" | "more";
+type LessonRow = {
+    slug: string;
+    title: string;
+    gradeId: string;
+};
 
-const exploreItems: { href: string; label: string; kind: ExploreKind; icon: typeof BookOpen }[] = [
-    { href: "/learn", label: "Lessons", kind: "lessons", icon: BookOpen },
-    { href: "/quizzes", label: "Quizzes", kind: "quizzes", icon: HelpCircle },
-    { href: "/learn/question-cards", label: "Cards", kind: "cards", icon: Layers },
-    { href: "/charts", label: "Charts", kind: "charts", icon: CandlestickChart },
-    { href: "/calendar", label: "Calendar", kind: "calendar", icon: CalendarDays },
-    { href: "/tools", label: "More", kind: "more", icon: Calculator },
-];
-
-const accounts = [
-    { href: "/learn", title: "Foundations", detail: "Open" },
-    { href: "/paths", title: "Paths", detail: "Open" },
-    { href: "/psychology", title: "Psychology", detail: "Open" },
-    { href: "/forexpedia", title: "Glossary", detail: "Open" },
-];
-
-const bannerSeed = [
-    {
-        id: "style",
-        href: "/paths",
-        title: "Find your trading style",
-        body: "A short path through risk, sessions, and what to study next.",
-        icon: Compass,
-    },
-    {
-        id: "journal",
-        href: "/journal",
-        title: "Trade journal",
-        body: "Log the setup, not the story. Review what you actually did.",
-        icon: NotebookPen,
-    },
-    {
-        id: "charts",
-        href: "/charts",
-        title: "Chart desk",
-        body: "Read structure before you size a position.",
-        icon: CandlestickChart,
-    },
-    {
-        id: "calendar",
-        href: "/calendar",
-        title: "Session clock",
-        body: "See which desk is open before you open a chart.",
-        icon: Clock3,
-    },
-];
-
-const highlights = [
-    {
-        href: "/calendar",
-        title: "Session clock",
-        description: "Check London, New York, and Tokyo before the chart.",
-        tags: ["London", "NY", "Tokyo"],
-        icon: Clock3,
-    },
-    {
-        href: "/journal",
-        title: "Trade journal",
-        description: "Log every trade and what it taught you.",
-        tags: ["Win rate", "Notes"],
-        icon: NotebookPen,
-    },
-    {
-        href: "/tools",
-        title: "Trading tools",
-        description: "Size, reward, and the rest of the desk.",
-        tags: ["Size", "Tools"],
-        icon: Wrench,
-    },
-];
+const FALLBACK = {
+    index: 1,
+    total: 10,
+    title: "What is a currency exchange?",
+    lede: "A 3 minute lesson. No experience needed.",
+    href: "/learn",
+};
 
 export default function HomePage() {
-    const [hidden, setHidden] = useState(false);
-    const [banners, setBanners] = useState(bannerSeed);
-    const [dot, setDot] = useState(0);
-    const score = hidden ? "••••" : "0";
-    const IconEye = hidden ? EyeOff : Eye;
+    const [lesson, setLesson] = useState(FALLBACK);
 
-    const dots = useMemo(() => banners.map((b) => b.id), [banners]);
+    useEffect(() => {
+        let cancelled = false;
+
+        async function loadNext() {
+            try {
+                const [lessonsRes, progressRes] = await Promise.all([
+                    fetch("/api/lessons"),
+                    fetch("/api/user/progress"),
+                ]);
+
+                if (!lessonsRes.ok) return;
+                const lessonsJson = await lessonsRes.json();
+                const lessons: LessonRow[] = Array.isArray(lessonsJson.lessons)
+                    ? lessonsJson.lessons
+                    : [];
+                if (!lessons.length) return;
+
+                let completed: string[] = [];
+                if (progressRes.ok) {
+                    const progressJson = await progressRes.json();
+                    completed = Array.isArray(progressJson.completedLessons)
+                        ? progressJson.completedLessons
+                        : [];
+                }
+
+                const nextIndex = lessons.findIndex((row) => !completed.includes(row.slug));
+                const index = nextIndex === -1 ? lessons.length : nextIndex;
+                const current =
+                    nextIndex === -1 ? lessons[lessons.length - 1] : lessons[nextIndex];
+                if (!current || cancelled) return;
+
+                setLesson({
+                    index: Math.min(index + 1, lessons.length),
+                    total: lessons.length,
+                    title: current.title,
+                    lede: "A 3 minute lesson. No experience needed.",
+                    href: `/learn/${current.gradeId}/${current.slug}`,
+                });
+            } catch {
+                /* keep fallback */
+            }
+        }
+
+        loadNext();
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    const ticks = useMemo(() => {
+        const count = Math.min(Math.max(lesson.total, 1), 10);
+        const active = Math.min(Math.max(lesson.index, 1), count);
+        return Array.from({ length: count }, (_, i) => i < active);
+    }, [lesson.index, lesson.total]);
 
     return (
         <div className="home-app">
-            <header className="home-top">
-                <Link href="/account/signin" className="home-icon-btn" aria-label="You">
-                    <UserRound size={18} />
-                </Link>
-                <Link href="/psychology" className="ask-coach">
-                    <Sparkles size={16} />
-                    Ask Coach
-                </Link>
-                <div className="home-top-actions">
-                    <button
-                        type="button"
-                        className="home-icon-btn"
-                        aria-label={hidden ? "Show score" : "Hide score"}
-                        onClick={() => setHidden((v) => !v)}
-                    >
-                        <IconEye size={18} />
-                    </button>
-                    <Link href="/alerts" className="home-icon-btn" aria-label="Alerts">
-                        <Bell size={18} />
-                    </Link>
-                </div>
-            </header>
-
-            <section className="readiness" aria-label="Trader readiness">
-                <div>
-                    <small className="section-kicker" style={{ margin: 0 }}>
-                        Trader readiness
-                    </small>
-                    <div className="readiness-score">
-                        {score}
-                        <small>/100</small>
-                    </div>
-                    <small style={{ color: "var(--muted)" }}>Keep practising on demo. Aim for 70+.</small>
-                </div>
-                <Link href="/learn" className="academy-btn">
-                    Continue
-                </Link>
-            </section>
-
-            <h2 className="section-kicker">My learning accounts</h2>
-            <div className="account-row">
-                {accounts.map((account) => (
-                    <Link key={account.href + account.title} href={account.href} className="account-card">
-                        <BookOpen size={28} />
-                        {account.title}
-                        <strong>
-                            {hidden ? "••••" : account.detail}{" "}
-                            <small style={{ color: "var(--muted)", fontSize: 13, fontWeight: 600 }}>lessons</small>
-                        </strong>
-                    </Link>
-                ))}
+            <div className="home-brand-row">
+                <span className="home-brand">Pipsology</span>
+                <span className="practice-money-pill">Practice money only</span>
             </div>
 
-            {banners.length > 0 ? (
-                <>
-                    <div
-                        className="banner-row"
-                        onScroll={(event) => {
-                            const el = event.currentTarget;
-                            const child = el.firstElementChild as HTMLElement | null;
-                            if (!child) return;
-                            const index = Math.round(el.scrollLeft / (child.offsetWidth + 12));
-                            setDot(Math.min(Math.max(index, 0), banners.length - 1));
-                        }}
-                    >
-                        {banners.map((banner) => {
-                            const Icon = banner.icon;
-                            return (
-                                <Link key={banner.id} href={banner.href} className="banner">
-                                    <div>
-                                        <h3>{banner.title}</h3>
-                                        <p>{banner.body}</p>
-                                    </div>
-                                    <Icon size={36} />
-                                    <button
-                                        type="button"
-                                        className="banner-x"
-                                        aria-label={`Dismiss ${banner.title}`}
-                                        onClick={(event) => {
-                                            event.preventDefault();
-                                            event.stopPropagation();
-                                            setBanners((list) => list.filter((item) => item.id !== banner.id));
-                                        }}
-                                    >
-                                        <X size={14} />
-                                    </button>
-                                </Link>
-                            );
-                        })}
-                    </div>
-                    <div className="banner-dots" aria-hidden>
-                        {dots.map((id, index) => (
-                            <i key={id} className={index === dot ? "on" : undefined} />
-                        ))}
-                    </div>
-                </>
-            ) : null}
+            <h1 className="home-greeting">Hi! Ready to learn how money markets work?</h1>
 
-            <section className="home-explore" aria-labelledby="explore-heading">
-                <h2 id="explore-heading" className="section-kicker">
-                    Explore
-                </h2>
-                <ul className="explore-grid">
-                    {exploreItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <li key={item.href + item.label}>
-                                <Link href={item.href} className="explore-item">
-                                    <span className={`explore-orb explore-orb--${item.kind}`}>
-                                        <Icon size={28} strokeWidth={1.75} />
-                                    </span>
-                                    <span className="explore-label">{item.label}</span>
-                                </Link>
-                            </li>
-                        );
-                    })}
+            <section className="lesson-hero" aria-labelledby="next-lesson-title">
+                <p className="lesson-hero-meta">
+                    Lesson {lesson.index} of {lesson.total}
+                </p>
+                <h2 id="next-lesson-title">{lesson.title}</h2>
+                <p className="lesson-hero-lede">{lesson.lede}</p>
+                <Link href={lesson.href} className="lesson-hero-cta">
+                    Start lesson.
+                </Link>
+                <ul className="lesson-ticks" aria-hidden>
+                    {ticks.map((on, i) => (
+                        <li key={i} className={on ? "on" : undefined} />
+                    ))}
                 </ul>
             </section>
 
-            <section className="academy-card" style={{ marginTop: 8 }}>
-                <h3 style={{ margin: "0 0 4px" }}>What&apos;s new</h3>
-                <p style={{ margin: 0, color: "var(--muted)" }}>
-                    Readiness, journal, and Ask Coach. Built for risk-first practice.
-                </p>
-            </section>
-
-            <section className="home-highlights" aria-labelledby="highlights-heading">
-                <h2 id="highlights-heading" className="section-kicker">
-                    Highlights
-                </h2>
-                <div className="highlights-scroller" role="list">
-                    {highlights.map((card) => {
-                        const Icon = card.icon;
-                        return (
-                            <Link key={card.href + card.title} href={card.href} className="academy-card" role="listitem" style={{ flex: "0 0 72%" }}>
-                                <h3 style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                                    <Icon size={18} />
-                                    {card.title}
-                                </h3>
-                                <p style={{ color: "var(--muted)" }}>{card.description}</p>
-                                <ul className="tag-row">
-                                    {card.tags.map((tag) => (
-                                        <li key={tag}>{tag}</li>
-                                    ))}
-                                </ul>
-                            </Link>
-                        );
-                    })}
-                </div>
-            </section>
-
-            <p style={{ fontSize: 12, color: "var(--muted)", marginTop: 12 }}>
-                Educational content only, not financial advice. Practice on a demo account first.
-            </p>
+            <ul className="home-shortcuts">
+                <li>
+                    <Link href="/quizzes" className="shortcut-row">
+                        <span className="shortcut-icon shortcut-icon--practice" aria-hidden>
+                            <CheckCircle2 size={22} strokeWidth={2.25} />
+                        </span>
+                        <span className="shortcut-copy">
+                            <strong>Practice</strong>
+                            <span>Quick quizzes and games.</span>
+                        </span>
+                    </Link>
+                </li>
+                <li>
+                    <Link href="/coach" className="shortcut-row shortcut-row--coach">
+                        <span className="shortcut-icon shortcut-icon--coach" aria-hidden>
+                            <Star size={22} strokeWidth={2.25} fill="currentColor" />
+                        </span>
+                        <span className="shortcut-copy">
+                            <strong>
+                                Ask Coach <span className="premium-pill">PREMIUM</span>
+                            </strong>
+                            <span>Your personal tutor, any time.</span>
+                        </span>
+                    </Link>
+                </li>
+                <li>
+                    <Link href="/forexpedia" className="shortcut-row">
+                        <span className="shortcut-icon shortcut-icon--words" aria-hidden>
+                            <BookOpen size={22} strokeWidth={2.25} />
+                        </span>
+                        <span className="shortcut-copy">
+                            <strong>Word book</strong>
+                            <span>What does that word mean?</span>
+                        </span>
+                    </Link>
+                </li>
+            </ul>
         </div>
     );
 }
