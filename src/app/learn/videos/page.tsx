@@ -4,9 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
     Play, Heart, MessageCircle, Share2, 
-    Music, X, Send, ChevronDown, Volume2, VolumeX
+    X, Send, Volume2, VolumeX, Loader2
 } from "lucide-react";
 import { tradingVideos } from "@/lib/data";
+import { BackButton } from "@/components/layout/BackButton";
 
 export default function VideosPage() {
     // Immersive Feed States
@@ -27,6 +28,9 @@ export default function VideosPage() {
     const [isMuted, setIsMuted] = useState(true);
     const [playingStates, setPlayingStates] = useState<Record<string, boolean>>({});
     const [readyVideos, setReadyVideos] = useState<Record<string, boolean>>({});
+    const [failedVideos, setFailedVideos] = useState<Record<string, boolean>>({});
+    const [embedAttempt, setEmbedAttempt] = useState<Record<string, number>>({});
+    const [openDescriptionId, setOpenDescriptionId] = useState<string | null>(null);
     
     // Simulated Commentary Database
     const [commentsStore, setCommentsStore] = useState<Record<string, { id: string; user: string; text: string; time: string }[]>>({
@@ -54,32 +58,33 @@ export default function VideosPage() {
     });
 
     const containerRef = useRef<HTMLDivElement>(null);
+    const playerRef = useRef<{
+        playVideo: () => void;
+        pauseVideo: () => void;
+        mute: () => void;
+        unMute: () => void;
+        setVolume: (volume: number) => void;
+        destroy: () => void;
+    } | null>(null);
 
     // Reset playing state to true when active video changes to hide play overlay on snap
     useEffect(() => {
         if (activeVideoId) {
             setPlayingStates((prev) => ({ ...prev, [activeVideoId]: true }));
+            setOpenDescriptionId(null);
+            setOpenCommentsId(null);
         }
     }, [activeVideoId]);
 
     const togglePlay = (id: string) => {
-        if (!readyVideos[id]) return;
-        const iframe = document.getElementById(`youtube-iframe-${id}`) as HTMLIFrameElement | null;
-        if (!iframe || !iframe.contentWindow) return;
+        if (!readyVideos[id] || !playerRef.current) return;
 
         const currentlyPlaying = playingStates[id] !== false; // defaults to true
         const nextPlaying = !currentlyPlaying;
 
         setPlayingStates((prev) => ({ ...prev, [id]: nextPlaying }));
-
-        iframe.contentWindow.postMessage(
-            JSON.stringify({
-                event: "command",
-                func: nextPlaying ? "playVideo" : "pauseVideo",
-                args: []
-            }),
-            "*"
-        );
+        if (nextPlaying) playerRef.current.playVideo();
+        else playerRef.current.pauseVideo();
     };
 
     // Observe active slide during native snap scrolling
@@ -109,73 +114,108 @@ export default function VideosPage() {
         };
     }, []);
 
-    // Listen for YouTube Iframe API ready messages
+    // Official player API. A raw iframe never sends onReady unless we complete
+    // YouTube's handshake, so the old timer treated a live connection as a failure
+    // and aborted the embed mid-load.
     useEffect(() => {
-        const handleMessage = (event: MessageEvent) => {
-            if (!event.origin.includes("youtube") && !event.origin.includes("youtube-nocookie")) return;
-            try {
-                const data = JSON.parse(event.data);
-                if (data.event === "onReady" || data.event === "initialDelivery") {
-                    const iframes = document.querySelectorAll("iframe");
-                    for (let i = 0; i < iframes.length; i++) {
-                        if (iframes[i].contentWindow === event.source) {
-                            const idAttr = iframes[i].id;
-                            if (idAttr) {
-                                const id = idAttr.replace("youtube-iframe-", "");
-                                setReadyVideos((prev) => ({ ...prev, [id]: true }));
-                            }
-                            break;
+        if (!activeVideoId || failedVideos[activeVideoId]) return;
+        const video = tradingVideos.find((item) => item.id === activeVideoId);
+        if (!video) return;
+
+        const slotId = `yt-slot-${activeVideoId}`;
+        let cancelled = false;
+        let player: { destroy: () => void } | null = null;
+        const timeout = window.setTimeout(() => {
+            if (!cancelled) setFailedVideos((prev) => (prev[activeVideoId] ? prev : { ...prev, [activeVideoId]: true }));
+        }, 4000);
+
+        const mount = () => {
+            const YT = (window as unknown as { YT?: { Player: new (id: string, options: object) => { destroy: () => void } } }).YT;
+            if (cancelled || !YT?.Player || !document.getElementById(slotId)) return;
+            player = new YT.Player(slotId, {
+                videoId: video.videoId,
+                host: "https://www.youtube-nocookie.com",
+                playerVars: {
+                    autoplay: 1,
+                    mute: 1,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    playsinline: 1,
+                    iv_load_policy: 3,
+                    disablekb: 1,
+                    origin: window.location.origin,
+                },
+                events: {
+                    onReady: (event: { target: NonNullable<typeof playerRef.current> }) => {
+                        if (cancelled) return;
+                        window.clearTimeout(timeout);
+                        playerRef.current = event.target;
+                        event.target.mute();
+                        event.target.playVideo();
+                        setReadyVideos((prev) => ({ ...prev, [activeVideoId]: true }));
+                    },
+                    onStateChange: (event: { data: number; target: NonNullable<typeof playerRef.current> }) => {
+                        if (cancelled) return;
+                        if (event.data === 1 || event.data === 3) {
+                            window.clearTimeout(timeout);
+                            playerRef.current = event.target;
+                            setReadyVideos((prev) => ({ ...prev, [activeVideoId]: true }));
                         }
-                    }
-                }
-            } catch (e) {
-                // Ignore parsing errors for other messages
+                    },
+                    onError: () => {
+                        if (cancelled) return;
+                        window.clearTimeout(timeout);
+                        setReadyVideos((prev) => ({ ...prev, [activeVideoId]: false }));
+                        setFailedVideos((prev) => ({ ...prev, [activeVideoId]: true }));
+                    },
+                },
+            });
+        };
+
+        const win = window as unknown as { YT?: { Player?: unknown }; onYouTubeIframeAPIReady?: () => void };
+        if (win.YT?.Player) {
+            mount();
+        } else {
+            const previous = win.onYouTubeIframeAPIReady;
+            win.onYouTubeIframeAPIReady = () => {
+                previous?.();
+                mount();
+            };
+            if (!document.getElementById("yt-iframe-api")) {
+                const script = document.createElement("script");
+                script.id = "yt-iframe-api";
+                script.src = "https://www.youtube.com/iframe_api";
+                document.body.appendChild(script);
+            }
+        }
+
+        return () => {
+            cancelled = true;
+            window.clearTimeout(timeout);
+            playerRef.current = null;
+            try {
+                player?.destroy();
+            } catch {
+                // Player may already be gone with the slide.
             }
         };
-        window.addEventListener("message", handleMessage);
-        return () => window.removeEventListener("message", handleMessage);
-    }, []);
+    }, [activeVideoId, failedVideos, embedAttempt]);
 
-    // Handle Mute/Unmute state using YouTube postMessage API to avoid reloading/restarting the video
+    const retryEmbed = (id: string) => {
+        setFailedVideos((prev) => ({ ...prev, [id]: false }));
+        setReadyVideos((prev) => ({ ...prev, [id]: false }));
+        setPlayingStates((prev) => ({ ...prev, [id]: true }));
+        setEmbedAttempt((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+    };
+
     useEffect(() => {
-        const activeVidId = activeVideoId;
-        if (!activeVidId) return;
-        if (!readyVideos[activeVidId]) return;
-
-        const toggleSound = () => {
-            const iframe = document.getElementById(`youtube-iframe-${activeVidId}`) as HTMLIFrameElement | null;
-            if (iframe && iframe.contentWindow) {
-                if (isMuted) {
-                    iframe.contentWindow.postMessage(
-                        JSON.stringify({
-                            event: "command",
-                            func: "mute",
-                            args: []
-                        }),
-                        "*"
-                    );
-                } else {
-                    iframe.contentWindow.postMessage(
-                        JSON.stringify({
-                            event: "command",
-                            func: "unMute",
-                            args: []
-                        }),
-                        "*"
-                    );
-                    iframe.contentWindow.postMessage(
-                        JSON.stringify({
-                            event: "command",
-                            func: "setVolume",
-                            args: [100]
-                        }),
-                        "*"
-                    );
-                }
-            }
-        };
-
-        toggleSound();
+        if (!activeVideoId || !readyVideos[activeVideoId] || !playerRef.current) return;
+        if (isMuted) playerRef.current.mute();
+        else {
+            playerRef.current.unMute();
+            playerRef.current.setVolume(100);
+        }
     }, [isMuted, activeVideoId, readyVideos]);
 
     // Immersive Interaction Handlers
@@ -244,19 +284,14 @@ export default function VideosPage() {
         }
     };
 
-    const scrollToVideo = (idx: number) => {
-        const cards = containerRef.current?.querySelectorAll("[data-video-card]");
-        if (cards && cards[idx]) {
-            cards[idx].scrollIntoView({ behavior: "smooth" });
-        }
-    };
-
     return (
-        <div className="max-w-7xl mx-auto px-4 md:px-6 relative" style={{ height: "calc(100vh - 40px)" }}>
-            <div className="flex justify-center items-center relative w-full" style={{ height: "100%" }}>
-                
-                {/* Snapping Scroll Area (occupies full container width & height) */}
-                <div className="w-full rounded-[var(--radius)] border border-[var(--line)] shadow-[var(--card-shadow)] overflow-hidden relative bg-[var(--paper)] flex flex-col" style={{ height: "100%" }}>
+        <div className="relative h-full w-full">
+            <div className="flex justify-center items-center relative w-full h-full">
+                <div className="w-full h-full overflow-hidden relative bg-black flex flex-col">
+                    <BackButton
+                        fallbackHref="/quizzes"
+                        className="history-back--on-media absolute top-[max(0.75rem,env(safe-area-inset-top))] left-2 z-30"
+                    />
                     <div
                         ref={containerRef}
                         className="flex-1 w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none"
@@ -276,11 +311,11 @@ export default function VideosPage() {
                                         key={video.id}
                                         data-video-card
                                         data-video-id={video.id}
-                                        className="w-full h-full snap-start snap-always relative bg-[var(--sunken)] flex flex-col items-center justify-center"
+                                        className="w-full h-full snap-start snap-always relative bg-black flex flex-col items-center justify-center"
                                     >
-                                        <div className="flex flex-col items-center gap-3 text-[var(--muted)]">
-                                            <div className="w-8 h-8 rounded-full border-2 border-dashed border-[var(--line)] animate-spin" />
-                                            <div className="w-16 h-2 bg-[var(--line)] rounded" />
+                                        <div className="flex flex-col items-center gap-3 text-white/40">
+                                            <div className="w-8 h-8 rounded-full border-2 border-dashed border-white/25 animate-spin" />
+                                            <div className="w-16 h-2 bg-white/15 rounded" />
                                         </div>
                                     </div>
                                 );
@@ -291,40 +326,74 @@ export default function VideosPage() {
                                         key={video.id}
                                         data-video-card
                                         data-video-id={video.id}
-                                        className="w-full h-full snap-start snap-always relative overflow-hidden flex flex-col justify-end bg-[var(--sunken)]"
+                                        className="w-full h-full snap-start snap-always relative overflow-hidden flex flex-col justify-end bg-black"
                                         onDoubleClick={(e) => handleDoubleClick(e, video.id)}
                                     >
                                         {/* Auto-playing YouTube Iframe */}
-                                        <div className="absolute inset-0 w-full h-full pointer-events-auto z-0 overflow-hidden bg-[var(--sunken)]">
-                                            {isActive && (
-                                                <>
-                                                    {/* If paused, show the high-quality still thumbnail to hide YouTube's native pause overlay */}
-                                                    {playingStates[video.id] === false && (
-                                                        <img
-                                                            src={`https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`}
-                                                            alt={video.title}
-                                                            className="absolute inset-0 w-full h-full object-cover z-5 opacity-60 animate-fade-in"
-                                                        />
-                                                    )}
-                                                    <iframe
-                                                        id={`youtube-iframe-${video.id}`}
-                                                        width="100%"
-                                                        height="100%"
-                                                        src={`https://www.youtube-nocookie.com/embed/${video.videoId}?autoplay=1&mute=1&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1&enablejsapi=1`}
-                                                        title={video.title}
-                                                        frameBorder="0"
-                                                        className={`w-full h-full object-cover pointer-events-none scale-[1.3] origin-center transition-opacity duration-300 ${
-                                                            playingStates[video.id] !== false ? "opacity-100" : "opacity-0 pointer-events-none"
-                                                        }`}
-                                                    ></iframe>
-                                                </>
+                                        <div className="absolute inset-0 w-full h-full pointer-events-auto z-0 overflow-hidden bg-black">
+                                            {isActive && !failedVideos[video.id] && (
+                                                <div key={`${video.id}-${embedAttempt[video.id] || 0}`} className="absolute inset-0 overflow-hidden bg-black [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0">
+                                                    <div id={`yt-slot-${video.id}`} className="h-full w-full" />
+                                                </div>
+                                            )}
+                                            {isActive && !failedVideos[video.id] && !readyVideos[video.id] && (
+                                                <div className="absolute inset-0 z-[15] flex items-center justify-center bg-black pointer-events-none">
+                                                    <Loader2 className="h-10 w-10 animate-spin text-white" strokeWidth={2.25} />
+                                                </div>
+                                            )}
+                                            {isActive && failedVideos[video.id] && (
+                                                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black px-8 pointer-events-auto">
+                                                    <div className="w-full max-w-[17rem] rounded-[var(--radius)] border-2 border-[var(--ink)] bg-[var(--raised)] px-4 py-4 text-left shadow-[4px_4px_0_var(--ink)]">
+                                                        <p className="font-tape text-[10px] font-extrabold uppercase tracking-[0.16em] text-[var(--lesson)]">
+                                                            Desk note
+                                                        </p>
+                                                        <h3 className="font-display mt-1 text-[15px] font-extrabold leading-tight text-[var(--ink)]">
+                                                            This clip didn’t load
+                                                        </h3>
+                                                        <p className="mt-1.5 font-reading text-[12px] leading-snug text-[var(--muted)]">
+                                                            YouTube isn’t reachable from this connection. The lesson is still here when the network is.
+                                                        </p>
+                                                        <div className="mt-3 flex gap-2">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => retryEmbed(video.id)}
+                                                                className="rounded-full bg-[var(--highlighter)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--on-highlighter)]"
+                                                            >
+                                                                Try again
+                                                            </button>
+                                                            <a
+                                                                href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                                                                target="_blank"
+                                                                rel="noreferrer"
+                                                                className="rounded-full border border-[var(--ink)] px-3 py-1.5 text-[12px] font-extrabold text-[var(--ink)]"
+                                                            >
+                                                                Open YouTube
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             )}
                                             {/* Custom Play Button Overlay Widget */}
                                             {playingStates[video.id] === false && (
-                                                <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-20 pointer-events-none">
                                                     <div className="w-16 h-16 bg-[var(--raised)] border border-[var(--line)] rounded-full flex items-center justify-center shadow-[var(--card-shadow)] transition-transform duration-300 scale-100">
                                                         <Play className="text-[var(--ink)] fill-[var(--ink)] ml-1.5" size={24} />
                                                     </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                            setIsMuted((prev) => !prev);
+                                                        }}
+                                                        className="pointer-events-auto flex flex-col items-center"
+                                                    >
+                                                        <div className="p-3 rounded-full bg-black/40 text-white backdrop-blur-sm">
+                                                            {!isMuted ? <Volume2 size={20} /> : <VolumeX size={20} />}
+                                                        </div>
+                                                        <span className="text-xs font-bold text-white mt-1 select-none drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+                                                            {!isMuted ? "Sound On" : "Mute"}
+                                                        </span>
+                                                    </button>
                                                 </div>
                                             )}
                                             {/* Shield layer that absorbs clicks and touches, preventing native pause/control overlays, now handles togglePlay */}
@@ -334,47 +403,40 @@ export default function VideosPage() {
                                             />
                                         </div>
 
-                                        {/* Gradient Dark Overlay */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-[color-mix(in_srgb,var(--paper)_88%,transparent)] via-transparent to-[color-mix(in_srgb,var(--paper)_35%,transparent)] pointer-events-none z-10" />
+                                        {/* Soft bottom scrim — Instagram-style, light fade for caption legibility */}
+                                        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-black/15 to-transparent pointer-events-none z-10" />
 
                                         {/* Sidebar Actions Panel */}
-                                        <div className="absolute right-6 bottom-8 flex flex-col items-center gap-5 z-20 pointer-events-auto">
-                                            {/* Creator Avatar */}
-                                            <div className="relative mb-1">
-                                                <div className="w-11 h-11 rounded-full border border-[var(--line)] bg-[var(--raised)] flex items-center justify-center font-bold text-xs text-[var(--chalk)]">
-                                                    PA
-                                                </div>
-                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-[var(--chalk)] text-[var(--on-chalk)] rounded-full w-4.5 h-4.5 flex items-center justify-center font-extrabold text-[10px] border border-[var(--ink)]">
-                                                    +
-                                                </div>
-                                            </div>
-
+                                        <div className="absolute right-4 bottom-[4.75rem] flex flex-col items-center gap-5 z-20 pointer-events-auto">
                                             {/* Like Button */}
                                             <button
                                                 onClick={() => handleLikeClick(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className={`p-3 rounded-full border border-[var(--line)] transition-all duration-300 ${
+                                                <div className={`p-3 rounded-full transition-all duration-300 backdrop-blur-sm ${
                                                     likedVideos[video.id]
-                                                        ? "bg-[color-mix(in_srgb,var(--pencil)_18%,var(--raised))] text-[var(--pencil)] scale-110"
-                                                        : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
+                                                        ? "bg-white/20 text-red-400 scale-110"
+                                                        : "bg-black/40 text-white hover:bg-black/55"
                                                 }`}>
                                                     <Heart size={20} fill={likedVideos[video.id] ? "currentColor" : "none"} />
                                                 </div>
-                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">
+                                                <span className="text-xs font-bold text-white mt-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
                                                     {videoLikes[video.id] || 0}
                                                 </span>
                                             </button>
 
                                             {/* Comments Button */}
                                             <button
-                                                onClick={() => setOpenCommentsId(video.id)}
+                                                onClick={() => {
+                                                    setOpenDescriptionId(null);
+                                                    setOpenCommentsId(video.id);
+                                                }}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border border-[var(--line)]">
+                                                <div className="p-3 bg-black/40 hover:bg-black/55 text-white rounded-full transition-all backdrop-blur-sm">
                                                     <MessageCircle size={20} />
                                                 </div>
-                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">
+                                                <span className="text-xs font-bold text-white mt-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
                                                     {commentsStore[video.id]?.length || 0}
                                                 </span>
                                             </button>
@@ -385,50 +447,34 @@ export default function VideosPage() {
                                                 onClick={() => handleShareClick(video.id)}
                                                 className="flex flex-col items-center group"
                                             >
-                                                <div className="p-3 bg-[var(--raised)] hover:bg-[var(--highlighter)] text-[var(--ink)] rounded-full transition-all border border-[var(--line)]">
+                                                <div className="p-3 bg-black/40 hover:bg-black/55 text-white rounded-full transition-all backdrop-blur-sm">
                                                     <Share2 size={20} />
                                                 </div>
-                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 drop-shadow-[0_1px_0_var(--raised)]">Share</span>
+                                                <span className="text-xs font-bold text-white mt-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">Share</span>
                                             </button>
-
-                                            {/* Mute/Unmute Button */}
-                                            <button
-                                                onClick={() => setIsMuted((prev) => !prev)}
-                                                className="flex flex-col items-center group"
-                                            >
-                                                <div className={`p-3 rounded-full border border-[var(--line)] transition-all duration-300 ${
-                                                    !isMuted
-                                                        ? "bg-[color-mix(in_srgb,var(--chalk)_22%,var(--raised))] text-[var(--chalk)] scale-110"
-                                                        : "bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)]"
-                                                }`}>
-                                                    {!isMuted ? <Volume2 size={20} className="animate-pulse" /> : <VolumeX size={20} />}
-                                                </div>
-                                                <span className="text-xs font-bold text-[var(--ink)] mt-1 select-none drop-shadow-[0_1px_0_var(--raised)]">
-                                                    {!isMuted ? "Sound On" : "Mute"}
-                                                </span>
-                                            </button>
-
-                                            {/* Vinyl disc spin animation */}
-                                            <div className="w-10 h-10 rounded-full border border-[var(--line)] bg-[var(--raised)] flex items-center justify-center animate-spin mt-1.5" style={{ animationDuration: "5s" }}>
-                                                <div className="w-6 h-6 rounded-full bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] border border-[var(--chalk)] flex items-center justify-center font-bold text-[8px] text-[var(--chalk)]">
-                                                    P
-                                                </div>
-                                            </div>
                                         </div>
 
-                                        {/* Bottom Details Panel */}
-                                        <div className="absolute left-8 right-28 bottom-8 z-20 text-left pointer-events-auto max-w-2xl">
-
-                                            <h4 className="font-display font-bold text-[var(--ink)] text-lg md:text-xl leading-snug mb-1.5">
+                                        {/* Bottom Details Panel — Instagram Reels caption pattern */}
+                                        <div className="absolute left-4 right-24 bottom-[4.75rem] z-20 text-left pointer-events-auto max-w-2xl">
+                                            <h4 className="font-display font-bold text-white text-[15px] leading-snug mb-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)]">
                                                 {video.title}
                                             </h4>
-                                            <p className="font-reading text-[var(--muted)] text-xs md:text-sm leading-relaxed mb-3">
-                                                {video.description}
-                                            </p>
-                                            <div className="flex items-center gap-2 text-[var(--muted)] text-[10px] md:text-xs font-semibold bg-[var(--raised)] border border-[var(--line)] px-3 py-1.5 rounded-xl w-fit">
-                                                <Music size={12} className="text-[var(--chalk)]" />
-                                                <span>Original Sound - Pipsology Academy</span>
-                                            </div>
+                                            {video.description ? (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setOpenCommentsId(null);
+                                                        setOpenDescriptionId(video.id);
+                                                    }}
+                                                    className="flex w-full items-baseline gap-1.5 text-left mb-2.5 font-reading text-white text-[13px] leading-snug drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)]"
+                                                    aria-label="Read full description"
+                                                >
+                                                    <span className="min-w-0 truncate">{video.description}</span>
+                                                    <span className="shrink-0 text-white/65 font-semibold">
+                                                        Read more
+                                                    </span>
+                                                </button>
+                                            ) : null}
                                         </div>
 
                                         {/* Double Tap Heart Overlays */}
@@ -447,28 +493,6 @@ export default function VideosPage() {
                                     </div>
                                 );
                             })}
-                        </div>
-
-                        {/* Vertical Progress Navigation Dots */}
-                        <div className="absolute left-6 top-1/2 -translate-y-1/2 flex flex-col gap-2.5 z-20">
-                            {tradingVideos.map((video, idx) => {
-                                const isActive = activeVideoId === video.id;
-                                return (
-                                    <button
-                                        key={video.id}
-                                        onClick={() => scrollToVideo(idx)}
-                                        className={`w-2 rounded-full transition-all duration-300 ${
-                                            isActive ? "h-6 bg-[var(--highlighter)] border border-[var(--ink)]" : "h-2 bg-[var(--raised)] border border-[var(--ink)] hover:bg-[var(--chalk)]"
-                                        }`}
-                                    />
-                                );
-                            })}
-                        </div>
-
-                        {/* Swipe Indicator (Helpful UX) */}
-                        <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-[var(--muted)] text-[10px] flex flex-col items-center gap-1.5 kicker animate-pulse">
-                            <span>Scroll down for next video</span>
-                            <ChevronDown size={14} className="animate-bounce" />
                         </div>
 
                         {/* Link Share Toast */}
@@ -501,9 +525,10 @@ export default function VideosPage() {
                                             </span>
                                             <button
                                                 onClick={() => setOpenCommentsId(null)}
-                                                className="p-1 bg-[var(--sunken)] hover:bg-[var(--highlighter)] rounded-full text-[var(--ink)] border border-[var(--ink)]"
+                                                className="close-x"
+                                                aria-label="Close comments"
                                             >
-                                                <X size={16} />
+                                                <X size={16} strokeWidth={3} />
                                             </button>
                                         </div>
 
@@ -550,6 +575,43 @@ export default function VideosPage() {
                                                 <Send size={14} />
                                             </button>
                                         </form>
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Description Slide Drawer */}
+                        <AnimatePresence>
+                            {openDescriptionId && (
+                                <>
+                                    <div
+                                        className="absolute inset-0 bg-[color-mix(in_srgb,var(--ink)_40%,transparent)] z-30 pointer-events-auto"
+                                        onClick={() => setOpenDescriptionId(null)}
+                                    />
+                                    <motion.div
+                                        initial={{ y: "100%" }}
+                                        animate={{ y: 0 }}
+                                        exit={{ y: "100%" }}
+                                        transition={{ type: "spring", damping: 25, stiffness: 220 }}
+                                        className="absolute bottom-0 left-0 right-0 h-[65%] bg-[var(--raised)] border-t-2 border-[var(--ink)] rounded-t-[var(--radius)] z-40 flex flex-col overflow-hidden pointer-events-auto shadow-[var(--card-shadow)]"
+                                    >
+                                        <div className="px-6 py-4 border-b-2 border-[var(--line)] flex items-center justify-between gap-3">
+                                            <span className="font-bold text-[var(--ink)] text-sm font-display min-w-0 truncate">
+                                                {tradingVideos.find((v) => v.id === openDescriptionId)?.title}
+                                            </span>
+                                            <button
+                                                onClick={() => setOpenDescriptionId(null)}
+                                                className="close-x"
+                                                aria-label="Close description"
+                                            >
+                                                <X size={16} strokeWidth={3} />
+                                            </button>
+                                        </div>
+                                        <div className="flex-1 overflow-y-auto px-6 py-4 scrollbar-thin">
+                                            <p className="text-[var(--ink)] text-sm leading-relaxed font-reading text-left">
+                                                {tradingVideos.find((v) => v.id === openDescriptionId)?.description}
+                                            </p>
+                                        </div>
                                     </motion.div>
                                 </>
                             )}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { PlayCircle, HelpCircle } from "lucide-react";
+import { loadGradesWithProgress } from "@/lib/clientCache";
 
 export function DynamicIsland() {
     const pathname = usePathname();
@@ -24,28 +25,7 @@ export function DynamicIsland() {
     useEffect(() => {
         async function fetchGradesAndProgress() {
             try {
-                const [gradesRes, progressRes] = await Promise.all([
-                    fetch("/api/grades/"),
-                    fetch("/api/user/progress/")
-                ]);
-
-                let fetchedGrades: any[] = [];
-                let progressData: any = {};
-
-                if (gradesRes.ok) {
-                    const gradesData = await gradesRes.json();
-                    fetchedGrades = gradesData.grades || [];
-                }
-
-                if (progressRes.ok) {
-                    progressData = await progressRes.json();
-                }
-
-                // Map progress to each grade
-                fetchedGrades = fetchedGrades.map((g: any) => ({
-                    ...g,
-                    progress: (progressData.progress && progressData.progress[g.id]) ?? 0
-                }));
+                const { grades: fetchedGrades } = await loadGradesWithProgress();
 
                 setGrades(fetchedGrades);
             } catch (err) {
@@ -100,7 +80,7 @@ export function DynamicIsland() {
 
                             {/* Circular Icon Link */}
                             <Link
-                                href={`/learn/${grade.id}/`}
+                                href="/quizzes"
                                 className={`w-11 h-11 rounded-full border-2 flex items-center justify-center text-[10px] font-black shrink-0 transition-all duration-200 ease-out hover:scale-115 active:scale-95 ${getBadgeStyle(grade.progress, isActive)}`}
                             >
                                 {grade.title.slice(0, 2).toUpperCase()}

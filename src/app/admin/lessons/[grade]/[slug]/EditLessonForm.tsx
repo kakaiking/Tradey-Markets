@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { 
-  ChevronLeft, 
   Save, 
   BookOpen, 
   Plus, 
@@ -14,12 +13,12 @@ import {
   ChevronRight,
   Trash2,
   X,
-  ArrowLeft,
   Video,
   Settings,
   HelpCircle
 } from "lucide-react";
 import { useFeedback } from "@/components/admin/FeedbackProvider";
+import { BackButton } from "@/components/layout/BackButton";
 const getYouTubeId = (url?: string) => {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -201,12 +200,7 @@ export default function EditLessonForm() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <button 
-            onClick={() => router.push("/admin/lessons")}
-            className="p-2 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-all text-white/50 hover:text-white"
-          >
-            <ArrowLeft size={20} />
-          </button>
+          <BackButton href="/admin/lessons" className="history-back--on-media" />
           <div>
             <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
               {slugParam ? "Edit Lesson" : "Create New Lesson"}

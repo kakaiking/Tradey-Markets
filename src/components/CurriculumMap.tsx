@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { loadGradesWithProgress } from "@/lib/clientCache";
 
 type GradeRow = {
     id: string;
@@ -25,29 +26,8 @@ export default function CurriculumMap() {
     useEffect(() => {
         async function fetchGradesAndProgress() {
             try {
-                const [gradesRes, progressRes] = await Promise.all([
-                    fetch("/api/grades"),
-                    fetch("/api/user/progress/"),
-                ]);
-
-                let fetchedGrades: GradeRow[] = [];
-                let progressData: { progress?: Record<string, number> } = {};
-
-                if (gradesRes.ok) {
-                    const gradesData = await gradesRes.json();
-                    fetchedGrades = gradesData.grades || [];
-                }
-
-                if (progressRes.ok) {
-                    progressData = await progressRes.json();
-                }
-
-                fetchedGrades = fetchedGrades.map((g) => ({
-                    ...g,
-                    progress: progressData.progress?.[g.id] ?? 0,
-                }));
-
-                setGrades(fetchedGrades);
+                const { grades: withProgress } = await loadGradesWithProgress();
+                setGrades(withProgress as GradeRow[]);
             } catch (err) {
                 console.error("Failed to fetch curriculum map data:", err);
             } finally {
@@ -117,7 +97,7 @@ export default function CurriculumMap() {
                                 {inner}
                             </div>
                         ) : (
-                            <Link href={`/learn/${grade.id}`} className="choice-card">
+                            <Link href={`/learn/question-cards/?grade=${grade.id}`} className="choice-card">
                                 {inner}
                             </Link>
                         )}

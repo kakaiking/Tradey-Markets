@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import LevelDetailPanel from "@/components/LevelDetailPanel";
+import { loadGradesWithProgress } from "@/lib/clientCache";
 
 export default function LevelStories() {
   const [grades, setGrades] = useState<any[]>([]);
@@ -12,29 +13,7 @@ export default function LevelStories() {
     async function fetchGradesAndProgress() {
       try {
         setLoading(true);
-        const [res, progressRes] = await Promise.all([
-          fetch("/api/grades"),
-          fetch("/api/user/progress")
-        ]);
-
-        let fetched: any[] = [];
-        let progressData: any = {};
-
-        if (res.ok) {
-          const data = await res.json();
-          fetched = data.grades || [];
-        }
-
-        if (progressRes.ok) {
-          progressData = await progressRes.json();
-        }
-
-        // Map progress to each grade
-        fetched = fetched.map((g: any) => ({
-          ...g,
-          progress: (progressData.progress && progressData.progress[g.id]) ?? 0
-        }));
-
+        const { grades: fetched } = await loadGradesWithProgress();
         setGrades(fetched);
         if (fetched.length > 0) {
           setActive(fetched[0].id);

@@ -173,9 +173,10 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
 
               <button
                 onClick={() => setSnackbar((prev) => ({ ...prev, show: false }))}
-                className="flex-shrink-0 p-1 text-white/40 hover:text-white rounded-lg hover:bg-white/5 transition-all"
+                className="close-x"
+                aria-label="Dismiss"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" strokeWidth={3} />
               </button>
             </motion.div>
           )}

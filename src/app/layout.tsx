@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Nunito, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { ConsoleCleaner } from "@/components/ConsoleCleaner";
+import { ThemeProvider } from "@/lib/theme";
 
 const nunito = Nunito({
     subsets: ["latin"],
@@ -34,6 +36,7 @@ export const viewport = {
     width: "device-width",
     initialScale: 1,
     viewportFit: "cover" as const,
+    themeColor: "#F5F5F5",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -42,13 +45,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             lang="en"
             className={`scroll-smooth ${nunito.variable} ${ibmPlexMono.variable}`}
             data-scroll-behavior="smooth"
+            data-theme="chalk"
+            data-appearance="system"
+            suppressHydrationWarning
         >
             <head>
                 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+                <Script src="/theme-init.js" strategy="beforeInteractive" />
             </head>
             <body className="antialiased">
-                <ConsoleCleaner />
-                <AppShell>{children}</AppShell>
+                <ThemeProvider>
+                    <ConsoleCleaner />
+                    <AppShell>{children}</AppShell>
+                </ThemeProvider>
             </body>
         </html>
     );

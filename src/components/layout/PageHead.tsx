@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
+import { BackButton } from "@/components/layout/BackButton";
 
 export function PageHead({
     title,
@@ -16,38 +16,20 @@ export function PageHead({
     trail?: ReactNode;
     backHref?: string;
 }) {
-    const router = useRouter();
-
     return (
         <header className="page-head">
             <div className="page-head-lead">
-                <button
-                    type="button"
-                    className="history-back"
-                    onClick={() => {
-                        if (backHref) {
-                            router.push(backHref);
-                            return;
-                        }
-                        if (typeof window !== "undefined" && window.history.length > 1) {
-                            router.back();
-                            return;
-                        }
-                        router.push("/learn");
-                    }}
-                >
-                    Back
-                </button>
+                <BackButton href={backHref} fallbackHref="/quizzes" />
+                {title ? (
+                    <h1 className="page-head-title">{title}</h1>
+                ) : byline ? (
+                    <h1 className="page-head-title">{byline}</h1>
+                ) : (
+                    <span className="page-head-title-spacer" aria-hidden />
+                )}
                 {trail ? <div className="page-head-trail">{trail}</div> : null}
             </div>
-            {title ? <h1>{title}</h1> : null}
-            {byline ? (
-                title ? (
-                    <p className="kicker">{byline}</p>
-                ) : (
-                    <h1>{byline}</h1>
-                )
-            ) : null}
+            {title && byline ? <p className="kicker">{byline}</p> : null}
             {lede ? <p className="lede">{lede}</p> : null}
         </header>
     );

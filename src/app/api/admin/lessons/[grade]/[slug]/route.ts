@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromSession } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
+import { invalidateCatalog } from "@/lib/catalogCache";
 
 export async function GET(
     req: Request,
@@ -144,6 +145,7 @@ export async function PUT(
             });
         });
 
+        invalidateCatalog();
         return NextResponse.json({ message: "Lesson updated successfully!", lesson: updated });
     } catch (error: any) {
         console.error("Error updating lesson:", error);
@@ -184,6 +186,7 @@ export async function DELETE(
             where: { id: existingLesson.id }
         });
 
+        invalidateCatalog();
         return NextResponse.json({ message: "Lesson deleted successfully!" });
     } catch (error: any) {
         console.error("Error deleting lesson:", error);

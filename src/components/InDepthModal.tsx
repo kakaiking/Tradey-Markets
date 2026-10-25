@@ -72,9 +72,10 @@ export const InDepthModal: React.FC<InDepthModalProps> = ({ isOpen, onClose, tit
                             </div>
                             <button
                                 onClick={onClose}
-                                className="p-2 hover:bg-[var(--sunken)] rounded-full transition-colors text-[var(--muted)] hover:text-[var(--ink)] border-2 border-transparent hover:border-[var(--ink)]"
+                                className="close-x"
+                                aria-label="Close"
                             >
-                                <X size={24} />
+                                <X size={18} strokeWidth={3} />
                             </button>
                         </div>
 

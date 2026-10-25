@@ -81,7 +81,7 @@ export default function AboutPage() {
                 <p className="lede" style={{ marginBottom: "1.25rem" }}>Join traders mastering the markets with Pipsology.</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "center" }}>
                     <Link href="/account/signup" className="btn">Sign up free</Link>
-                    <Link href="/learn" className="btn secondary">Browse courses</Link>
+                    <Link href="/quizzes" className="btn secondary">Browse courses</Link>
                 </div>
             </div>
         </div>

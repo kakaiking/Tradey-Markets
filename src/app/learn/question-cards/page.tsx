@@ -51,7 +51,7 @@ export default async function QuestionCardsPage() {
     }));
 
     return (
-        <div className="w-full py-6 pb-24 text-[var(--ink)]">
+        <div className="question-cards-page w-full h-full min-h-0 flex flex-col text-[var(--ink)]">
             <Suspense fallback={
                 <div className="w-full max-w-[620px] mx-auto text-center py-20">
                     <div className="w-12 h-12 rounded-full border border-[var(--line)] border-t-[var(--highlighter)] animate-spin mx-auto mb-4" />

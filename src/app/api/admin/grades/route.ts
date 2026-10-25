@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromSession } from "@/lib/auth";
+import { invalidateCatalog } from "@/lib/catalogCache";
 
 export async function GET() {
     try {
@@ -56,6 +57,7 @@ export async function POST(req: Request) {
             }
         });
 
+        invalidateCatalog();
         return NextResponse.json({ message: "Group created successfully!", grade: newGrade });
     } catch (error: any) {
         console.error("Error creating grade:", error);

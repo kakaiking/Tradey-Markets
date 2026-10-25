@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { invalidateCatalog } from "@/lib/catalogCache";
 import { getUserFromSession } from "@/lib/auth";
 import { Prisma } from "@prisma/client";
 
@@ -102,6 +103,7 @@ export async function POST(req: Request) {
             });
         });
 
+        invalidateCatalog();
         return NextResponse.json({ message: "Lesson created successfully!", lesson: newLesson });
     } catch (error: any) {
         console.error("Error creating lesson:", error);

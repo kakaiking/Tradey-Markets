@@ -1,11 +1,5 @@
-import LevelDetailPanel from "@/components/LevelDetailPanel";
+import { redirect } from "next/navigation";
 
-export default async function GradePage({ params }: { params: Promise<{ grade: string }> }) {
-    const { grade } = await params;
-
-    return (
-        <div className="pb-6">
-            <LevelDetailPanel gradeId={grade} />
-        </div>
-    );
+export default function GradePage() {
+    redirect("/quizzes");
 }

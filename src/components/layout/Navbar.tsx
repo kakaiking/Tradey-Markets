@@ -6,6 +6,7 @@ import {
     BookOpen, TrendingUp, BarChart3, Wrench, Users, Bell,
     Crown, Menu, X, ChevronDown, Flame, Star, LogIn
 } from "lucide-react";
+import { cachedJson, invalidateClientCache } from "@/lib/clientCache";
 
 interface NavItem {
     label: string;
@@ -23,7 +24,7 @@ const navItems: NavItem[] = [
         label: "Learn",
         icon: BookOpen,
         children: [
-            { label: "Pipsology", href: "/learn", desc: "Complete forex curriculum" },
+            { label: "Pipsology", href: "/quizzes", desc: "Complete forex curriculum" },
             { label: "Learning Paths", href: "/paths", desc: "Personalized curriculum" },
             { label: "Forexpedia", href: "/forexpedia", desc: "Trading glossary" },
         ],
@@ -77,11 +78,8 @@ export function Navbar() {
 
         async function fetchUser() {
             try {
-                const res = await fetch("/api/auth/me");
-                if (res.ok) {
-                    const data = await res.json();
-                    setUser(data.user);
-                }
+                const data = await cachedJson<{ user: any } | null>("auth-me", "/api/auth/me", 120_000);
+                setUser(data?.user ?? null);
             } catch (err) {
                 console.error("Failed to fetch session:", err);
             } finally {
@@ -91,11 +89,8 @@ export function Navbar() {
 
         async function fetchNotifications() {
             try {
-                const res = await fetch("/api/notifications");
-                if (res.ok) {
-                    const data = await res.json();
-                    setRecentLessons(data.lessons || []);
-                }
+                const data = await cachedJson<{ lessons?: any[] }>("notifications", "/api/notifications", 60_000);
+                setRecentLessons(data.lessons || []);
             } catch (err) {
                 console.error("Failed to fetch notifications:", err);
             }
@@ -176,6 +171,7 @@ export function Navbar() {
     async function handleSignOut() {
         try {
             await fetch("/api/auth/signout", { method: "POST" });
+            invalidateClientCache();
             setUser(null);
             setAvatarOpen(false);
             router.push("/");
@@ -271,7 +267,7 @@ export function Navbar() {
                                                     return (
                                                         <Link
                                                             key={lesson.id}
-                                                            href={`/learn/${lesson.gradeId}/${lesson.slug}`}
+                                                            href="/quizzes"
                                                             onClick={() => {
                                                                 markAsRead(lesson.id);
                                                                 setNotifOpen(false);
@@ -409,8 +405,8 @@ export function Navbar() {
                     <div className="fixed top-0 right-0 h-full w-80 bg-[#0a0f0d] border-l border-white/10 z-[210] p-6 overflow-y-auto animate-in slide-in-from-right shadow-2xl">
                         <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
                             <span className="font-bold text-lg font-display text-white/90 tracking-tight">Navigation</span>
-                            <button onClick={() => setOpen(false)} className="w-9 h-9 flex items-center justify-center rounded-lg glass text-white/70 hover:text-white transition-colors">
-                                <X size={18} />
+                            <button onClick={() => setOpen(false)} className="close-x" aria-label="Close menu">
+                                <X size={18} strokeWidth={3} />
                             </button>
                         </div>
 

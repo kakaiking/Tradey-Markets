@@ -51,7 +51,7 @@ export default function AdminDashboard() {
         title="Admin dashboard"
         byline="Overview"
         lede="What's happening across lessons, videos, and students."
-        backHref="/learn"
+        backHref="/quizzes"
       />
 
       <div className="admin-stat-grid" style={{ marginBottom: "var(--space-5)" }}>

@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CheckCircle, XCircle, RotateCcw, ArrowRight } from "lucide-react";
+import { recordQuizPass } from "@/lib/practiceProgress";
 
 interface Question {
     q: string;
@@ -44,6 +45,12 @@ export function QuizWidget({ quiz }: { quiz: Quiz }) {
 
     const reset = () => { setCurrent(0); setSelected(null); setAnswered(false); setScore(0); setDone(false); };
 
+    useEffect(() => {
+        if (!done) return;
+        const pct = Math.round((score / quiz.questions.length) * 100);
+        recordQuizPass(quiz.slug, pct);
+    }, [done, score, quiz.questions.length, quiz.slug]);
+
     if (done) {
         const pct = Math.round((score / quiz.questions.length) * 100);
         return (
@@ -58,7 +65,7 @@ export function QuizWidget({ quiz }: { quiz: Quiz }) {
                     <button type="button" onClick={reset} className="btn secondary">
                         <RotateCcw size={15} /> Try again
                     </button>
-                    <Link href="/learn" className="btn chalk">
+                    <Link href="/quizzes" className="btn chalk">
                         Continue learning <ArrowRight size={15} />
                     </Link>
                 </div>

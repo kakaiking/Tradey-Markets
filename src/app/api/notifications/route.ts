@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-
-export const dynamic = "force-dynamic";
+import { getCachedRecentLessons } from "@/lib/catalogCache";
 
 export async function GET() {
     try {
@@ -9,17 +8,12 @@ export async function GET() {
             return NextResponse.json({ lessons: [] });
         }
 
-        const recentLessons = await prisma.lesson.findMany({
-            take: 5,
-            orderBy: {
-                createdAt: "desc"
-            },
-            include: {
-                grade: true
-            }
-        });
+        const recentLessons = await getCachedRecentLessons();
 
-        return NextResponse.json({ lessons: recentLessons });
+        return NextResponse.json(
+            { lessons: recentLessons },
+            { headers: { "Cache-Control": "private, max-age=30, stale-while-revalidate=60" } }
+        );
     } catch (error: any) {
         console.error("Error fetching notification lessons:", error);
         return NextResponse.json({ message: "Internal server error", error: error.message }, { status: 500 });

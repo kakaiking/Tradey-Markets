@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronLeft, ChevronRight, PanelLeftClose, PanelLeftOpen, PlayCircle } from "lucide-react";
-import { courseGrades, tradingVideos } from "@/lib/data";
+import { loadGradesWithProgress } from "@/lib/clientCache";
 
 export function LearnSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; onToggle: () => void }) {
     const pathname = usePathname();
@@ -16,28 +16,7 @@ export function LearnSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; 
     useEffect(() => {
         async function fetchGradesAndProgress() {
             try {
-                const [gradesRes, progressRes] = await Promise.all([
-                    fetch("/api/grades"),
-                    fetch("/api/user/progress")
-                ]);
-
-                let fetchedGrades: any[] = [];
-                let progressData: any = {};
-
-                if (gradesRes.ok) {
-                    const gradesData = await gradesRes.json();
-                    fetchedGrades = gradesData.grades || [];
-                }
-
-                if (progressRes.ok) {
-                    progressData = await progressRes.json();
-                }
-
-                // Map progress to each grade
-                fetchedGrades = fetchedGrades.map((g: any) => ({
-                    ...g,
-                    progress: (progressData.progress && progressData.progress[g.id]) ?? 0
-                }));
+                const { grades: fetchedGrades } = await loadGradesWithProgress();
 
                 setGrades(fetchedGrades);
             } catch (err) {
@@ -69,7 +48,7 @@ export function LearnSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; 
                         return (
                             <Link
                                 key={grade.id}
-                                href={`/learn/${grade.id}`}
+                                href="/quizzes"
                                 className={`flex items-center ${isCollapsed ? "justify-center p-1" : "gap-4 p-3"} rounded-xl transition-all group ${isActive
                                     ? "bg-green-500/10 text-green-400"
                                     : "text-white/60 hover:bg-white/5 hover:text-white"

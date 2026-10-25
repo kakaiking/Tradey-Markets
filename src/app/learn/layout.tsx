@@ -14,7 +14,13 @@ export default function LearnLayout({ children }: { children: React.ReactNode })
 
     if (isFullscreenPage) {
         return (
-            <div className="relative h-[calc(100dvh-var(--header-h))] md:h-full min-h-[60vh] w-full overflow-hidden">
+            <div
+                className={
+                    isVideosPage
+                        ? "relative h-full min-h-0 flex-1 w-full overflow-hidden"
+                        : "relative h-[calc(100dvh-var(--header-h))] md:h-full min-h-[60vh] w-full overflow-hidden"
+                }
+            >
                 {children}
             </div>
         );

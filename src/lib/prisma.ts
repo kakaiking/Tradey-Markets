@@ -8,23 +8,31 @@ dns.setDefaultResultOrder("ipv4first");
 const globalForPrisma = globalThis as unknown as {
     prisma: any;
     pool: Pool | undefined;
+    poolUrl: string | undefined;
 };
 
 let prismaInstance: any;
 
 if (typeof window === "undefined") {
-    // Use the NON-POOLING direct connection for the pg adapter at runtime.
-    // The pooled URL (POSTGRES_PRISMA_URL) uses pgBouncer which is incompatible with pg.Pool.
+    // Prefer the Neon pooler. A suspended compute does not accept the direct
+    // host (P1001), while the pooler accepts the connection and wakes it.
+    // node-postgres uses unnamed statements, which Neon's transaction pooler allows.
     const connectionString =
+        process.env.DATABASE_URL ??
+        process.env.POSTGRES_PRISMA_URL ??
+        process.env.POSTGRES_URL ??
         process.env.DATABASE_URL_UNPOOLED ??
-        process.env.POSTGRES_URL_NON_POOLING ??
-        process.env.DATABASE_URL;
+        process.env.POSTGRES_URL_NON_POOLING;
 
     if (connectionString) {
+        const previousUrl = globalForPrisma.poolUrl;
         let pool: Pool;
-        if (globalForPrisma.pool) {
+        if (globalForPrisma.pool && previousUrl === connectionString) {
             pool = globalForPrisma.pool;
         } else {
+            if (globalForPrisma.pool) {
+                void globalForPrisma.pool.end().catch(() => {});
+            }
             const isDev = process.env.NODE_ENV !== "production";
             pool = new Pool({
                 connectionString,
@@ -37,10 +45,12 @@ if (typeof window === "undefined") {
             });
             if (process.env.NODE_ENV !== "production") {
                 globalForPrisma.pool = pool;
+                globalForPrisma.poolUrl = connectionString;
             }
         }
 
-        if (globalForPrisma.prisma) {
+        const poolChanged = previousUrl !== connectionString;
+        if (globalForPrisma.prisma && !poolChanged) {
             prismaInstance = globalForPrisma.prisma;
         } else {
             const adapter = new PrismaPg(pool);
@@ -52,24 +62,33 @@ if (typeof window === "undefined") {
                         : [],
             });
             
-            // Add global query retry extension to handle Neon DB cold starts/timeouts
+            // Retry on Neon cold starts (P1001) and connection timeouts.
             prismaInstance = basePrismaInstance.$extends({
                 query: {
                     async $allOperations({ model, operation, args, query }) {
-                        let retries = 3;
-                        let delay = 1500;
+                        let retries = 4;
+                        let delay = 2000;
                         while (retries > 0) {
                             try {
                                 return await query(args);
                             } catch (error: any) {
-                                const isTimeout =
+                                const message = error.message ?? "";
+                                const isTransient =
+                                    error.code === "P1001" ||
+                                    error.code === "P1002" ||
                                     error.code === "ETIMEDOUT" ||
-                                    error.message?.includes("timeout") ||
-                                    error.message?.includes("ETIMEDOUT") ||
-                                    error.message?.includes("pool");
-                                
-                                if (isTimeout && retries > 1) {
-                                    console.warn(`[Prisma Extension] Connection timed out on ${model}.${operation}. Retrying in ${delay}ms... (${retries - 1} left)`);
+                                    error.code === "ECONNREFUSED" ||
+                                    error.code === "ECONNRESET" ||
+                                    message.includes("Can't reach database server") ||
+                                    message.includes("timeout") ||
+                                    message.includes("ETIMEDOUT") ||
+                                    message.includes("Connection terminated") ||
+                                    message.includes("pool");
+
+                                if (isTransient && retries > 1) {
+                                    console.warn(
+                                        `[Prisma] Transient DB error on ${model}.${operation} (${error.code ?? "unknown"}). Retrying in ${delay}ms... (${retries - 1} left)`
+                                    );
                                     await new Promise((resolve) => setTimeout(resolve, delay));
                                     retries--;
                                     delay *= 1.5;

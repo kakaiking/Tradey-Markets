@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageHead } from "@/components/layout/PageHead";
+import { cachedJson, loadGradesWithProgress } from "@/lib/clientCache";
 
 type Props = { gradeId: string; title?: string; subtitle?: string };
 
@@ -17,34 +18,21 @@ export default function LevelDetailPanel({ gradeId, title, subtitle }: Props) {
     useEffect(() => {
         async function fetchData() {
             try {
-                const [progressRes, lessonsRes, gradesRes] = await Promise.all([
-                    fetch("/api/user/progress/"),
-                    fetch(`/api/lessons?gradeId=${gradeId}`),
-                    fetch("/api/grades"),
+                const [{ grades, completedLessons: done, progress: progressMap }, lessonsData] = await Promise.all([
+                    loadGradesWithProgress(),
+                    cachedJson<{ lessons?: any[] }>(`lessons:${gradeId}`, `/api/lessons?gradeId=${gradeId}`),
                 ]);
 
-                if (progressRes.ok) {
-                    const data = await progressRes.json();
-                    if (data) {
-                        setCompletedLessons(data.completedLessons ?? []);
-                        if (data.progress && data.progress[gradeId] !== undefined) {
-                            setProgress(data.progress[gradeId]);
-                        }
-                    }
+                setCompletedLessons(done);
+                if (progressMap[gradeId] !== undefined) {
+                    setProgress(progressMap[gradeId]);
                 }
+                setLessons(lessonsData?.lessons || []);
 
-                if (lessonsRes.ok) {
-                    const lessonsData = await lessonsRes.json();
-                    setLessons(lessonsData.lessons || []);
-                }
-
-                if (gradesRes.ok) {
-                    const gradesData = await gradesRes.json();
-                    const match = (gradesData.grades || []).find((g: any) => g.id === gradeId);
-                    if (match) {
-                        setGradeTitle(match.title || gradeId);
-                        setGradeSubtitle(match.subtitle || "");
-                    }
+                const match = grades.find((g) => g.id === gradeId);
+                if (match) {
+                    setGradeTitle(String(match.title ?? gradeId));
+                    setGradeSubtitle(typeof match.subtitle === "string" ? match.subtitle : "");
                 }
             } catch (err) {
                 console.error("Failed to fetch data in LevelDetailPanel:", err);
@@ -61,7 +49,7 @@ export default function LevelDetailPanel({ gradeId, title, subtitle }: Props) {
                 title={gradeTitle}
                 byline={gradeSubtitle || undefined}
                 lede={`Grade progress ${loading ? "…" : `${progress}%`}`}
-                backHref="/learn"
+                backHref="/quizzes"
             />
 
             <div className="heat" style={{ margin: "0 auto 1.25rem", maxWidth: "100%" }} aria-hidden>
@@ -90,7 +78,7 @@ export default function LevelDetailPanel({ gradeId, title, subtitle }: Props) {
                         return (
                             <li key={lesson.id}>
                                 <Link
-                                    href={`/learn/${gradeId}/${lesson.slug}`}
+                                    href="/quizzes"
                                     className="choice-card"
                                 >
                                     <div className="choice-copy">

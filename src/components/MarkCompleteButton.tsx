@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
+import { cachedJson, invalidateClientCache } from "@/lib/clientCache";
 
 interface Props {
     gradeId: string;
@@ -18,12 +19,12 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
     useEffect(() => {
         async function checkCompletion() {
             try {
-                const res = await fetch("/api/user/progress/");
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.completedLessons) {
-                        setIsCompleted(data.completedLessons.includes(lessonSlug));
-                    }
+                const data = await cachedJson<{ completedLessons?: string[] }>(
+                    "progress",
+                    "/api/user/progress"
+                );
+                if (data?.completedLessons) {
+                    setIsCompleted(data.completedLessons.includes(lessonSlug));
                 }
             } catch (err) {
                 console.error("Failed to check lesson completion:", err);
@@ -46,6 +47,7 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
                 body: JSON.stringify({ gradeId, lessonSlug }),
             });
             if (res.ok) {
+                invalidateClientCache("progress");
                 setIsCompleted(true);
                 // Trigger Next.js router refresh to update all components on the page
                 router.refresh();

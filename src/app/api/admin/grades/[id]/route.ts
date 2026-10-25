@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getUserFromSession } from "@/lib/auth";
+import { invalidateCatalog } from "@/lib/catalogCache";
 
 export async function PUT(
     req: Request,
@@ -52,6 +53,7 @@ export async function PUT(
             }
         });
 
+        invalidateCatalog();
         return NextResponse.json({ message: "Group updated successfully!", grade: updated });
     } catch (error: any) {
         console.error("Error updating grade:", error);
@@ -88,6 +90,7 @@ export async function DELETE(
             where: { id }
         });
 
+        invalidateCatalog();
         return NextResponse.json({ message: "Group deleted successfully!" });
     } catch (error: any) {
         console.error("Error deleting grade:", error);

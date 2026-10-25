@@ -4,11 +4,11 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
-    ChevronLeft, ChevronRight, RotateCcw, 
-    Check, X, BookOpen, Sparkles, ChevronDown 
+    ChevronLeft, ChevronRight, 
+    Check, X, BookOpen 
 } from "lucide-react";
 import { getQuestionCardsForLesson, QuestionCard } from "@/lib/questionCardsData";
-import Link from "next/link";
+import { recordCardPass } from "@/lib/practiceProgress";
 
 interface Section {
     id: string;
@@ -52,11 +52,9 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
     // Loaded cards for the selected lesson
     const [cards, setCards] = useState<QuestionCard[]>([]);
     const [currentCardIndex, setCurrentCardIndex] = useState(0);
+    const [history, setHistory] = useState<number[]>([]);
     const [isFlipped, setIsFlipped] = useState(false);
-    
-    // Quiz state: stores the index of the selected answer for each card (null if unanswered)
-    const [answers, setAnswers] = useState<Record<number, number>>({});
-    const [quizCompleted, setQuizCompleted] = useState(false);
+    const [currentAnswer, setCurrentAnswer] = useState<number | null>(null);
 
     // Get current active grade and lesson object
     const activeGrade = grades.find(g => g.id === selectedGradeId);
@@ -82,11 +80,14 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                 title: activeLesson.title,
                 sections: activeLesson.sections
             });
+            const start = lessonCards.length > 0
+                ? Math.floor(Math.random() * lessonCards.length)
+                : 0;
             setCards(lessonCards);
-            setCurrentCardIndex(0);
+            setCurrentCardIndex(start);
+            setHistory([]);
             setIsFlipped(false);
-            setAnswers({});
-            setQuizCompleted(false);
+            setCurrentAnswer(null);
         } else {
             setCards([]);
         }
@@ -95,220 +96,118 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
     // Answer selecting handler
     const handleAnswerSelect = (optionIndex: number, e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card from flipping back
-        if (answers[currentCardIndex] !== undefined) return; // Answer already submitted for this card
+        if (currentAnswer !== null) return;
 
-        setAnswers(prev => ({
-            ...prev,
-            [currentCardIndex]: optionIndex
-        }));
+        setCurrentAnswer(optionIndex);
+        const card = cards[currentCardIndex];
+        if (card && optionIndex === card.correctIndex) {
+            recordCardPass(card.id);
+        }
+    };
+
+    const pickRandomIndex = (exclude: number) => {
+        if (cards.length <= 1) return 0;
+        let next = exclude;
+        while (next === exclude) {
+            next = Math.floor(Math.random() * cards.length);
+        }
+        return next;
+    };
+
+    const showCard = (index: number) => {
+        setIsFlipped(false);
+        setCurrentAnswer(null);
+        setTimeout(() => {
+            setCurrentCardIndex(index);
+        }, 250);
     };
 
     const handleNext = () => {
-        if (currentCardIndex < cards.length - 1) {
-            setIsFlipped(false);
-            // Slight delay to allow card to flip back before changing index
-            setTimeout(() => {
-                setCurrentCardIndex(prev => prev + 1);
-            }, 250);
-        } else {
-            // Check if all cards have been answered
-            setQuizCompleted(true);
-        }
+        setHistory(prev => [...prev, currentCardIndex]);
+        showCard(pickRandomIndex(currentCardIndex));
     };
 
     const handlePrev = () => {
-        if (currentCardIndex > 0) {
-            setIsFlipped(false);
-            setTimeout(() => {
-                setCurrentCardIndex(prev => prev - 1);
-            }, 250);
+        if (history.length === 0) {
+            showCard(pickRandomIndex(currentCardIndex));
+            return;
         }
-    };
-
-    const handleResetQuiz = () => {
-        setAnswers({});
-        setCurrentCardIndex(0);
-        setIsFlipped(false);
-        setQuizCompleted(false);
+        const previous = history[history.length - 1];
+        setHistory(prev => prev.slice(0, -1));
+        showCard(previous);
     };
 
     const currentCard = cards[currentCardIndex];
-    const isWrong = currentCard && answers[currentCardIndex] !== undefined && answers[currentCardIndex] !== currentCard.correctIndex;
-    const totalCorrect = Object.entries(answers).reduce((acc, [cardIdx, answerIdx]) => {
-        const card = cards[Number(cardIdx)];
-        if (card && card.correctIndex === answerIdx) {
-            return acc + 1;
-        }
-        return acc;
-    }, 0);
+    const isWrong = currentCard && currentAnswer !== null && currentAnswer !== currentCard.correctIndex;
 
     return (
-        <div className="w-full flex flex-col items-center">
+        <div className="w-full h-full min-h-0 flex flex-col items-center">
             
-            {/* Centered Card Selector Dropdown */}
-            {cards.length > 0 && (
-                <div className="w-full max-w-[620px] flex flex-col items-center mb-8 px-4 relative z-20">
-                    <label className="kicker mb-2 select-none">
-                        Select Study Card
-                    </label>
-                    <div className="relative w-full max-w-sm">
-                        <select
-                            value={currentCardIndex}
-                            onChange={(e) => {
-                                const index = Number(e.target.value);
-                                setIsFlipped(false);
-                                setCurrentCardIndex(index);
-                            }}
-                            className="w-full bg-[var(--raised)] hover:bg-[var(--highlighter)] border border-[var(--line)] rounded-[var(--radius-sm)] px-5 py-3.5 pr-10 text-xs md:text-sm font-bold text-[var(--ink)] transition-all focus:outline-none cursor-pointer appearance-none text-center"
-                            style={{
-                                textAlignLast: "center"
-                            }}
-                        >
-                            {cards.map((card, idx) => {
-                                const displayTitle = card.sectionTitle 
-                                    ? `${card.sectionTitle} - Card ${idx + 1}`
-                                    : `Card ${idx + 1}: ${card.question.length > 50 ? card.question.substring(0, 47) + "..." : card.question}`;
-                                return (
-                                    <option key={card.id || idx} value={idx} className="bg-[var(--raised)] text-[var(--ink)] text-xs md:text-sm normal-case font-semibold">
-                                        {displayTitle}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                        <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-[var(--muted)]">
-                            <ChevronDown size={16} />
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Main Interactive Deck Container */}
-            <div className="w-full max-w-[760px] flex flex-col items-center">
+            <div className="w-full max-w-[760px] h-full min-h-0 flex flex-col items-center">
                 
                 {cards.length === 0 ? (
                     <div className="w-full max-w-[620px] text-center py-16 card">
                         <BookOpen className="mx-auto text-[var(--muted)] mb-4" size={48} />
                         <p className="status text-sm font-semibold">No questions configured for this lesson yet.</p>
                     </div>
-                ) : quizCompleted ? (
-                    
-                    /* SCORE SCREEN */
-                    <div className="w-full max-w-[620px]">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="w-full card text-center relative overflow-hidden"
-                        >
-                            <div className="w-20 h-20 bg-[color-mix(in_srgb,var(--chalk)_18%,var(--raised))] text-[var(--chalk)] border border-[var(--line)] rounded-full flex items-center justify-center mx-auto mb-6">
-                                <Sparkles size={36} />
-                            </div>
-                            
-                            <h2 className="font-display text-2xl font-bold text-[var(--ink)] mb-2">Lesson Quiz Completed!</h2>
-                            <p className="kicker mb-6">
-                                {activeLesson?.title}
-                            </p>
-                            
-                            <div className="bg-[var(--sunken)] border border-[var(--line)] rounded-[var(--radius-sm)] p-6 max-w-sm mx-auto mb-8">
-                                <div className="kicker mb-1">Your Score</div>
-                                <div className="text-5xl font-black text-[var(--chalk)] font-display">
-                                    {totalCorrect} <span className="text-[var(--muted)] text-3xl">/</span> {cards.length}
-                                </div>
-                                <div className="text-sm text-[var(--muted)] mt-3 font-semibold font-reading">
-                                    {totalCorrect === cards.length 
-                                        ? "Perfect! You've mastered this lesson's details!" 
-                                        : totalCorrect >= cards.length / 2 
-                                            ? "Good job! Review the cards to get a perfect score." 
-                                            : "Try reading the lesson text again to improve."
-                                    }
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap gap-3 justify-center">
-                                <button
-                                    onClick={handleResetQuiz}
-                                    className="btn secondary !w-auto"
-                                >
-                                    <RotateCcw size={14} /> Retry Quiz
-                                </button>
-                                {activeLesson && (
-                                    <Link
-                                        href={`/learn/${selectedGradeId}/${selectedLessonSlug}/`}
-                                        className="btn chalk !w-auto"
-                                    >
-                                        <BookOpen size={14} /> Read Lesson Notes
-                                    </Link>
-                                )}
-                            </div>
-                        </motion.div>
-                    </div>
-
                 ) : (
                     
                     /* FLASHCARD PLAYING SCREEN */
-                    <div className="w-full flex flex-col items-center">
+                    <div className="w-full h-full min-h-0 flex flex-col items-center">
                         
-                        {/* Flex Row containing Buttons on Left/Right of Card */}
-                        <div className="w-full flex items-center justify-between gap-4 md:gap-6">
-                            
-                            {/* Prev Button */}
-                            <button
-                                onClick={handlePrev}
-                                disabled={currentCardIndex === 0}
-                                className="flex items-center justify-center w-12 h-12 rounded-full border border-[var(--line)] bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)] transition-all active:scale-90 disabled:opacity-0 disabled:pointer-events-none shrink-0"
-                            >
-                                <ChevronLeft size={24} />
-                            </button>
+                        <div className="relative w-full h-full min-h-0 flex flex-col items-center">
 
-                            {/* Flip Card Deck Wrapper */}
-                            <div className="w-full max-w-[620px] perspective-1000 relative">
+                            {/* Flip Card Deck Wrapper — height follows the text */}
+                            <div className="w-full max-w-[620px] max-[599px]:max-w-none h-auto shrink-0 perspective-1000 relative">
                                 
                                 <motion.div
                                     layout
                                     animate={{ rotateY: isFlipped ? 180 : 0 }}
                                     transition={{ type: "spring", stiffness: 120, damping: 18 }}
-                                    className="w-full relative transform-style-3d cursor-pointer"
+                                    className="w-full h-auto relative transform-style-3d cursor-pointer"
                                     onClick={() => setIsFlipped(!isFlipped)}
                                 >
                                     {/* FRONT FACE: LESSON NOTE DESCRIPTION */}
                                     <div 
-                                        className={`${isFlipped ? "absolute inset-0 w-full h-full" : "relative w-full h-auto"} backface-hidden card flex flex-col justify-between min-h-[360px] md:min-h-[380px]`}
+                                        className={`${isFlipped ? "absolute inset-0 w-full h-full overflow-y-auto" : "relative w-full h-auto"} backface-hidden card flex flex-col justify-between`}
                                         style={{
                                             backfaceVisibility: "hidden"
                                         }}
                                     >
                                         <div>
-                                            <p className="kicker mb-2">Read face</p>
-                                            <h3 className="font-display text-lg md:text-xl font-bold text-[var(--ink)] mb-3">
+                                            <p className="kicker !text-sm mb-3">Read face</p>
+                                            <h3 className="font-display text-2xl font-bold text-[var(--ink)] mb-4 leading-tight">
                                                 {currentCard.sectionTitle || activeLesson?.title || "Lesson Details"}
                                             </h3>
                                             
-                                            <div className="lesson-prose !text-sm max-h-[160px] md:max-h-[180px] overflow-y-auto pr-1 scrollbar-none whitespace-pre-wrap">
+                                            <div className="lesson-prose !text-[1.2rem] !leading-relaxed pr-1 whitespace-pre-wrap">
                                                 {currentCard.sectionContent || currentCard.description}
                                             </div>
                                         </div>
 
                                         <div className="flex justify-between items-center mt-4 pt-4 border-t-2 border-[var(--line)] select-none">
-                                            <div className="kicker">
+                                            <div className="kicker !text-sm">
                                                 Tap to flip
                                             </div>
-                                            <div className="text-xs font-bold text-[var(--chalk)] flex items-center gap-1">
-                                                Flip to Question <ChevronRight size={14} className="mt-0.5" />
+                                            <div className="text-base font-bold text-[var(--chalk)] flex items-center gap-1">
+                                                Flip to Question <ChevronRight size={18} className="mt-0.5" />
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* BACK FACE: QUESTION & MULTIPLE CHOICE OPTIONS */}
                                     <div 
-                                        className={`${isFlipped ? "relative w-full h-auto" : "absolute inset-0 w-full h-full"} card flex flex-col rotate-y-180 backface-hidden min-h-[360px] md:min-h-[380px]`}
+                                        className={`${isFlipped ? "relative w-full h-auto overflow-visible" : "absolute inset-0 w-full h-full overflow-y-auto"} card flex flex-col rotate-y-180 backface-hidden`}
                                         style={{
                                             backfaceVisibility: "hidden",
                                             transform: "rotateY(180deg)"
                                         }}
                                     >
                                         <div>
-                                            <p className="kicker mb-2">Question</p>
+                                            <p className="kicker !text-sm mb-3">Question</p>
                                             {/* Question Text */}
-                                            <h4 className="font-display text-sm md:text-base font-bold text-[var(--ink)] mb-4 leading-snug">
+                                            <h4 className="font-display text-xl font-bold text-[var(--ink)] mb-4 leading-snug">
                                                 {currentCard.question}
                                             </h4>
 
@@ -316,8 +215,8 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                                             <div className="choice-list">
                                                 {currentCard.options.map((option, idx) => {
                                                     const letter = ["A", "B", "C", "D"][idx];
-                                                    const isAnswered = answers[currentCardIndex] !== undefined;
-                                                    const isUserSelection = answers[currentCardIndex] === idx;
+                                                    const isAnswered = currentAnswer !== null;
+                                                    const isUserSelection = currentAnswer === idx;
                                                     const isCorrectOption = currentCard.correctIndex === idx;
 
                                                     let stateClass = "";
@@ -343,7 +242,7 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                                                             onClick={(e) => handleAnswerSelect(idx, e)}
                                                             className={`choice-card !grid-cols-[auto_1fr] ${stateClass} ${isAnswered ? "locked" : ""}`}
                                                         >
-                                                            <span className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 ${circleClass}`}>
+                                                            <span className={`w-9 h-9 rounded-full flex items-center justify-center text-base font-black shrink-0 ${circleClass}`}>
                                                                 {isAnswered && isCorrectOption ? (
                                                                     <Check size={12} strokeWidth={3} />
                                                                 ) : isAnswered && isUserSelection && !isCorrectOption ? (
@@ -352,7 +251,7 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                                                                     letter
                                                                 )}
                                                             </span>
-                                                            <span className="leading-tight font-semibold text-sm">{option}</span>
+                                                            <span className="leading-snug font-semibold text-lg">{option}</span>
                                                         </button>
                                                     );
                                                 })}
@@ -365,10 +264,10 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                                                     className="mt-4 text-left"
                                                 >
                                                     <hr className="my-4 border-[var(--line)]" />
-                                                    <p className="text-xs md:text-sm font-bold text-[var(--chalk)] mb-2">
+                                                    <p className="text-base font-bold text-[var(--chalk)] mb-2">
                                                         The correct answer was: {["A", "B", "C", "D"][currentCard.correctIndex]}. {currentCard.options[currentCard.correctIndex]}
                                                     </p>
-                                                    <p className="lesson-prose !text-sm">
+                                                    <p className="lesson-prose !text-[1.15rem] !leading-relaxed">
                                                         {currentCard.description}
                                                     </p>
                                                 </div>
@@ -379,14 +278,24 @@ export function QuestionCardsClient({ grades }: QuestionCardsClientProps) {
                                 </motion.div>
                             </div>
 
-                            {/* Next Button */}
-                            <button
-                                onClick={handleNext}
-                                disabled={answers[currentCardIndex] === undefined}
-                                className="flex items-center justify-center w-12 h-12 rounded-full border border-[var(--line)] bg-[var(--highlighter)] text-[var(--ink)] hover:brightness-95 disabled:bg-[var(--sunken)] disabled:text-[var(--muted)] transition-all active:scale-90 disabled:pointer-events-none shrink-0"
-                            >
-                                <ChevronRight size={24} />
-                            </button>
+                            <div className="flex-1 w-full min-h-[5.5rem] flex items-center justify-center gap-6">
+                                <button
+                                    onClick={handlePrev}
+                                    disabled={cards.length === 0}
+                                    aria-label="Previous card"
+                                    className="flex items-center justify-center w-12 h-12 rounded-full border border-[var(--line)] bg-[var(--raised)] text-[var(--ink)] hover:bg-[var(--highlighter)] transition-all active:scale-90 disabled:opacity-30 disabled:pointer-events-none shrink-0 shadow-[var(--shadow)]"
+                                >
+                                    <ChevronLeft size={24} />
+                                </button>
+                                <button
+                                    onClick={handleNext}
+                                    disabled={currentAnswer === null}
+                                    aria-label="Next card"
+                                    className="flex items-center justify-center w-12 h-12 rounded-full border border-[var(--line)] bg-[var(--highlighter)] text-[var(--ink)] hover:brightness-95 disabled:bg-[var(--sunken)] disabled:text-[var(--muted)] transition-all active:scale-90 disabled:pointer-events-none shrink-0 shadow-[var(--shadow)]"
+                                >
+                                    <ChevronRight size={24} />
+                                </button>
+                            </div>
 
                         </div>
 

@@ -16,12 +16,6 @@ export async function GET() {
                 progress[g.id] = 0;
             });
 
-            if (Object.keys(progress).length === 0) {
-                progress.preschool = 0;
-                progress.kindergarten = 0;
-                progress.elementary = 0;
-            }
-
             return NextResponse.json({
                 completedLessons: [],
                 progress
@@ -66,10 +60,13 @@ export async function GET() {
         }
 
 
-        return NextResponse.json({
-            completedLessons: completedSlugs,
-            progress
-        });
+        return NextResponse.json(
+            {
+                completedLessons: completedSlugs,
+                progress,
+            },
+            { headers: { "Cache-Control": "private, max-age=15, stale-while-revalidate=30" } }
+        );
     } catch (error: any) {
         console.error("Error fetching user progress:", error);
         return NextResponse.json(
