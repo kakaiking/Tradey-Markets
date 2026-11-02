@@ -72,7 +72,7 @@ function groupLessons<T extends LessonRow>(lessons: T[]) {
         .map((chapter) => {
             const items = chapter.slugs
                 .map((slug) => lessons.find((lesson) => lesson.slug === slug))
-                .filter((lesson): lesson is LessonRow => Boolean(lesson));
+                .filter((lesson): lesson is T => Boolean(lesson));
             items.forEach((lesson) => used.add(lesson.slug));
             return { title: chapter.title, lessons: items };
         })

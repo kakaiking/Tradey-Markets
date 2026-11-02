@@ -17,12 +17,18 @@ if (typeof window === "undefined") {
     // Prefer the Neon pooler. A suspended compute does not accept the direct
     // host (P1001), while the pooler accepts the connection and wakes it.
     // node-postgres uses unnamed statements, which Neon's transaction pooler allows.
-    const connectionString =
+    const rawConnectionString =
         process.env.DATABASE_URL ??
         process.env.POSTGRES_PRISMA_URL ??
         process.env.POSTGRES_URL ??
         process.env.DATABASE_URL_UNPOOLED ??
         process.env.POSTGRES_URL_NON_POOLING;
+    // pg v8 warns that require/prefer/verify-ca will change meaning later.
+    // verify-full is the behavior those modes already use today.
+    const connectionString = rawConnectionString?.replace(
+        /([?&]sslmode=)(prefer|require|verify-ca)\b/,
+        "$1verify-full"
+    );
 
     if (connectionString) {
         const previousUrl = globalForPrisma.poolUrl;
