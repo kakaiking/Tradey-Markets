@@ -137,34 +137,34 @@ export const curricula: Record<string, any[]> = {
 export const tradingVideos = [
     {
         id: "v1",
-        title: "Forex Trading for Beginners",
-        description: "A complete guide to get started in Forex trading from scratch. Learn about currency pairs, pips, leverage, and how the market works.",
-        videoId: "oJ9Cz6dPZw0", 
+        title: "The Ultimate Forex Trading Course (For Beginners)",
+        description: "A full beginner course: what the market is, how pairs move, and the terms you need before the first ticket.",
+        videoId: "mEyuQVy3OHc",
     },
     {
         id: "v2",
-        title: "Price Action Trading Strategies",
-        description: "Master the art of reading price charts without indicators. Learn about candlestick patterns, support/resistance, and market structure.",
-        videoId: "q7J_27yZf7g",
+        title: "Key Trading Terms: Pips, Lots, Leverage, and Spread",
+        description: "Definitions and examples for pips, pipettes, lot size, margin, and the spread.",
+        videoId: "aQNMF5Q5fSM",
     },
     {
         id: "v3",
-        title: "Understanding Risk Management",
-        description: "The most important skill in trading. Learn how to calculate position size, set stop losses, and manage your account capital effectively.",
-        videoId: "_YVQN6_nkfs",
+        title: "How to Trade Forex for Beginners",
+        description: "How a buy or sell makes or loses money, from pip distance through lot size.",
+        videoId: "vP9gmvxdFd8",
     },
     {
         id: "v4",
-        title: "Trading Psychology",
-        description: "Master your emotions and develop a winning mindset. Learn how to handle losses, avoid FOMO, and stay disciplined in your trading plan.",
-        videoId: "54Z6Q-hN1yQ",
+        title: "Order Types, Brokers, and Platforms",
+        description: "Market, limit, and stop orders, plus what changes when you pick a broker and a platform.",
+        videoId: "Era7-qY7mqg",
     },
     {
         id: "v5",
-        title: "Top 5 Forex Mistakes",
-        description: "Avoid the common traps that wipe out most beginner accounts. Learn why over-leveraging and revenge trading are dangerous.",
-        videoId: "y7yEea5L3dE",
-    }
+        title: "How to Start Forex Trading",
+        description: "A current start-to-finish walkthrough of opening a chart, placing a practice trade, and reading margin.",
+        videoId: "ZwL11tUfeXg",
+    },
 ];
 
 export const communityEvents = [
