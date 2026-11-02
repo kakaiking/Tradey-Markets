@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, House, MessageCircle, UserRound } from "lucide-react";
+import { BookOpen, House, UserRound } from "lucide-react";
 
 type ShellMode = "school" | "admin" | "auth" | "bare";
 
@@ -26,10 +26,6 @@ function isLearnActive(pathname: string) {
     );
 }
 
-function isCoachActive(pathname: string) {
-    return pathname.startsWith("/coach") || pathname.startsWith("/psychology");
-}
-
 function isMeActive(pathname: string) {
     return (
         pathname.startsWith("/me") ||
@@ -41,7 +37,6 @@ function isMeActive(pathname: string) {
 const schoolLinks = [
     { href: "/", label: "Home", match: isHomeActive, icon: House },
     { href: "/quizzes", label: "Learn", match: isLearnActive, icon: BookOpen },
-    { href: "/coach", label: "Coach", match: isCoachActive, icon: MessageCircle },
     { href: "/me", label: "Me", match: isMeActive, icon: UserRound },
 ];
 

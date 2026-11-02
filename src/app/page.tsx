@@ -19,16 +19,6 @@ type NextLesson = {
 
 const moreTools: { href: string; title: string; mark: ReactNode }[] = [
     {
-        href: "/premium",
-        title: "Premium",
-        mark: (
-            <svg viewBox="0 0 48 48" className="explore-mark">
-                <rect x="8" y="10" width="32" height="28" rx="8" fill="#f5c518" />
-                <path d="M16 22l4 3 4-7 4 7 4-3v12H16V22z" fill="#fff" />
-            </svg>
-        ),
-    },
-    {
         href: "/analyze",
         title: "Analyze",
         mark: (
@@ -36,27 +26,6 @@ const moreTools: { href: string; title: string; mark: ReactNode }[] = [
                 <rect x="8" y="8" width="32" height="32" rx="8" fill="#0e6cb8" />
                 <path d="M14 30l6-8 5 4 9-12" fill="none" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
                 <circle cx="34" cy="14" r="2.4" fill="#14b8a6" />
-            </svg>
-        ),
-    },
-    {
-        href: "/journal",
-        title: "Trade journal",
-        mark: (
-            <svg viewBox="0 0 48 48" className="explore-mark">
-                <rect x="10" y="8" width="28" height="32" rx="7" fill="#0e6cb8" />
-                <rect x="10" y="28" width="28" height="12" rx="6" fill="#14b8a6" />
-                <text x="24" y="22" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="800" fontFamily="Arial, sans-serif">MT</text>
-            </svg>
-        ),
-    },
-    {
-        href: "/charts",
-        title: "Charts",
-        mark: (
-            <svg viewBox="0 0 48 48" className="explore-mark">
-                <rect x="9" y="9" width="30" height="30" rx="7" fill="#111" />
-                <path d="M17 31V21M24 31V15M31 31v-8" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
             </svg>
         ),
     },
@@ -230,17 +199,6 @@ export default function HomePage() {
                         </Link>
                     </li>
                     <li>
-                        <Link href="/coach" className="explore-tile">
-                            <span className="explore-disc" aria-hidden>
-                                <svg viewBox="0 0 48 48" className="explore-mark">
-                                    <rect x="8" y="8" width="32" height="32" rx="8" fill="#163a78" />
-                                    <path d="M24 14.5l2.4 5.1 5.6.7-4.1 3.8 1.1 5.5L24 26.8l-5 2.8 1.1-5.5-4.1-3.8 5.6-.7z" fill="#f5c518" />
-                                </svg>
-                            </span>
-                            <span className="explore-label">Ask Coach</span>
-                        </Link>
-                    </li>
-                    <li>
                         <Link href="/forexpedia" className="explore-tile">
                             <span className="explore-disc" aria-hidden>
                                 <svg viewBox="0 0 48 48" className="explore-mark">
@@ -249,29 +207,6 @@ export default function HomePage() {
                                 </svg>
                             </span>
                             <span className="explore-label">Word book</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/charts" className="explore-tile">
-                            <span className="explore-disc" aria-hidden>
-                                <svg viewBox="0 0 48 48" className="explore-mark">
-                                    <rect x="9" y="9" width="30" height="30" rx="7" fill="#111" />
-                                    <path d="M17 31V21M24 31V15M31 31v-8" stroke="#fff" strokeWidth="2.6" strokeLinecap="round" />
-                                </svg>
-                            </span>
-                            <span className="explore-label">Charts</span>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/journal" className="explore-tile">
-                            <span className="explore-disc" aria-hidden>
-                                <svg viewBox="0 0 48 48" className="explore-mark">
-                                    <rect x="10" y="8" width="28" height="32" rx="7" fill="#0e6cb8" />
-                                    <rect x="10" y="28" width="28" height="12" rx="6" fill="#14b8a6" />
-                                    <text x="24" y="22" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="800" fontFamily="Arial, sans-serif">MT</text>
-                                </svg>
-                            </span>
-                            <span className="explore-label">Journal</span>
                         </Link>
                     </li>
                     <li>
