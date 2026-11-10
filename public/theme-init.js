@@ -1,7 +1,7 @@
 (function () {
   var pref = "system";
   try {
-    var stored = localStorage.getItem("pipsology-appearance");
+    var stored = localStorage.getItem("tradey-markets-appearance");
     if (
       stored === "system" ||
       stored === "chalk" ||

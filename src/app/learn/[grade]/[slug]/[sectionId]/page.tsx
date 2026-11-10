@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
 
-export default function LessonSectionPage() {
-    redirect("/quizzes");
+type PageProps = {
+    params: Promise<{ grade: string; slug: string; sectionId: string }>;
+};
+
+export default async function LessonSectionPage({ params }: PageProps) {
+    const { grade, slug, sectionId } = await params;
+    redirect(`/learn/${grade}/${slug}#${sectionId}`);
 }

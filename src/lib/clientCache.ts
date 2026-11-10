@@ -65,16 +65,28 @@ export async function cachedJson<T>(key: string, url: string, ttlMs = 60_000): P
     return data;
 }
 
+type GradeLessonRow = {
+    id: string;
+    slug: string;
+    title: string;
+};
+
 type GradeRow = {
     id: string;
     title?: string;
     subtitle?: string;
-    [key: string]: unknown;
+    lessons?: GradeLessonRow[];
 };
 type GradePayload = { grades?: GradeRow[] };
+type ResumeEntry = {
+    sectionId: string;
+    gradeId: string;
+};
+
 type ProgressPayload = {
     progress?: Record<string, number>;
     completedLessons?: string[];
+    resumes?: Record<string, ResumeEntry>;
 } | null;
 
 export async function loadGradesWithProgress() {
@@ -91,5 +103,6 @@ export async function loadGradesWithProgress() {
         grades,
         progress,
         completedLessons: progressJson?.completedLessons ?? [],
+        resumes: progressJson?.resumes ?? {},
     };
 }

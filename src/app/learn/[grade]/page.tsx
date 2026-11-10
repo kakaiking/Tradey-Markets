@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function GradePage() {
-    redirect("/quizzes");
+    redirect("/learn");
 }

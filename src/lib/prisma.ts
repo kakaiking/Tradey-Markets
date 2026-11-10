@@ -69,11 +69,23 @@ if (typeof window === "undefined") {
             });
             
             // Retry on Neon cold starts (P1001) and connection timeouts.
+            // Reads fail faster so home SSR can fall back; writes keep longer retries.
+            const READ_OPS = new Set([
+                "findUnique",
+                "findUniqueOrThrow",
+                "findFirst",
+                "findFirstOrThrow",
+                "findMany",
+                "count",
+                "aggregate",
+                "groupBy",
+            ]);
             prismaInstance = basePrismaInstance.$extends({
                 query: {
                     async $allOperations({ model, operation, args, query }) {
-                        let retries = 4;
-                        let delay = 2000;
+                        const isRead = READ_OPS.has(operation);
+                        let retries = isRead ? 2 : 4;
+                        let delay = isRead ? 400 : 2000;
                         while (retries > 0) {
                             try {
                                 return await query(args);

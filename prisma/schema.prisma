@@ -14,6 +14,7 @@ model User {
   username      String    @unique
   email         String    @unique
   passwordHash  String?   // Nullable to support standard Credentials + OAuth (Google/Apple)
+  googleId      String?   @unique // Google OAuth subject id
   avatar        String?   // Custom avatar URL or generic initials
   tier          String    @default("FREE") // FREE or PREMIUM subscription level
   createdAt     DateTime  @default(now())
@@ -26,6 +27,7 @@ model User {
 
   // Relationships
   completedLessons CompletedLesson[]
+  lessonResumes    LessonResume[]
   earnedBadges     UserBadge[]
   dailyMissions    UserMission[]
 }
@@ -44,6 +46,21 @@ model CompletedLesson {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // A user can only complete a specific lesson once
+  @@unique([userId, lessonSlug])
+}
+
+// Last section the user was reading in a lesson (in-lesson resume)
+model LessonResume {
+  id         String   @id @default(cuid())
+  userId     String
+  gradeId    String
+  lessonSlug String
+  sectionId  String
+  updatedAt  DateTime @updatedAt
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([userId, lessonSlug])
 }
 

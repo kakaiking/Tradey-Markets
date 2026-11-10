@@ -78,7 +78,7 @@ export default function LevelDetailPanel({ gradeId, title, subtitle }: Props) {
                         return (
                             <li key={lesson.id}>
                                 <Link
-                                    href="/quizzes"
+                                    href={`/learn/${lesson.gradeId || gradeId}/${lesson.slug}`}
                                     className="choice-card"
                                 >
                                     <div className="choice-copy">

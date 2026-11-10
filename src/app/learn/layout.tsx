@@ -6,13 +6,11 @@ import { usePathname } from "next/navigation";
 export default function LearnLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const cleanPathname = pathname.replace(/\/$/, "");
-    const pathParts = cleanPathname.split("/").filter(Boolean);
-
     const isVideosPage = cleanPathname === "/learn/videos";
-    const isLessonPage = pathParts.length === 3 && pathParts[0] === "learn";
-    const isFullscreenPage = isVideosPage || isLessonPage;
+    const isQuestionCardsPage = cleanPathname === "/learn/question-cards";
 
-    if (isFullscreenPage) {
+    // Only video/card surfaces need locked overflow; school pages scroll normally.
+    if (isVideosPage || isQuestionCardsPage) {
         return (
             <div
                 className={
@@ -26,5 +24,5 @@ export default function LearnLayout({ children }: { children: React.ReactNode })
         );
     }
 
-    return <>{children}</>;
+    return <div className="school-shell">{children}</div>;
 }

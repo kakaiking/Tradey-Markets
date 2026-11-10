@@ -24,7 +24,7 @@ const navItems: NavItem[] = [
         label: "Learn",
         icon: BookOpen,
         children: [
-            { label: "Pipsology", href: "/quizzes", desc: "Complete forex curriculum" },
+            { label: "Tradey Markets", href: "/quizzes", desc: "Complete forex curriculum" },
             { label: "Learning Paths", href: "/paths", desc: "Personalized curriculum" },
             { label: "Forexpedia", href: "/forexpedia", desc: "Trading glossary" },
         ],
@@ -200,7 +200,7 @@ export function Navbar() {
                             <TrendingUp size={16} className="text-white" />
                         </div>
                         <span className="font-bold text-lg font-display tracking-tight">
-                            <span className="text-white/90">Pipsology</span>
+                            <span className="text-white/90">Tradey Markets</span>
                         </span>
                     </Link>
 

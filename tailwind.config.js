@@ -12,7 +12,7 @@ module.exports = {
                 sans: ['var(--font-nunito)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
                 display: ['var(--font-nunito)', 'ui-sans-serif', 'sans-serif'],
                 reading: ['var(--font-nunito)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                mono: ['var(--font-ibm-plex-mono)', 'ui-monospace', 'monospace'],
+                mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
             },
             colors: {
                 paper: 'var(--paper)',

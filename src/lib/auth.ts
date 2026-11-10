@@ -32,6 +32,19 @@ export async function verifyJWT(token: string): Promise<{ userId: string } | nul
     }
 }
 
+/** Shared session cookie flags for email + OAuth sign-in. */
+export async function setSessionCookie(userId: string): Promise<void> {
+    const token = await signJWT({ userId });
+    const cookieStore = await cookies();
+    cookieStore.set("session_token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+}
+
 export async function checkAndUpdateStreak(user: { id: string; currentStreak: number; lastActiveAt: Date | null }): Promise<{ currentStreak: number; lastActiveAt: Date | null }> {
     if (!prisma) return { currentStreak: user.currentStreak, lastActiveAt: user.lastActiveAt };
 
@@ -90,8 +103,13 @@ export async function getUserFromSession(): Promise<any | null> {
         const cookieStore = await cookies();
         const token = cookieStore.get("session_token")?.value;
         if (!token) {
-            // In local development, if no session cookie exists, fallback to the first user in the DB to avoid 401 Unauthorized blocking development.
-            if (process.env.NODE_ENV === "development" && prisma) {
+            // Opt-in only: set DEV_AUTH_USER=1 to auto-pick the first DB user in local/dev.
+            // Default off so home/progress do not pay a Neon round-trip on every request.
+            if (
+                process.env.NODE_ENV === "development" &&
+                process.env.DEV_AUTH_USER === "1" &&
+                prisma
+            ) {
                 const devUser = await prisma.user.findFirst({
                     select: {
                         id: true,

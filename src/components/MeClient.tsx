@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LogIn } from "lucide-react";
 import { ModeSwitch } from "@/components/ModeSwitch";
 import { getPracticeCounts } from "@/lib/practiceProgress";
 import { THEMES, useTheme, type Appearance } from "@/lib/theme";
@@ -77,11 +75,11 @@ export function MeClient() {
         void loadRemote();
 
         const onPractice = () => loadLocal();
-        window.addEventListener("pipsology-practice", onPractice);
+        window.addEventListener("tradey-markets-practice", onPractice);
         window.addEventListener("storage", onPractice);
         return () => {
             active = false;
-            window.removeEventListener("pipsology-practice", onPractice);
+            window.removeEventListener("tradey-markets-practice", onPractice);
             window.removeEventListener("storage", onPractice);
         };
     }, []);
@@ -137,21 +135,6 @@ export function MeClient() {
                             <p className="stat-label">Question cards passed</p>
                         </li>
                     </ul>
-
-                    {!stats.signedIn ? (
-                        <Link href="/account/signin" className="shortcut-row">
-                            <span
-                                className="shortcut-icon shortcut-icon--practice"
-                                aria-hidden
-                            >
-                                <LogIn size={20} strokeWidth={2.25} />
-                            </span>
-                            <span className="shortcut-copy">
-                                <strong>Sign in</strong>
-                                <span>Save progress across devices.</span>
-                            </span>
-                        </Link>
-                    ) : null}
                 </section>
             ) : null}
 

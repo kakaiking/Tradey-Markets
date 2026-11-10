@@ -48,6 +48,7 @@ export default function MarkCompleteButton({ gradeId, lessonSlug }: Props) {
             });
             if (res.ok) {
                 invalidateClientCache("progress");
+                invalidateClientCache("next-lesson");
                 setIsCompleted(true);
                 // Trigger Next.js router refresh to update all components on the page
                 router.refresh();

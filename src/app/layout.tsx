@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Nunito, IBM_Plex_Mono } from "next/font/google";
+import { Fraunces, Nunito } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { ConsoleCleaner } from "@/components/ConsoleCleaner";
@@ -12,20 +12,19 @@ const nunito = Nunito({
     display: "swap",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
+const fraunces = Fraunces({
     subsets: ["latin"],
-    weight: ["400", "500", "600", "700"],
-    variable: "--font-ibm-plex-mono",
+    variable: "--font-fraunces",
     display: "swap",
 });
 
 export const metadata: Metadata = {
-    title: "Pipsology — Learn how money markets work",
+    title: "Tradey Markets — Learn how money markets work",
     description:
         "Short lessons, practice quizzes, and a personal coach. Practice money only — not financial advice.",
-    keywords: ["forex", "learn forex", "currency exchange", "trading education", "Pipsology"],
+    keywords: ["forex", "learn forex", "currency exchange", "trading education", "Tradey Markets"],
     openGraph: {
-        title: "Pipsology — Learn how money markets work",
+        title: "Tradey Markets — Learn how money markets work",
         description:
             "Short lessons, practice quizzes, and a personal coach. Practice money only — not financial advice.",
         type: "website",
@@ -43,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html
             lang="en"
-            className={`scroll-smooth ${nunito.variable} ${ibmPlexMono.variable}`}
+            className={`scroll-smooth ${nunito.variable} ${fraunces.variable}`}
             data-scroll-behavior="smooth"
             data-theme="chalk"
             data-appearance="system"

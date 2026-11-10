@@ -1,5 +1,5 @@
 /**
- * Local smoke test for Kakaitec → Pipsology provisioning webhook.
+ * Local smoke test for Kakaitec → Tradey Markets provisioning webhook.
  * Usage: node scripts/test-provision-webhook.js
  */
 const { createHmac } = require("crypto");
@@ -19,7 +19,7 @@ const bodyObj = {
     name: "Webhook Test User",
     email: "webhook.test@example.com",
   },
-  product: { id: "APP_PIPSOLOGY", name: "Pipsology" },
+  product: { id: "APP_TRADEY_MARKETS", name: "Tradey Markets" },
   license: {
     accessId: "ACC_TEST_001",
     planName: "Standard",

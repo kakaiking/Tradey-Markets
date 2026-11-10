@@ -1,5 +1,5 @@
-const QUIZ_KEY = "pipsology-quizzes-passed";
-const CARD_KEY = "pipsology-cards-passed";
+const QUIZ_KEY = "tradey-markets-quizzes-passed";
+const CARD_KEY = "tradey-markets-cards-passed";
 
 function readSet(key: string): Set<string> {
     if (typeof window === "undefined") return new Set();
@@ -33,7 +33,7 @@ export function recordQuizPass(slug: string, pct: number): void {
     if (next.has(slug)) return;
     next.add(slug);
     writeSet(QUIZ_KEY, next);
-    window.dispatchEvent(new Event("pipsology-practice"));
+    window.dispatchEvent(new Event("tradey-markets-practice"));
 }
 
 /** Mark a question card passed when answered correctly. */
@@ -43,7 +43,7 @@ export function recordCardPass(cardId: string): void {
     if (next.has(cardId)) return;
     next.add(cardId);
     writeSet(CARD_KEY, next);
-    window.dispatchEvent(new Event("pipsology-practice"));
+    window.dispatchEvent(new Event("tradey-markets-practice"));
 }
 
 export function getPracticeCounts(): {

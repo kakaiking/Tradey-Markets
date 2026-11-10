@@ -19,7 +19,7 @@ export type Appearance =
 
 export type ResolvedTheme = Exclude<Appearance, "system">;
 
-const KEY = "pipsology-appearance";
+const KEY = "tradey-markets-appearance";
 
 const APPEARANCES: Appearance[] = [
     "system",

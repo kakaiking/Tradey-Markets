@@ -50,6 +50,55 @@ export const getCachedRecentLessons = unstable_cache(
     { revalidate: 60, tags: [CATALOG_TAG] }
 );
 
+export const getCachedLessonBySlug = unstable_cache(
+    async (slug: string) => {
+        return prisma.lesson.findUnique({
+            where: { slug },
+            select: {
+                id: true,
+                slug: true,
+                title: true,
+                gradeId: true,
+                grade: { select: { id: true, title: true } },
+                sections: {
+                    select: {
+                        id: true,
+                        title: true,
+                        text: true,
+                        videoUrl: true,
+                        order: true,
+                    },
+                    orderBy: { order: "asc" },
+                },
+            },
+        });
+    },
+    ["public-lesson-by-slug"],
+    { revalidate: 120, tags: [CATALOG_TAG] }
+);
+
+/** Lightweight list with first-section teaser for chapter overviews. */
+export const getCachedLessonsWithTeasers = unstable_cache(
+    async () => {
+        return prisma.lesson.findMany({
+            select: {
+                id: true,
+                slug: true,
+                title: true,
+                gradeId: true,
+                sections: {
+                    select: { title: true, text: true },
+                    orderBy: { order: "asc" },
+                    take: 1,
+                },
+            },
+            orderBy: { createdAt: "asc" },
+        });
+    },
+    ["public-lessons-teasers"],
+    { revalidate: 120, tags: [CATALOG_TAG] }
+);
+
 export function invalidateCatalog() {
     revalidateTag(CATALOG_TAG, "max");
 }
