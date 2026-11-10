@@ -1879,6 +1879,7 @@ select.field {
 }
 
 .me-head {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1889,6 +1890,32 @@ select.field {
 .me-id {
   max-width: min(100%, 18rem);
   min-width: 0;
+}
+
+.me-logout {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.me-logout:hover,
+.me-logout:focus-visible {
+  background: color-mix(in srgb, #ef4444 14%, transparent);
+  color: #f87171;
+  outline: none;
 }
 
 .me-title {

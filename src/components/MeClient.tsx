@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { LogOut } from "lucide-react";
 import { ModeSwitch } from "@/components/ModeSwitch";
+import { invalidateClientCache } from "@/lib/clientCache";
 import { getPracticeCounts } from "@/lib/practiceProgress";
 import { THEMES, useTheme, type Appearance } from "@/lib/theme";
 
@@ -18,6 +21,7 @@ type Stats = {
 };
 
 export function MeClient() {
+    const router = useRouter();
     const { appearance, setAppearance } = useTheme();
     const [tab, setTab] = useState<Tab>("achievements");
     const [stats, setStats] = useState<Stats>({
@@ -88,6 +92,18 @@ export function MeClient() {
         setAppearance(next);
     }
 
+    async function handleSignOut() {
+        try {
+            await fetch("/api/auth/signout", { method: "POST" });
+            invalidateClientCache();
+            router.push("/");
+            router.refresh();
+            window.location.reload();
+        } catch (err) {
+            console.error("Failed to sign out:", err);
+        }
+    }
+
     return (
         <div className="me-screen">
             <header className="me-head">
@@ -101,6 +117,16 @@ export function MeClient() {
                             : "Your progress and look — all in one place."}
                     </p>
                 </div>
+                {stats.signedIn ? (
+                    <button
+                        type="button"
+                        className="me-logout"
+                        onClick={handleSignOut}
+                        aria-label="Log out"
+                    >
+                        <LogOut size={20} strokeWidth={2.25} aria-hidden="true" />
+                    </button>
+                ) : null}
             </header>
 
             <ModeSwitch
