@@ -19,7 +19,7 @@ export default function LevelPostCard({ id, title, subtitle, lessons = 0, progre
 
   return (
     <article className="bg-gray-900 rounded-2xl overflow-hidden shadow-lg min-w-0">
-      <div className="relative w-full h-56 bg-gradient-to-tr from-green-900 to-green-800">
+      <div className="relative w-full h-56 bg-gradient-to-tr from-brand-900 to-brand-700">
         {img ? (
           // simple img fallback — project can swap to Next/Image later
           <img src={img} alt={`${title} cover`} className="w-full h-full object-cover" />
@@ -28,8 +28,8 @@ export default function LevelPostCard({ id, title, subtitle, lessons = 0, progre
         )}
 
         <div className="absolute top-3 left-3 flex items-center gap-2">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${isDone ? 'bg-green-500/20 text-green-400' : 'bg-white/5 text-white/60'}`}>
-            {isDone ? <CheckCircle size={18} className="text-green-400" /> : id.slice(0,2).toUpperCase()}
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${isDone ? 'bg-brand-500/20 text-brand-500' : 'bg-white/5 text-white/60'}`}>
+            {isDone ? <CheckCircle size={18} className="text-brand-500" /> : id.slice(0,2).toUpperCase()}
           </div>
         </div>
 
@@ -49,7 +49,7 @@ export default function LevelPostCard({ id, title, subtitle, lessons = 0, progre
           <p className="text-sm text-white/45">{subtitle}</p>
           <div className="mt-3 flex items-center gap-3">
             <div className="progress-bar w-40 h-2 bg-[#1e2d24] rounded-full overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400" style={{ width: `${progress}%` }} />
+              <div className="h-full bg-gradient-to-r from-brand-500 to-brand-400" style={{ width: `${progress}%` }} />
             </div>
             <span className="text-xs text-white/35">{progress}%</span>
           </div>
@@ -57,7 +57,7 @@ export default function LevelPostCard({ id, title, subtitle, lessons = 0, progre
 
         <div className="flex flex-col items-end gap-3 shrink-0">
           <div className="text-xs text-white/40">{lessons} lessons</div>
-          <Link href={href} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-green-500 to-emerald-500 text-black">
+          <Link href={href} className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold bg-gradient-to-r from-brand-500 to-brand-600 text-black">
             {isDone ? 'Review' : (progress > 0 ? 'Continue' : 'Start')}
           </Link>
         </div>

@@ -154,7 +154,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
 
               <div className="flex-shrink-0 ml-1.5 mt-0.5">
                 {snackbar.type === "success" && (
-                  <CheckCircle className="h-5 w-5 text-emerald-400" />
+                  <CheckCircle className="h-5 w-5 text-brand-400" />
                 )}
                 {snackbar.type === "error" && (
                   <AlertCircle className="h-5 w-5 text-red-400" />
@@ -211,7 +211,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                 className={`h-1.5 w-full bg-gradient-to-r ${
                   confirmState.isDestructive 
                     ? "from-red-500 to-rose-600" 
-                    : "from-green-500 to-emerald-600"
+                    : "from-brand-500 to-brand-600"
                 }`}
               />
 
@@ -221,7 +221,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                     className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center ${
                       confirmState.isDestructive 
                         ? "bg-red-500/10 text-red-400 border border-red-500/20" 
-                        : "bg-green-500/10 text-green-400 border border-green-500/20"
+                        : "bg-brand-500/10 text-brand-500 border border-brand-500/20"
                     }`}
                   >
                     {confirmState.isDestructive ? (
@@ -255,7 +255,7 @@ export function FeedbackProvider({ children }: { children: React.ReactNode }) {
                     className={`px-6 py-2.5 rounded-xl font-bold transition-all active:scale-95 text-sm flex items-center gap-2 ${
                       confirmState.isDestructive
                         ? "bg-red-500 hover:bg-red-400 text-white shadow-[0_0_20px_rgba(239,68,68,0.2)]"
-                        : "bg-green-500 hover:bg-green-400 text-black shadow-[0_0_20px_rgba(34,197,94,0.2)]"
+                        : "bg-brand-500 hover:bg-brand-400 text-black shadow-[0_0_20px_rgba(5,129,213,0.2)]"
                     }`}
                   >
                     {isConfirming && <Loader2 className="h-4 w-4 animate-spin" />}

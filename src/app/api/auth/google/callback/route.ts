@@ -6,30 +6,28 @@ import {
     GOOGLE_OAUTH_STATE_COOKIE,
     exchangeGoogleCode,
     fetchGoogleProfile,
+    resolveAppOrigin,
     toGoogleAuthUserMessage,
     upsertUserFromGoogle,
 } from "@/lib/googleAuth";
-
-function appUrl() {
-    return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";
-}
 
 export async function GET(req: Request) {
     const url = new URL(req.url);
     const code = url.searchParams.get("code");
     const state = url.searchParams.get("state");
     const oauthError = url.searchParams.get("error");
+    const origin = resolveAppOrigin(req);
 
     try {
         if (oauthError) {
             return NextResponse.redirect(
-                `${appUrl()}/account/signin?error=${encodeURIComponent(oauthError)}`
+                `${origin}/account/signin?error=${encodeURIComponent(oauthError)}`
             );
         }
 
         if (!code || !state) {
             return NextResponse.redirect(
-                `${appUrl()}/account/signin?error=${encodeURIComponent("Missing OAuth code")}`
+                `${origin}/account/signin?error=${encodeURIComponent("Missing OAuth code")}`
             );
         }
 
@@ -39,11 +37,11 @@ export async function GET(req: Request) {
 
         if (!expectedState || expectedState !== state) {
             return NextResponse.redirect(
-                `${appUrl()}/account/signin?error=${encodeURIComponent("Invalid OAuth state")}`
+                `${origin}/account/signin?error=${encodeURIComponent("Invalid OAuth state")}`
             );
         }
 
-        const accessToken = await exchangeGoogleCode(code);
+        const accessToken = await exchangeGoogleCode(code, req);
         const profile = await fetchGoogleProfile(accessToken);
         const user = await upsertUserFromGoogle(profile);
 
@@ -57,11 +55,11 @@ export async function GET(req: Request) {
         const next = safeNextPath(cookieStore.get(AUTH_NEXT_COOKIE)?.value);
         cookieStore.delete(AUTH_NEXT_COOKIE);
 
-        return NextResponse.redirect(`${appUrl()}${next}`);
+        return NextResponse.redirect(`${origin}${next}`);
     } catch (error: unknown) {
         console.error("Google OAuth callback error:", error);
         return NextResponse.redirect(
-            `${appUrl()}/account/signin?error=${encodeURIComponent(
+            `${origin}/account/signin?error=${encodeURIComponent(
                 toGoogleAuthUserMessage(error)
             )}`
         );

@@ -20,14 +20,14 @@ export function LearnSidebar({ isCollapsed, onToggle }: { isCollapsed: boolean; 
     const linkClass = (active: boolean) =>
         `flex items-center ${isCollapsed ? "justify-center p-1" : "gap-4 p-3"} rounded-xl transition-all group ${
             active
-                ? "bg-green-500/10 text-green-400"
+                ? "bg-brand-500/10 text-brand-500"
                 : "text-white/60 hover:bg-white/5 hover:text-white"
         }`;
 
     const iconClass = (active: boolean) =>
         `w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center border-2 transition-all ${
             active
-                ? "border-green-400 bg-green-500/20 text-green-400"
+                ? "border-brand-400 bg-brand-500/20 text-brand-500"
                 : "border-white/10 bg-white/5 text-white/40 group-hover:border-white/20"
         }`;
 

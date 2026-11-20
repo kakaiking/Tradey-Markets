@@ -1,33 +1,36 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Fraunces, Nunito } from "next/font/google";
+import { DM_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 import { ConsoleCleaner } from "@/components/ConsoleCleaner";
 import { ThemeProvider } from "@/lib/theme";
 
-const nunito = Nunito({
+const spaceGrotesk = Space_Grotesk({
     subsets: ["latin"],
-    variable: "--font-nunito",
+    variable: "--font-space-grotesk",
     display: "swap",
 });
 
-const fraunces = Fraunces({
+const dmSans = DM_Sans({
     subsets: ["latin"],
-    variable: "--font-fraunces",
+    variable: "--font-dm-sans",
     display: "swap",
 });
 
 export const metadata: Metadata = {
-    title: "Tradey Markets — Learn how money markets work",
+    title: "Tradey Market — Learn how money markets work",
     description:
         "Short lessons, practice quizzes, and a personal coach. Practice money only — not financial advice.",
-    keywords: ["forex", "learn forex", "currency exchange", "trading education", "Tradey Markets"],
+    keywords: ["forex", "learn forex", "currency exchange", "trading education", "Tradey Market"],
     openGraph: {
-        title: "Tradey Markets — Learn how money markets work",
+        title: "Tradey Market — Learn how money markets work",
         description:
             "Short lessons, practice quizzes, and a personal coach. Practice money only — not financial advice.",
         type: "website",
+    },
+    icons: {
+        icon: "/favicon.svg",
     },
 };
 
@@ -35,14 +38,14 @@ export const viewport = {
     width: "device-width",
     initialScale: 1,
     viewportFit: "cover" as const,
-    themeColor: "#F5F5F5",
+    themeColor: "#FFFFFF",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html
             lang="en"
-            className={`scroll-smooth ${nunito.variable} ${fraunces.variable}`}
+            className={`scroll-smooth ${spaceGrotesk.variable} ${dmSans.variable}`}
             data-scroll-behavior="smooth"
             data-theme="chalk"
             data-appearance="system"

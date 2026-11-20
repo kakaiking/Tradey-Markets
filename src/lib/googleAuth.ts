@@ -122,18 +122,66 @@ async function googleFetch(url: string, init: RequestInit = {}): Promise<Respons
     throw lastError instanceof Error ? lastError : new Error("Google request failed");
 }
 
-function requireGoogleConfig() {
+function hostnameOf(hostOrUrl: string): string {
+    try {
+        const withScheme = hostOrUrl.includes("://") ? hostOrUrl : `http://${hostOrUrl}`;
+        return new URL(withScheme).hostname.toLowerCase();
+    } catch {
+        return hostOrUrl.split(":")[0]?.toLowerCase() || "";
+    }
+}
+
+function isLoopbackHost(hostOrUrl: string): boolean {
+    const host = hostnameOf(hostOrUrl);
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+}
+
+/** Public origin for the current request — never bounce prod users to localhost. */
+export function resolveAppOrigin(req: Request): string {
+    const forwardedHost = req.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+    const host = forwardedHost || req.headers.get("host")?.trim();
+    if (host) {
+        const forwardedProto = req.headers.get("x-forwarded-proto")?.split(",")[0]?.trim();
+        const proto = forwardedProto || (isLoopbackHost(host) ? "http" : "https");
+        return `${proto}://${host}`.replace(/\/$/, "");
+    }
+
+    const fromEnv = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+    if (fromEnv) return fromEnv;
+    return "http://localhost:3001";
+}
+
+function requireGoogleCredentials() {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-    const redirectUri =
-        process.env.GOOGLE_REDIRECT_URI ||
-        `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001"}/api/auth/google/callback`;
 
     if (!clientId || !clientSecret) {
         throw new Error("Google OAuth is not configured (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET)");
     }
 
-    return { clientId, clientSecret, redirectUri };
+    return { clientId, clientSecret };
+}
+
+/**
+ * Prefer a configured redirect URI when it matches this request.
+ * localhost / 127.0.0.1 / ::1 are treated as the same so Google Console
+ * only needs the canonical localhost callback registered.
+ */
+export function resolveGoogleRedirectUri(req: Request): string {
+    const origin = resolveAppOrigin(req);
+    const configured = process.env.GOOGLE_REDIRECT_URI?.trim();
+    if (configured) {
+        try {
+            const configuredOrigin = new URL(configured).origin;
+            if (configuredOrigin === origin) return configured;
+            if (isLoopbackHost(configuredOrigin) && isLoopbackHost(origin)) {
+                return configured;
+            }
+        } catch {
+            /* fall through to derived URI */
+        }
+    }
+    return `${origin}/api/auth/google/callback`;
 }
 
 export function createOAuthState(): string {
@@ -142,8 +190,9 @@ export function createOAuthState(): string {
     return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-export function buildGoogleAuthUrl(state: string): string {
-    const { clientId, redirectUri } = requireGoogleConfig();
+export function buildGoogleAuthUrl(state: string, req: Request): string {
+    const { clientId } = requireGoogleCredentials();
+    const redirectUri = resolveGoogleRedirectUri(req);
     const params = new URLSearchParams({
         client_id: clientId,
         redirect_uri: redirectUri,
@@ -156,8 +205,9 @@ export function buildGoogleAuthUrl(state: string): string {
     return `${GOOGLE_AUTH_URL}?${params.toString()}`;
 }
 
-export async function exchangeGoogleCode(code: string): Promise<string> {
-    const { clientId, clientSecret, redirectUri } = requireGoogleConfig();
+export async function exchangeGoogleCode(code: string, req: Request): Promise<string> {
+    const { clientId, clientSecret } = requireGoogleCredentials();
+    const redirectUri = resolveGoogleRedirectUri(req);
     const res = await googleFetch(GOOGLE_TOKEN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },

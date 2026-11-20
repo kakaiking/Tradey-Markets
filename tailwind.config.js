@@ -9,9 +9,9 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['var(--font-nunito)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                display: ['var(--font-nunito)', 'ui-sans-serif', 'sans-serif'],
-                reading: ['var(--font-nunito)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                sans: ['var(--font-space-grotesk)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                display: ['var(--font-space-grotesk)', 'ui-sans-serif', 'sans-serif'],
+                reading: ['var(--font-dm-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
                 mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
             },
             colors: {
@@ -25,16 +25,16 @@ module.exports = {
                 pencil: 'var(--pencil)',
                 muted: 'var(--muted)',
                 brand: {
-                    50: '#fff9e6',
-                    100: '#fff0b8',
-                    200: '#ffe680',
-                    300: '#f5d24a',
-                    400: '#f5c518',
-                    500: '#e0b000',
-                    600: '#b38c00',
-                    700: '#866900',
-                    800: '#594600',
-                    900: '#2c2300',
+                    50: '#eaf5fd',
+                    100: '#d2ebfa',
+                    200: '#a6d6f4',
+                    300: '#6bb8e8',
+                    400: '#2f9ef0',
+                    500: '#0581d5',
+                    600: '#0469ad',
+                    700: '#035388',
+                    800: '#033a5e',
+                    900: '#02253d',
                 },
                 surface: {
                     900: 'var(--paper)',

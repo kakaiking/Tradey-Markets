@@ -57,14 +57,14 @@ export function DynamicIsland() {
                         href="/learn"
                         className={`w-11 h-11 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 ease-out hover:scale-115 active:scale-95 ${
                             isLessonsActive
-                                ? "border-green-400 bg-green-500/20 text-green-400 shadow-[0_0_15px_rgba(74,222,128,0.3)] scale-110"
+                                ? "border-brand-400 bg-brand-500/20 text-brand-500 shadow-[0_0_15px_rgba(5,129,213,0.3)] scale-110"
                                 : "border-white/10 bg-white/5 text-white/50 hover:border-white/20 hover:text-white"
                         }`}
                     >
                         <BookOpen size={16} />
                     </Link>
                     {isLessonsActive && (
-                        <div className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
+                        <div className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 shadow-[0_0_8px_rgba(5,129,213,0.7)]" />
                     )}
                 </div>
 
@@ -81,14 +81,14 @@ export function DynamicIsland() {
                         href="/learn/videos/"
                         className={`w-11 h-11 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 ease-out hover:scale-115 active:scale-95 ${
                             isVideosActive
-                                ? "border-green-400 bg-green-500/20 text-green-400 shadow-[0_0_15px_rgba(74,222,128,0.3)] scale-110"
+                                ? "border-brand-400 bg-brand-500/20 text-brand-500 shadow-[0_0_15px_rgba(5,129,213,0.3)] scale-110"
                                 : "border-white/10 bg-white/5 text-white/50 hover:border-white/20 hover:text-white"
                         }`}
                     >
                         <PlayCircle size={16} className={isVideosActive ? "animate-pulse" : ""} />
                     </Link>
                     {isVideosActive && (
-                        <div className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
+                        <div className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 shadow-[0_0_8px_rgba(5,129,213,0.7)]" />
                     )}
                 </div>
 
@@ -109,14 +109,14 @@ export function DynamicIsland() {
                         }
                         className={`w-11 h-11 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 ease-out hover:scale-115 active:scale-95 ${
                             isQuestionCardsActive
-                                ? "border-green-400 bg-green-500/20 text-green-400 shadow-[0_0_15px_rgba(74,222,128,0.3)] scale-110"
+                                ? "border-brand-400 bg-brand-500/20 text-brand-500 shadow-[0_0_15px_rgba(5,129,213,0.3)] scale-110"
                                 : "border-white/10 bg-white/5 text-white/50 hover:border-white/20 hover:text-white"
                         }`}
                     >
                         <HelpCircle size={16} className={isQuestionCardsActive ? "animate-pulse" : ""} />
                     </Link>
                     {isQuestionCardsActive && (
-                        <div className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
+                        <div className="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-brand-400 shadow-[0_0_8px_rgba(5,129,213,0.7)]" />
                     )}
                 </div>
             </motion.div>

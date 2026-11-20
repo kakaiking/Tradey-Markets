@@ -29,7 +29,7 @@ export default function AboutPage() {
     return (
         <div>
             <PageHead
-                title="About Tradey Markets"
+                title="About Tradey Market"
                 byline="Our mission"
                 lede="Democratizing institutional-grade trading education and tools for the retail trader."
                 backHref="/"
@@ -38,8 +38,8 @@ export default function AboutPage() {
             <div className="card" style={{ padding: 0, overflow: "hidden", marginBottom: "1.5rem" }}>
                 <div style={{ position: "relative", aspectRatio: "16 / 10", background: "var(--sunken)" }}>
                     <Image
-                        src="/tradeymarkets/tradeymarkets_about_hero_1777017887435.png"
-                        alt="Tradey Markets"
+                        src="/tradeymarkets_about_hero_1777017887435.png"
+                        alt="Tradey Market"
                         fill
                         className="object-cover"
                         priority
@@ -78,7 +78,7 @@ export default function AboutPage() {
 
             <div className="card" style={{ textAlign: "center" }}>
                 <h2 className="font-display" style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>Ready to start?</h2>
-                <p className="lede" style={{ marginBottom: "1.25rem" }}>Join traders mastering the markets with Tradey Markets.</p>
+                <p className="lede" style={{ marginBottom: "1.25rem" }}>Join traders mastering the markets with Tradey Market.</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem", justifyContent: "center" }}>
                     <Link href="/account/signup" className="btn">Sign up free</Link>
                     <Link href="/quizzes" className="btn secondary">Browse courses</Link>

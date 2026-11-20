@@ -1,4 +1,4 @@
-// Shared mock data for the entire Tradey Markets platform
+// Shared mock data for the entire Tradey Market platform
 
 export const latestArticles = [
     { id: 1, slug: "eurusd-retests-range-support", title: "EUR/USD Retests Range Support After Sharp Losses", category: "Chart Art", tag: "chart-art", date: "Mar 5, 2026", readTime: "4 min", excerpt: "Price has retested the 1.0450 range support after a sharp 200-pip drop. Watch for bounce confirmation.", image: "/api/placeholder/400/220" },
@@ -94,7 +94,7 @@ export const psychologyModules = [
 
 export const learningPaths = [
     { id: "scalper", title: "Scalper's Path", icon: "⚡", color: "from-blue-500 to-cyan-500", desc: "Master rapid intraday trading on the M1–M15 timeframes.", steps: ["Beginner", "Intermediate", "Market Hours", "Oscillators", "Backtester"], weeks: 3, level: "Intermediate" },
-    { id: "swing", title: "Swing Trader", icon: "📊", color: "from-green-500 to-emerald-500", desc: "Capture multi-day moves using H4 and Daily chart patterns.", steps: ["Beginner", "Intermediate", "Chart Patterns", "Fibonacci", "Risk Management"], weeks: 4, level: "Beginner" },
+    { id: "swing", title: "Swing Trader", icon: "📊", color: "from-brand-500 to-brand-600", desc: "Capture multi-day moves using H4 and Daily chart patterns.", steps: ["Beginner", "Intermediate", "Chart Patterns", "Fibonacci", "Risk Management"], weeks: 4, level: "Beginner" },
     { id: "price-action", title: "Price Action Purist", icon: "🎯", color: "from-purple-500 to-violet-500", desc: "Trade with no indicators — pure candles, S/R, and structure.", steps: ["Beginner", "Candlesticks", "Support & Resistance", "Chart Patterns", "Multi-TF"], weeks: 5, level: "Intermediate" },
     { id: "news-trader", title: "News Trader", icon: "📰", color: "from-orange-500 to-amber-500", desc: "Trade high-impact economic events with precision entries.", steps: ["Beginner", "Fundamental Analysis", "Economic Calendar", "Trading the News", "Event Guides"], weeks: 3, level: "Beginner" },
     { id: "long-term", title: "Long-Term Investor", icon: "🏦", color: "from-yellow-500 to-gold-500", desc: "Position trading on weekly/monthly charts using macro analysis.", steps: ["Beginner", "Fundamental Analysis", "Currency Correlations", "Carry Trade", "Risk Management"], weeks: 6, level: "Advanced" },
@@ -108,7 +108,7 @@ export const achievements = [
     { id: 4, title: "Trade Logger", icon: "📓", desc: "Log your first 10 trades", xp: 150, earned: false },
     { id: 5, title: "Chart Master", icon: "📈", desc: "Complete 20 backtesting sessions", xp: 300, earned: false },
     { id: 6, title: "Community Voice", icon: "💬", desc: "Make 25 forum posts", xp: 200, earned: false },
-    { id: 7, title: "Tradey Markets Graduate", icon: "🏆", desc: "Complete all free courses", xp: 500, earned: false },
+    { id: 7, title: "Tradey Market Graduate", icon: "🏆", desc: "Complete all free courses", xp: 500, earned: false },
     { id: 8, title: "Idea Publisher", icon: "🌐", desc: "Post 10 trade ideas to social feed", xp: 250, earned: false },
     { id: 9, title: "Risk Guardian", icon: "🛡️", desc: "Complete Risk Management module", xp: 200, earned: true },
     { id: 10, title: "30-Day Warrior", icon: "⚡", desc: "30-day consecutive study streak", xp: 750, earned: false },

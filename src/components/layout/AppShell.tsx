@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { cachedJson, invalidateClientCache } from "@/lib/clientCache";
 
 type ShellMode = "school" | "admin" | "auth" | "bare";
@@ -186,7 +187,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <header className="site-header">
                     <div className="wrap">
                         <Link href="/admin" className="brand">
-                            <span className="brand-mark">Tradey Markets Admin</span>
+                            <BrandLogo href={null} size="sm" />
+                            <span className="brand-mark">Admin</span>
                         </Link>
                         <nav className="nav nav-desktop" aria-label="Admin">
                             {adminLinks.map((link) => (
@@ -239,9 +241,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             {onHome || onReels ? null : (
                 <header className="site-header">
                     <div className="wrap">
-                        <Link href="/" className="brand">
-                            <span className="brand-mark">Tradey Markets</span>
-                        </Link>
+                        <div className="brand">
+                            <BrandLogo href="/" size="md" priority />
+                        </div>
                     </div>
                 </header>
             )}

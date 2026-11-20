@@ -30,7 +30,7 @@ export default function NewLessonPage() {
   return (
     <Suspense fallback={
       <div className="flex flex-col items-center justify-center py-20 bg-white/5 border border-white/10 rounded-2xl">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-500 mb-4"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-500 mb-4"></div>
         <p className="text-white/50 text-sm">Loading lesson creator...</p>
       </div>
     }>
@@ -185,7 +185,7 @@ function NewLessonForm() {
         <div className="flex items-center gap-4">
           <BackButton href="/admin/lessons" className="history-back--on-media" />
           <div>
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-emerald-600">
+            <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-brand-400 to-brand-600">
               Create New Lesson
             </h1>
             <p className="text-white/50">Draft a new educational module for the curriculum.</p>
@@ -200,7 +200,7 @@ function NewLessonForm() {
           </button>
           <button 
             onClick={handleSave}
-            className="flex items-center gap-2 px-8 py-3 bg-green-500 hover:bg-green-400 text-black font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] active:scale-95"
+            className="flex items-center gap-2 px-8 py-3 bg-brand-500 hover:bg-brand-400 text-black font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(5,129,213,0.28)] active:scale-95"
           >
             <Save size={20} />
             Save
@@ -213,7 +213,7 @@ function NewLessonForm() {
         <div className="bg-[#0d1411] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
           <div className="p-6 border-b border-white/5 bg-white/[0.02]">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <BookOpen size={20} className="text-green-400" />
+              <BookOpen size={20} className="text-brand-500" />
               General Information
             </h3>
           </div>
@@ -231,7 +231,7 @@ function NewLessonForm() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g., Understanding Pip Calculations"
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all"
                   />
                 </div>
               </div>
@@ -246,7 +246,7 @@ function NewLessonForm() {
                     value={grade}
                     required
                     onChange={(e) => setGrade(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-10 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all cursor-pointer"
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-10 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all cursor-pointer"
                   >
                     <option value="" disabled>Select a grade</option>
                     {grades.map((g) => (
@@ -267,7 +267,7 @@ function NewLessonForm() {
               <button
                 type="button"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="flex items-center gap-2 text-sm text-green-400 hover:text-green-300 font-bold transition-all focus:outline-none bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl border border-white/5"
+                className="flex items-center gap-2 text-sm text-brand-500 hover:text-brand-400 font-bold transition-all focus:outline-none bg-white/5 hover:bg-white/10 px-4 py-2 rounded-xl border border-white/5"
               >
                 <Settings size={16} />
                 <span>{showAdvanced ? "Hide Advanced / SEO Settings" : "Show Advanced / SEO Settings"}</span>
@@ -288,7 +288,7 @@ function NewLessonForm() {
                         value={slug}
                         onChange={(e) => setSlug(e.target.value)}
                         placeholder="understanding-pip-calculations"
-                        className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all font-mono text-sm"
+                        className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all font-mono text-sm"
                       />
                     </div>
                     <p className="text-xs text-white/40 mt-2 pl-1">
@@ -305,13 +305,13 @@ function NewLessonForm() {
         <div className="bg-[#0d1411] border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
           <div className="p-6 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Plus size={20} className="text-green-400" />
+              <Plus size={20} className="text-brand-500" />
               Lesson Curriculum
             </h3>
             <button
               type="button"
               onClick={addContentBlock}
-              className="px-4 py-2 bg-green-500/10 text-green-400 hover:bg-green-500/20 rounded-lg text-sm font-bold transition-all flex items-center gap-2"
+              className="px-4 py-2 bg-brand-500/10 text-brand-500 hover:bg-brand-500/20 rounded-lg text-sm font-bold transition-all flex items-center gap-2"
             >
               <Plus size={16} />
               Add Section
@@ -345,7 +345,7 @@ function NewLessonForm() {
                       value={block.title}
                       onChange={(e) => updateContentBlock(index, "title", e.target.value)}
                       placeholder="e.g., The Core Concepts"
-                      className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-green-500/50"
+                      className="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50"
                     />
                   </div>
 
@@ -356,7 +356,7 @@ function NewLessonForm() {
                       onChange={(e) => updateContentBlock(index, "text", e.target.value)}
                       placeholder="Enter the lesson text here. Use new lines for separate paragraphs."
                       rows={5}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl py-4 px-4 text-white focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all resize-none"
+                      className="w-full bg-black/40 border border-white/10 rounded-xl py-4 px-4 text-white focus:outline-none focus:ring-2 focus:ring-brand-500/50 transition-all resize-none"
                     />
                   </div>
 
@@ -371,7 +371,7 @@ function NewLessonForm() {
                         value={block.videoUrl || ""}
                         onChange={(e) => updateContentBlock(index, "videoUrl", e.target.value)}
                         placeholder="e.g., https://www.youtube.com/watch?v=..."
-                        className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all"
+                        className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/50 focus:border-brand-500 transition-all"
                       />
                     </div>
 
@@ -404,13 +404,13 @@ function NewLessonForm() {
                   <div className="border-t border-white/5 pt-4 mt-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <h5 className="text-xs font-bold text-white/50 uppercase tracking-wider flex items-center gap-1.5">
-                        <HelpCircle size={14} className="text-green-400" />
+                        <HelpCircle size={14} className="text-brand-500" />
                         Question Cards ({(block.questionCards || []).length})
                       </h5>
                       <button
                         type="button"
                         onClick={() => addQuestionToBlock(index)}
-                        className="px-3 py-1.5 border border-green-500/30 text-green-400 bg-green-500/5 hover:bg-green-500/10 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                        className="px-3 py-1.5 border border-brand-500/30 text-brand-500 bg-brand-500/5 hover:bg-brand-500/10 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
                       >
                         <Plus size={12} /> Add Question Card
                       </button>
@@ -420,7 +420,7 @@ function NewLessonForm() {
                       {(block.questionCards || []).map((card: any, qIdx: number) => (
                         <div key={card.id || qIdx} className="p-4 bg-black/30 border border-white/5 rounded-xl space-y-3 relative group/q-card">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-extrabold text-green-400/80 bg-green-500/5 px-2 py-0.5 rounded border border-green-500/10">
+                            <span className="text-xs font-extrabold text-brand-500/80 bg-brand-500/5 px-2 py-0.5 rounded border border-brand-500/10">
                               Question Card {qIdx + 1}
                             </span>
                             <button
@@ -442,7 +442,7 @@ function NewLessonForm() {
                                 value={card.question}
                                 onChange={(e) => updateQuestionInBlock(index, qIdx, "question", e.target.value)}
                                 placeholder="e.g., What is the primary purpose of a Stop Loss?"
-                                className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-green-500"
+                                className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand-500"
                               />
                             </div>
 
@@ -455,7 +455,7 @@ function NewLessonForm() {
                                 onChange={(e) => updateQuestionInBlock(index, qIdx, "description", e.target.value)}
                                 placeholder="Write the details shown on the card face or the explanation for correct/incorrect choices..."
                                 rows={2}
-                                className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-green-500 resize-none"
+                                className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-brand-500 resize-none"
                               />
                             </div>
 
@@ -473,7 +473,7 @@ function NewLessonForm() {
                                         onClick={() => updateQuestionInBlock(index, qIdx, "correctIndex", optIdx)}
                                         className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-black transition-all ${
                                           isCorrect
-                                            ? "bg-green-500 text-black shadow-[0_0_10px_rgba(34,197,94,0.3)]"
+                                            ? "bg-brand-500 text-black shadow-[0_0_10px_rgba(5,129,213,0.28)]"
                                             : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white"
                                         }`}
                                       >

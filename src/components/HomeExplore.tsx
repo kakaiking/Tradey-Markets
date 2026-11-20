@@ -74,12 +74,12 @@ const exploreTools: { href: string; title: string; mark: ReactNode }[] = [
                 <path
                     d="M28 16a6 6 0 0 0-8.5 8.5L14 30l4 4 5.5-5.5A6 6 0 0 0 28 16z"
                     fill="none"
-                    stroke="#f5c518"
+                    stroke="#0581d5"
                     strokeWidth="2.4"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                 />
-                <circle cx="29.5" cy="18.5" r="2" fill="#f5c518" />
+                <circle cx="29.5" cy="18.5" r="2" fill="#0581d5" />
             </svg>
         ),
     },

@@ -5,6 +5,7 @@ import {
     GOOGLE_OAUTH_STATE_COOKIE,
     buildGoogleAuthUrl,
     createOAuthState,
+    resolveAppOrigin,
     toGoogleAuthUserMessage,
 } from "@/lib/googleAuth";
 
@@ -30,13 +31,12 @@ export async function GET(req: Request) {
             maxAge: 60 * 10, // 10 minutes
         });
 
-        const authUrl = buildGoogleAuthUrl(state);
+        const authUrl = buildGoogleAuthUrl(state, req);
         return NextResponse.redirect(authUrl);
     } catch (error: unknown) {
         console.error("Google OAuth start error:", error);
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3001";
         return NextResponse.redirect(
-            `${appUrl}/account/signin?error=${encodeURIComponent(
+            `${resolveAppOrigin(req)}/account/signin?error=${encodeURIComponent(
                 toGoogleAuthUserMessage(error)
             )}`
         );

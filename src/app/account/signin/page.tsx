@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState, type ReactNode } from "react";
 
 function GoogleMark() {
@@ -20,24 +21,6 @@ function GoogleMark() {
             <path
                 fill="#1976D2"
                 d="M43.6 20.5H42V20H24v8h11.3c-1.1 3.2-3.5 5.8-6.5 7.3l6.2 5.2C38.9 37.1 44 31.2 44 24c0-1.2-.1-2.3-.4-3.5z"
-            />
-        </svg>
-    );
-}
-
-function TradeyMark({ className }: { className?: string }) {
-    return (
-        <svg
-            className={className}
-            viewBox="0 0 32 32"
-            width="112"
-            height="112"
-            aria-hidden="true"
-        >
-            <rect width="32" height="32" rx="8" fill="var(--chalk)" />
-            <path
-                d="M11 22V10H16.5C18.433 10 20 11.567 20 13.5C20 15.433 18.433 17 16.5 17H13V22H11ZM13 15H16.5C17.3284 15 18 14.3284 18 13.5C18 12.6716 17.3284 12 16.5 12H13V15Z"
-                fill="#ffffff"
             />
         </svg>
     );
@@ -84,11 +67,11 @@ function AuthBrandAtmosphere() {
                 <ellipse cx="450" cy="420" rx="280" ry="220" fill="url(#auth-pool)" />
 
                 <g className="auth-brand-drift" opacity="0.9">
-                    <circle cx="120" cy="160" r="140" fill="var(--chalk)" fillOpacity="0.35" />
-                    <circle cx="820" cy="120" r="170" fill="#0a0a0a" fillOpacity="0.45" />
-                    <circle cx="780" cy="780" r="200" fill="var(--chalk)" fillOpacity="0.28" />
-                    <circle cx="80" cy="720" r="160" fill="#0f3d28" fillOpacity="0.35" />
-                    <circle cx="450" cy="820" r="110" fill="var(--highlighter)" fillOpacity="0.08" />
+                    <circle cx="120" cy="160" r="140" fill="var(--brand-blue)" fillOpacity="0.12" />
+                    <circle cx="820" cy="120" r="170" fill="#000000" fillOpacity="0.06" />
+                    <circle cx="780" cy="780" r="200" fill="var(--brand-blue)" fillOpacity="0.1" />
+                    <circle cx="80" cy="720" r="160" fill="var(--brand-blue)" fillOpacity="0.08" />
+                    <circle cx="450" cy="820" r="110" fill="var(--brand-blue)" fillOpacity="0.06" />
                 </g>
 
                 <g className="auth-brand-weave">
@@ -167,8 +150,14 @@ function AuthShell({
             <aside className="auth-brand">
                 <AuthBrandAtmosphere />
                 <div className="auth-brand-lockup">
-                    <TradeyMark className="auth-brand-mark" />
-                    <p className="auth-brand-name">Tradey Markets</p>
+                    <Image
+                        src="/tradey-market-logo.png"
+                        alt="Tradey Market"
+                        width={176}
+                        height={176}
+                        priority
+                        className="auth-brand-mark"
+                    />
                 </div>
             </aside>
 

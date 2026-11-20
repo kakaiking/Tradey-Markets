@@ -20,11 +20,11 @@
   document.documentElement.setAttribute("data-appearance", pref);
   document.documentElement.setAttribute("data-theme", theme);
   var colors = {
-    chalk: "#F5F5F5",
-    night: "#121212",
-    slate: "#E8EEF4",
-    ledger: "#14161C",
-    meadow: "#E6F2EA",
+    chalk: "#FFFFFF",
+    night: "#0B0D10",
+    slate: "#F0F5FA",
+    ledger: "#10131A",
+    meadow: "#EEF7FC",
   };
   var meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.setAttribute("content", colors[theme] || colors.chalk);

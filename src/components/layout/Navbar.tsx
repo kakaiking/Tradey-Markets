@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-    BookOpen, TrendingUp, BarChart3, Wrench, Users, Bell,
-    Crown, Menu, X, ChevronDown, Flame, Star, LogIn
+    BookOpen, Wrench, Users, Bell,
+    Menu, X, ChevronDown, Star, LogIn
 } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 import { cachedJson, invalidateClientCache } from "@/lib/clientCache";
 
 interface NavItem {
@@ -24,7 +25,7 @@ const navItems: NavItem[] = [
         label: "Learn",
         icon: BookOpen,
         children: [
-            { label: "Tradey Markets", href: "/quizzes", desc: "Complete forex curriculum" },
+            { label: "Tradey Market", href: "/quizzes", desc: "Complete forex curriculum" },
             { label: "Learning Paths", href: "/paths", desc: "Personalized curriculum" },
             { label: "Forexpedia", href: "/forexpedia", desc: "Trading glossary" },
         ],
@@ -55,18 +56,15 @@ export function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
 
-    // Actual user auth state
     const [user, setUser] = useState<any | null>(null);
     const [loading, setLoading] = useState(true);
     const [avatarOpen, setAvatarOpen] = useState(false);
 
-    // Notifications & Recent Lessons Dropdown state
     const [notifOpen, setNotifOpen] = useState(false);
     const [recentLessons, setRecentLessons] = useState<any[]>([]);
     const [readLessonIds, setReadLessonIds] = useState<string[]>([]);
 
     useEffect(() => {
-        // Load read lesson IDs from localStorage
         const stored = localStorage.getItem("read_lesson_ids");
         if (stored) {
             try {
@@ -99,12 +97,10 @@ export function Navbar() {
         fetchUser();
         fetchNotifications();
 
-        // Refresh notifications every 60 seconds
         const interval = setInterval(fetchNotifications, 60000);
         return () => clearInterval(interval);
     }, []);
 
-    // Handle click outside dropdowns to close them
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             const target = event.target as HTMLElement;
@@ -119,20 +115,17 @@ export function Navbar() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Close dropdowns on path changes
     useEffect(() => {
         setAvatarOpen(false);
         setNotifOpen(false);
     }, [pathname]);
 
-    // Mark all notifications as read
     const markAllAsRead = () => {
         const allIds = recentLessons.map(l => l.id);
         setReadLessonIds(allIds);
         localStorage.setItem("read_lesson_ids", JSON.stringify(allIds));
     };
 
-    // Mark a single notification as read
     const markAsRead = (id: string) => {
         if (!readLessonIds.includes(id)) {
             const updated = [...readLessonIds, id];
@@ -143,7 +136,6 @@ export function Navbar() {
 
     const unreadCount = recentLessons.filter(l => !readLessonIds.includes(l.id)).length;
 
-    // Helper to format relative study time
     function formatRelativeTime(dateString: string) {
         try {
             const date = new Date(dateString);
@@ -190,25 +182,11 @@ export function Navbar() {
 
     return (
         <>
-            <nav
-                className="fixed top-0 left-0 right-0 z-[100] bg-[#0a0f0d]/80 backdrop-blur-xl border-b border-white/5"
-            >
+            <nav className="fixed top-0 left-0 right-0 z-[100] bg-white/90 backdrop-blur-xl border-b border-black/8">
                 <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
-                    {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center shadow-lg glow-green-sm">
-                            <TrendingUp size={16} className="text-white" />
-                        </div>
-                        <span className="font-bold text-lg font-display tracking-tight">
-                            <span className="text-white/90">Tradey Markets</span>
-                        </span>
-                    </Link>
+                    <BrandLogo href="/" size="md" priority />
 
-
-
-                    {/* Right side */}
                     <div className="flex items-center gap-3">
-                        {/* Notifications — click triggers dropdown */}
                         <div className="relative">
                             <button
                                 id="notif-btn"
@@ -216,26 +194,26 @@ export function Navbar() {
                                     setNotifOpen(!notifOpen);
                                     setAvatarOpen(false);
                                 }}
-                                className="flex relative w-9 h-9 items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-all text-white/60 hover:text-white border border-white/5"
+                                className="flex relative w-9 h-9 items-center justify-center rounded-[0.35rem] bg-black/[0.03] hover:bg-black/[0.06] transition-all text-black/55 hover:text-black border border-black/8"
                                 aria-label="Notifications"
                             >
                                 <Bell size={18} />
                                 {unreadCount > 0 && (
-                                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-green-500 rounded-full border-2 border-[#0a0f0d]" />
+                                    <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-brand-500 rounded-full border-2 border-white" />
                                 )}
                             </button>
 
                             {notifOpen && (
-                                <div 
-                                    id="notif-dropdown-container" 
+                                <div
+                                    id="notif-dropdown-container"
                                     className="absolute right-0 mt-2 w-80 sm:w-96 z-[110]"
                                 >
-                                    <div className="bg-[#111714] border border-white/10 rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-top-2 duration-200">
-                                        <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-3">
+                                    <div className="bg-white border border-black/10 rounded-[0.45rem] p-4 shadow-[0_16px_40px_rgba(0,0,0,0.12)] animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="flex items-center justify-between pb-3 border-b border-black/8 mb-3">
                                             <div className="flex items-center gap-2">
-                                                <span className="font-bold text-sm text-white/90">Notifications</span>
+                                                <span className="font-bold text-sm text-black">Notifications</span>
                                                 {unreadCount > 0 && (
-                                                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">
+                                                    <span className="px-2 py-0.5 rounded-[0.3rem] text-[10px] font-bold bg-brand-50 text-brand-600 border border-brand-200">
                                                         {unreadCount} New
                                                     </span>
                                                 )}
@@ -243,7 +221,7 @@ export function Navbar() {
                                             {unreadCount > 0 && (
                                                 <button
                                                     onClick={markAllAsRead}
-                                                    className="text-xs font-semibold text-green-400 hover:text-green-300 transition-colors hover:underline"
+                                                    className="text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors hover:underline"
                                                 >
                                                     Mark all as read
                                                 </button>
@@ -253,11 +231,11 @@ export function Navbar() {
                                         <div className="max-h-80 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                                             {recentLessons.length === 0 ? (
                                                 <div className="py-8 flex flex-col items-center justify-center text-center">
-                                                    <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white/30 mb-3">
+                                                    <div className="w-12 h-12 rounded-[0.45rem] bg-black/[0.04] flex items-center justify-center text-black/30 mb-3">
                                                         <Bell size={20} className="opacity-40" />
                                                     </div>
-                                                    <p className="text-sm font-semibold text-white/70">All caught up!</p>
-                                                    <p className="text-xs text-white/40 mt-1 max-w-[200px]">
+                                                    <p className="text-sm font-semibold text-black/70">All caught up!</p>
+                                                    <p className="text-xs text-black/40 mt-1 max-w-[200px]">
                                                         When the admin adds a new lesson, it will appear here.
                                                     </p>
                                                 </div>
@@ -272,31 +250,31 @@ export function Navbar() {
                                                                 markAsRead(lesson.id);
                                                                 setNotifOpen(false);
                                                             }}
-                                                            className={`flex items-start gap-3 p-3 rounded-xl border transition-all text-left ${
+                                                            className={`flex items-start gap-3 p-3 rounded-[0.35rem] border transition-all text-left ${
                                                                 isUnread
-                                                                    ? "bg-green-500/[0.03] border-green-500/10 hover:bg-green-500/[0.06] hover:border-green-500/20"
-                                                                    : "bg-white/[0.01] border-white/5 hover:bg-white/[0.04] hover:border-white/10"
+                                                                    ? "bg-brand-50 border-brand-100 hover:bg-brand-100/70 hover:border-brand-200"
+                                                                    : "bg-black/[0.01] border-black/5 hover:bg-black/[0.03] hover:border-black/10"
                                                             }`}
                                                         >
-                                                            <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-400 border border-green-500/20 shrink-0 mt-0.5">
+                                                            <div className="w-8 h-8 rounded-[0.3rem] bg-brand-50 flex items-center justify-center text-brand-500 border border-brand-100 shrink-0 mt-0.5">
                                                                 <BookOpen size={15} />
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <div className="flex items-center justify-between gap-2">
-                                                                    <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">
+                                                                    <span className="text-[10px] font-bold text-brand-500 uppercase tracking-[0.18em]">
                                                                         New Lesson Added
                                                                     </span>
                                                                     {isUnread && (
-                                                                        <span className="w-2 h-2 rounded-full bg-green-400 shrink-0" />
+                                                                        <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0" />
                                                                     )}
                                                                 </div>
-                                                                <p className="text-sm font-bold text-white/90 truncate mt-0.5">
+                                                                <p className="text-sm font-bold text-black truncate mt-0.5">
                                                                     {lesson.title}
                                                                 </p>
-                                                                <p className="text-xs text-white/40 mt-0.5">
+                                                                <p className="text-xs text-black/40 mt-0.5">
                                                                     Added to {lesson.grade?.title || lesson.gradeId}
                                                                 </p>
-                                                                <span className="text-[10px] text-white/30 mt-1.5 block">
+                                                                <span className="text-[10px] text-black/30 mt-1.5 block">
                                                                     {formatRelativeTime(lesson.createdAt)}
                                                                 </span>
                                                             </div>
@@ -318,55 +296,55 @@ export function Navbar() {
                                         setAvatarOpen(!avatarOpen);
                                         setNotifOpen(false);
                                     }}
-                                    className="w-9 h-9 rounded-full bg-white/6 flex items-center justify-center text-sm font-bold text-white/90 hover:bg-white/10 transition animate-in fade-in"
+                                    className="w-9 h-9 rounded-[0.35rem] bg-black text-sm font-bold text-white hover:bg-black/85 transition animate-in fade-in"
                                     aria-label="Account menu"
                                 >
                                     {initial}
                                 </button>
 
                                 {avatarOpen && (
-                                    <div 
+                                    <div
                                         id="avatar-dropdown-container"
                                         className="absolute right-0 mt-2 w-64 z-[110]"
                                     >
-                                        <div className="bg-[#111714] border border-white/10 rounded-2xl p-3 shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-in fade-in slide-in-from-top-2 duration-200">
+                                        <div className="bg-white border border-black/10 rounded-[0.45rem] p-3 shadow-[0_16px_40px_rgba(0,0,0,0.12)] animate-in fade-in slide-in-from-top-2 duration-200">
                                             <div className="flex items-center justify-between mb-2">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center font-bold text-black">{initial}</div>
+                                                    <div className="w-10 h-10 rounded-[0.35rem] bg-brand-500 flex items-center justify-center font-bold text-white">{initial}</div>
                                                     <div>
-                                                        <div className="text-sm font-bold text-white/90">{user.username}</div>
-                                                        <div className="text-xs text-white/40">{user.tier === "PREMIUM" ? "Pro Member" : "Free Member"}</div>
+                                                        <div className="text-sm font-bold text-black">{user.username}</div>
+                                                        <div className="text-xs text-black/40">{user.tier === "PREMIUM" ? "Pro Member" : "Free Member"}</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="py-2 border-t border-white/5">
+                                            <div className="py-2 border-t border-black/8">
                                                 <div className="grid grid-cols-2 gap-2 mb-2">
                                                     <div className="flex items-center gap-2 px-1 py-2">
                                                         <span className="text-xl">🔥</span>
                                                         <div>
-                                                            <div className="text-sm font-bold text-green-400">{user.currentStreak ?? 0}</div>
-                                                            <div className="text-xs text-white/40 uppercase tracking-tighter">Day Streak</div>
+                                                            <div className="text-sm font-bold text-brand-500">{user.currentStreak ?? 0}</div>
+                                                            <div className="text-xs text-black/40 uppercase tracking-tighter">Day Streak</div>
                                                         </div>
                                                     </div>
 
                                                     <div className="flex items-center gap-2 px-1 py-2">
-                                                        <Star size={16} className="text-yellow-400" />
+                                                        <Star size={16} className="text-brand-500" />
                                                         <div>
-                                                            <div className="text-sm font-bold text-yellow-400">{(user.totalXP ?? 0).toLocaleString()}</div>
-                                                            <div className="text-xs text-white/40">XP</div>
+                                                            <div className="text-sm font-bold text-brand-500">{(user.totalXP ?? 0).toLocaleString()}</div>
+                                                            <div className="text-xs text-black/40">XP</div>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div className="mt-3 grid gap-2">
                                                     {user.tier !== "PREMIUM" && (
-                                                        <Link href="/premium" className="py-2 rounded-lg text-sm font-bold text-black bg-gradient-to-r from-yellow-500 to-amber-600 text-center hover:opacity-90 transition-opacity">
+                                                        <Link href="/premium" className="py-2 rounded-[0.35rem] text-sm font-bold text-white bg-brand-500 text-center hover:bg-brand-600 transition-colors">
                                                             Pro
                                                         </Link>
                                                     )}
-                                                    <button 
+                                                    <button
                                                         onClick={handleSignOut}
-                                                        className="w-full py-2 rounded-lg text-sm font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all text-center"
+                                                        className="w-full py-2 rounded-[0.35rem] text-sm font-bold bg-red-500/10 border border-red-500/20 text-red-500 hover:bg-red-500/15 transition-all text-center"
                                                     >
                                                         Sign Out
                                                     </button>
@@ -377,34 +355,34 @@ export function Navbar() {
                                 )}
                             </div>
                         ) : (
-                            <button
-                                onClick={handleSignIn}
-                                className="flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider glass hover:bg-white/8 transition-all text-white/90 border border-white/10"
-                            >
-                                <LogIn size={14} className="hidden sm:block" />
-                                <span className="hidden sm:block">Sign In</span>
-                                <span className="sm:hidden text-xs">Login</span>
-                            </button>
+                            !loading && (
+                                <button
+                                    onClick={handleSignIn}
+                                    className="flex items-center gap-2 px-5 py-2 rounded-[0.35rem] text-xs font-bold uppercase tracking-[0.14em] bg-brand-500 hover:bg-brand-600 transition-all text-white"
+                                >
+                                    <LogIn size={14} className="hidden sm:block" />
+                                    <span className="hidden sm:block">Sign In</span>
+                                    <span className="sm:hidden text-xs">Login</span>
+                                </button>
+                            )
                         )}
 
-                        {/* Hamburger button (Always visible, triggering off-canvas) */}
-                        <button onClick={() => setOpen(!open)} className="w-9 h-9 flex items-center justify-center rounded-lg glass text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                        <button onClick={() => setOpen(!open)} className="w-9 h-9 flex items-center justify-center rounded-[0.35rem] border border-black/10 text-black/70 hover:text-black hover:bg-black/[0.04] transition-colors">
                             <Menu size={18} />
                         </button>
                     </div>
                 </div>
             </nav>
 
-            {/* Offcanvas menu */}
             {open && (
                 <>
                     <div
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[200] animate-in fade-in transition-all"
+                        className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] animate-in fade-in transition-all"
                         onClick={() => setOpen(false)}
                     />
-                    <div className="fixed top-0 right-0 h-full w-80 bg-[#0a0f0d] border-l border-white/10 z-[210] p-6 overflow-y-auto animate-in slide-in-from-right shadow-2xl">
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/10">
-                            <span className="font-bold text-lg font-display text-white/90 tracking-tight">Navigation</span>
+                    <div className="fixed top-0 right-0 h-full w-80 bg-white border-l border-black/10 z-[210] p-6 overflow-y-auto animate-in slide-in-from-right shadow-2xl">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-black/10">
+                            <BrandLogo href={null} size="sm" />
                             <button onClick={() => setOpen(false)} className="close-x" aria-label="Close menu">
                                 <X size={18} strokeWidth={3} />
                             </button>
@@ -414,27 +392,27 @@ export function Navbar() {
                             {navItems.map((item) => (
                                 <div key={item.label} className="space-y-3">
                                     {item.href ? (
-                                        <Link href={item.href} onClick={() => setOpen(false)} className="flex items-center gap-3 text-base font-semibold text-white/90 hover:text-green-400 transition-colors bg-white/5 p-3 rounded-xl border border-white/5">
-                                            <item.icon size={18} className="text-green-400" />
+                                        <Link href={item.href} onClick={() => setOpen(false)} className="flex items-center gap-3 text-base font-semibold text-black hover:text-brand-500 transition-colors bg-black/[0.03] p-3 rounded-[0.35rem] border border-black/5">
+                                            <item.icon size={18} className="text-brand-500" />
                                             {item.label}
                                         </Link>
                                     ) : (
-                                        <div className="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden transition-all">
+                                        <div className="bg-black/[0.02] border border-black/5 rounded-[0.35rem] overflow-hidden transition-all">
                                             <button
                                                 onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
-                                                className="w-full flex items-center justify-between p-4 text-left hover:bg-white/5 transition-colors"
+                                                className="w-full flex items-center justify-between p-4 text-left hover:bg-black/[0.03] transition-colors"
                                             >
-                                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/40">
+                                                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-black/40">
                                                     <item.icon size={14} />
                                                     {item.label}
                                                 </div>
-                                                <ChevronDown size={14} className={`text-white/40 transition-transform ${activeDropdown === item.label ? "rotate-180" : ""}`} />
+                                                <ChevronDown size={14} className={`text-black/40 transition-transform ${activeDropdown === item.label ? "rotate-180" : ""}`} />
                                             </button>
 
                                             {activeDropdown === item.label && (
                                                 <div className="flex flex-col gap-1 px-4 pb-4 animate-in slide-in-from-top-2 fade-in duration-200">
                                                     {item.children?.map((c) => (
-                                                        <Link key={c.href} href={c.href} onClick={() => setOpen(false)} className="text-sm font-medium text-white/70 hover:text-green-400 py-2 px-3 rounded-lg hover:bg-white/5 transition-colors">
+                                                        <Link key={c.href} href={c.href} onClick={() => setOpen(false)} className="text-sm font-medium text-black/70 hover:text-brand-500 py-2 px-3 rounded-[0.3rem] hover:bg-black/[0.03] transition-colors">
                                                             {c.label}
                                                         </Link>
                                                     ))}
@@ -447,10 +425,7 @@ export function Navbar() {
                         </div>
                     </div>
                 </>
-            )
-            }
+            )}
         </>
     );
 }
-
-
