@@ -702,7 +702,7 @@ export function VideosFeedClient({
                                     <>
                                         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-black/15 to-transparent pointer-events-none z-10" />
 
-                                        <div className="absolute left-4 right-4 bottom-[4.75rem] z-20 text-left pointer-events-auto max-w-2xl">
+                                        <div className="absolute left-4 right-4 bottom-[4.75rem] z-20 text-center pointer-events-auto">
                                             <h4 className="font-display font-bold text-white text-[15px] leading-snug mb-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)]">
                                                 {video.title}
                                             </h4>
@@ -714,7 +714,7 @@ export function VideosFeedClient({
                                                             video.id
                                                         )
                                                     }
-                                                    className="flex w-full items-baseline gap-1.5 text-left mb-2.5 font-reading text-white text-[13px] leading-snug drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)]"
+                                                    className="mx-auto flex max-w-2xl items-baseline justify-center gap-1.5 text-center mb-2.5 font-reading text-white text-[13px] leading-snug drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)]"
                                                     aria-label="Open lesson"
                                                 >
                                                     <span className="min-w-0 truncate">

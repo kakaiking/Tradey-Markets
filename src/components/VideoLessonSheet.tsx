@@ -94,9 +94,26 @@ export function VideoLessonSheet({
             animate={{ height: sheetHeight }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 260 }}
-            className="absolute inset-x-0 bottom-0 z-40 flex flex-col overflow-hidden rounded-t-[var(--radius)] border-t-2 border-[var(--ink)] bg-[var(--raised)] shadow-[var(--card-shadow)] pointer-events-auto"
+            className="absolute inset-x-0 bottom-0 z-40 flex flex-col overflow-hidden rounded-t-[var(--radius)] border-t border-[var(--line)] bg-[var(--raised)] shadow-[var(--card-shadow)] pointer-events-auto"
         >
-            <div className="relative shrink-0 flex flex-col border-b-2 border-[var(--line)]">
+            <div className="shrink-0 flex items-center gap-2 px-3 py-2.5 border-b border-[var(--line)]">
+                {onShare ? (
+                    <button
+                        type="button"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onShare();
+                        }}
+                        className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] transition-colors hover:bg-[var(--sunken)]"
+                        aria-label="Share lesson"
+                    >
+                        <Share2 size={14} strokeWidth={2.5} />
+                    </button>
+                ) : (
+                    <div className="h-8 w-8 shrink-0" aria-hidden />
+                )}
+
                 <motion.div
                     drag="y"
                     dragConstraints={{ top: 0, bottom: 0 }}
@@ -119,41 +136,26 @@ export function VideoLessonSheet({
                             handleHeaderActivate();
                         }
                     }}
-                    className="flex flex-col items-center justify-center pt-3 pb-3 cursor-grab active:cursor-grabbing touch-none select-none"
+                    className="flex min-w-0 flex-1 flex-col items-center justify-center py-1 cursor-grab active:cursor-grabbing touch-none select-none"
                 >
                     <div
                         className="w-10 h-1.5 rounded-full bg-[var(--muted)]/70"
                         aria-hidden
                     />
                 </motion.div>
-                <div className="absolute top-2 right-3 z-10 flex items-center gap-1.5">
-                    <button
-                        type="button"
-                        onPointerDown={(e) => e.stopPropagation()}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onLevelChange(0);
-                        }}
-                        className="close-x"
-                        aria-label="Close lesson"
-                    >
-                        <X size={16} strokeWidth={3} />
-                    </button>
-                    {onShare ? (
-                        <button
-                            type="button"
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onShare();
-                            }}
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] transition-colors hover:bg-[var(--sunken)]"
-                            aria-label="Share lesson"
-                        >
-                            <Share2 size={14} strokeWidth={2.5} />
-                        </button>
-                    ) : null}
-                </div>
+
+                <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onLevelChange(0);
+                    }}
+                    className="close-x shrink-0"
+                    aria-label="Close lesson"
+                >
+                    <X size={16} strokeWidth={3} />
+                </button>
             </div>
 
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-thin">
