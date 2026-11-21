@@ -1,17 +1,63 @@
 import { prisma } from "@/lib/prisma";
 import { tradingVideos } from "@/lib/data";
+import { getSeedLessonBySlug } from "@/lib/lessonFallback";
 import {
     getQuestionCardsForLesson,
     type QuestionCard,
 } from "@/lib/questionCardsData";
 
+export type VideoLessonSection = {
+    title: string;
+    paragraphs: string[];
+};
+
 export type VideoLessonContent = {
     title: string;
     paragraphs: string[];
+    sections: VideoLessonSection[];
     cards: QuestionCard[];
 };
 
 export type VideoLessonContentMap = Record<string, VideoLessonContent>;
+
+type LessonRow = {
+    slug: string;
+    title: string;
+    sections: {
+        id: string;
+        title: string;
+        text: string[];
+        questionCards: {
+            id: string;
+            description: string;
+            question: string;
+            options: string[];
+            correctIndex: number;
+        }[];
+    }[];
+};
+
+function normalizeSections(
+    sections: { title: string; text: string[] | string }[]
+): VideoLessonSection[] {
+    return sections
+        .map((s) => ({
+            title: s.title || "",
+            paragraphs: (Array.isArray(s.text) ? s.text : [String(s.text || "")]).filter(
+                Boolean
+            ),
+        }))
+        .filter((s) => s.paragraphs.length > 0 || s.title);
+}
+
+function flattenParagraphs(sections: VideoLessonSection[]): string[] {
+    return sections.flatMap((s) => {
+        if (s.title && s.paragraphs.length > 0) {
+            return [s.title, ...s.paragraphs];
+        }
+        return s.paragraphs;
+    });
+}
 
 export async function loadVideoLessonContent(): Promise<VideoLessonContentMap> {
     const slugs = [
@@ -26,22 +72,7 @@ export async function loadVideoLessonContent(): Promise<VideoLessonContentMap> {
 
     if (slugs.length === 0) return map;
 
-    let lessons: {
-        slug: string;
-        title: string;
-        sections: {
-            id: string;
-            title: string;
-            text: string[];
-            questionCards: {
-                id: string;
-                description: string;
-                question: string;
-                options: string[];
-                correctIndex: number;
-            }[];
-        }[];
-    }[] = [];
+    let lessons: LessonRow[] = [];
 
     if (prisma) {
         try {
@@ -60,19 +91,22 @@ export async function loadVideoLessonContent(): Promise<VideoLessonContentMap> {
                         },
                     },
                 },
-            })) as typeof lessons;
+            })) as LessonRow[];
         } catch (err) {
             console.error("Failed to load video lesson content:", err);
         }
     }
 
     for (const slug of slugs) {
-        const lesson = lessons.find((l) => l.slug === slug);
-        const paragraphs = lesson
-            ? lesson.sections.flatMap((s) =>
-                  Array.isArray(s.text) ? s.text : [String(s.text || "")]
-              ).filter(Boolean)
+        const dbLesson = lessons.find((l) => l.slug === slug);
+        const seedLesson = !dbLesson ? getSeedLessonBySlug(slug) : null;
+        const lesson = dbLesson || seedLesson;
+
+        const sections = lesson
+            ? normalizeSections(lesson.sections)
             : [];
+
+        const paragraphs = flattenParagraphs(sections);
 
         const cards = getQuestionCardsForLesson(
             slug,
@@ -92,6 +126,12 @@ export async function loadVideoLessonContent(): Promise<VideoLessonContentMap> {
                     ? paragraphs
                     : videoFallback?.description
                       ? [videoFallback.description]
+                      : [],
+            sections:
+                sections.length > 0
+                    ? sections
+                    : videoFallback?.description
+                      ? [{ title: "", paragraphs: [videoFallback.description] }]
                       : [],
             cards,
         };

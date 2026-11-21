@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Play,
@@ -13,7 +12,6 @@ import {
     Volume2,
     VolumeX,
     Loader2,
-    BookOpen,
 } from "lucide-react";
 import { tradingVideos } from "@/lib/data";
 import { BackButton } from "@/components/layout/BackButton";
@@ -547,13 +545,6 @@ export function VideosFeedClient({
                 fallbackHref="/"
                 className="history-back--on-media absolute top-[max(0.75rem,env(safe-area-inset-top))] left-2 z-30"
             />
-            <Link
-                href="/quizzes"
-                className="absolute top-[max(0.75rem,env(safe-area-inset-top))] right-3 z-30 inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-black/45 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.08em] text-white backdrop-blur-sm"
-            >
-                <BookOpen size={14} strokeWidth={2.4} />
-                Courses
-            </Link>
 
             <div className="relative w-full flex-1 min-h-0">
                 <div
@@ -854,6 +845,7 @@ export function VideosFeedClient({
                         title={activeDescriptionVideo.title}
                         description={activeDescriptionVideo.description}
                         paragraphs={lessonBundle?.paragraphs ?? []}
+                        sections={lessonBundle?.sections ?? []}
                         cards={lessonBundle?.cards ?? []}
                         lessonTitle={lessonBundle?.title}
                     />

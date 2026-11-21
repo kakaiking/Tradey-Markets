@@ -9,12 +9,18 @@ import type { QuestionCard } from "@/lib/questionCardsData";
 /** 0 = closed, 1 = 70% split, 2 = full lesson */
 export type DescriptionLevel = 0 | 1 | 2;
 
+export type VideoLessonSectionView = {
+    title: string;
+    paragraphs: string[];
+};
+
 export type VideoLessonSheetProps = {
     level: DescriptionLevel;
     onLevelChange: (level: DescriptionLevel) => void;
     title: string;
     description: string;
     paragraphs: string[];
+    sections?: VideoLessonSectionView[];
     cards: QuestionCard[];
     lessonTitle?: string;
 };
@@ -25,6 +31,7 @@ export function VideoLessonSheet({
     title,
     description,
     paragraphs,
+    sections = [],
     cards,
     lessonTitle,
 }: VideoLessonSheetProps) {
@@ -61,6 +68,9 @@ export function VideoLessonSheet({
 
     const bodyParagraphs =
         paragraphs.length > 0 ? paragraphs : description ? [description] : [];
+    const hasStructuredSections = sections.some(
+        (s) => s.title || s.paragraphs.length > 0
+    );
 
     const sheetHeight = level === 2 ? "100%" : "70%";
 
@@ -124,8 +134,47 @@ export function VideoLessonSheet({
             </div>
 
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-thin">
+                <section className="text-left mb-6">
+                    <p className="kicker !text-sm mb-2">Lesson</p>
+                    <h3 className="font-display text-lg font-bold text-[var(--ink)] mb-3 leading-snug">
+                        {lessonTitle || title}
+                    </h3>
+                    {hasStructuredSections ? (
+                        <div className="space-y-5">
+                            {sections.map((section, si) => (
+                                <div key={`lesson-sec-${si}`} className="space-y-2">
+                                    {section.title ? (
+                                        <h4 className="font-display text-sm font-bold text-[var(--ink)] leading-snug">
+                                            {section.title}
+                                        </h4>
+                                    ) : null}
+                                    {section.paragraphs.map((paragraph, pi) => (
+                                        <p
+                                            key={`lesson-sec-${si}-p-${pi}`}
+                                            className="text-[var(--ink)] text-sm leading-relaxed font-reading"
+                                        >
+                                            {paragraph}
+                                        </p>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {bodyParagraphs.map((paragraph, i) => (
+                                <p
+                                    key={`lesson-p-${i}`}
+                                    className="text-[var(--ink)] text-sm leading-relaxed font-reading"
+                                >
+                                    {paragraph}
+                                </p>
+                            ))}
+                        </div>
+                    )}
+                </section>
+
                 {cards.length > 0 && (
-                    <section className="mb-5">
+                    <section className="mb-2">
                         <QuestionCardDeck
                             cards={cards}
                             lessonTitle={lessonTitle || title}
@@ -133,23 +182,6 @@ export function VideoLessonSheet({
                         />
                     </section>
                 )}
-
-                <section className="text-left">
-                    <p className="kicker !text-sm mb-2">Lesson</p>
-                    <h3 className="font-display text-lg font-bold text-[var(--ink)] mb-3 leading-snug">
-                        {lessonTitle || title}
-                    </h3>
-                    <div className="space-y-3">
-                        {bodyParagraphs.map((paragraph, i) => (
-                            <p
-                                key={`lesson-p-${i}`}
-                                className="text-[var(--ink)] text-sm leading-relaxed font-reading"
-                            >
-                                {paragraph}
-                            </p>
-                        ))}
-                    </div>
-                </section>
             </div>
         </motion.div>
     );
