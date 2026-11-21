@@ -26,7 +26,7 @@ export function VideosFeedClient({
     const [activeHearts, setActiveHearts] = useState<
         Record<string, { id: number; x: number; y: number }[]>
     >({});
-    const [isMuted, setIsMuted] = useState(true);
+    const [isMuted, setIsMuted] = useState(false);
     const [playingStates, setPlayingStates] = useState<Record<string, boolean>>(
         {}
     );
@@ -133,6 +133,7 @@ export function VideosFeedClient({
 
     const containerRef = useRef<HTMLDivElement>(null);
     const sheetOpenRef = useRef(false);
+    const isMutedRef = useRef(false);
     const playerRef = useRef<{
         playVideo: () => void;
         pauseVideo: () => void;
@@ -141,6 +142,10 @@ export function VideosFeedClient({
         setVolume: (volume: number) => void;
         destroy: () => void;
     } | null>(null);
+
+    useEffect(() => {
+        isMutedRef.current = isMuted;
+    }, [isMuted]);
 
     const sheetOpen = descriptionLevel > 0 && descriptionVideoId !== null;
     sheetOpenRef.current = sheetOpen;
@@ -351,8 +356,14 @@ export function VideosFeedClient({
                         target: NonNullable<typeof playerRef.current>;
                     }) => {
                         if (cancelled) return;
+                        // Start muted so autoplay is allowed, then unmute
+                        // immediately when the user wants sound on open.
                         event.target.mute();
                         event.target.playVideo();
+                        if (!isMutedRef.current) {
+                            event.target.unMute();
+                            event.target.setVolume(100);
+                        }
                         markReady(event.target);
                     },
                     onStateChange: (event: {
