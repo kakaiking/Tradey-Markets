@@ -2,17 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-    Play,
-    Heart,
-    MessageCircle,
-    Share2,
-    X,
-    Send,
-    Volume2,
-    VolumeX,
-    Loader2,
-} from "lucide-react";
+import { Play, Volume2, VolumeX, Loader2 } from "lucide-react";
 import { tradingVideos } from "@/lib/data";
 import { BackButton } from "@/components/layout/BackButton";
 import {
@@ -32,16 +22,7 @@ export function VideosFeedClient({
         tradingVideos[0]?.id ?? ""
     );
     const [likedVideos, setLikedVideos] = useState<Record<string, boolean>>({});
-    const [videoLikes, setVideoLikes] = useState<Record<string, number>>({
-        "v-what-is-forex-trading": 1543,
-        "v-what-is-traded-in-forex": 892,
-        "v-buying-and-selling-currency-pairs": 1204,
-        "v-how-a-forex-trade-works": 765,
-        "v-forex-lingo": 981,
-    });
     const [showToast, setShowToast] = useState(false);
-    const [openCommentsId, setOpenCommentsId] = useState<string | null>(null);
-    const [newCommentText, setNewCommentText] = useState("");
     const [activeHearts, setActiveHearts] = useState<
         Record<string, { id: number; x: number; y: number }[]>
     >({});
@@ -173,15 +154,15 @@ export function VideosFeedClient({
     useEffect(() => {
         if (!activeVideoId) return;
         setPlayingStates((prev) => ({ ...prev, [activeVideoId]: true }));
-        // Only clear the sheet when the active reel actually changes —
-        // never because a collapsed pane lost intersection.
+        // Shrinking the player for the split view can re-fire intersection and
+        // change the active id — never wipe an open lesson sheet because of that.
+        if (sheetOpenRef.current) return;
         setDescriptionLevel(0);
         setDescriptionVideoId(null);
-        setOpenCommentsId(null);
     }, [activeVideoId]);
 
     // Level 3 covers the video: pause without destroying the player.
-    // Level 2 (and close) keep / resume playback under the overlay.
+    // Level 2 (and close) keep / resume playback in the top band.
     useEffect(() => {
         if (!playerRef.current || !readyVideos[activeVideoId]) return;
         try {
@@ -204,12 +185,14 @@ export function VideosFeedClient({
     }, [descriptionLevel, activeVideoId, readyVideos]);
 
     const openLessonSheet = (videoId: string) => {
-        setOpenCommentsId(null);
+        // Set synchronously so IntersectionObserver ignores the pane resize.
+        sheetOpenRef.current = true;
         setDescriptionVideoId(videoId);
         setDescriptionLevel(1);
     };
 
     const handleLevelChange = (level: DescriptionLevel) => {
+        sheetOpenRef.current = level > 0;
         setDescriptionLevel(level);
         if (level === 0) {
             setDescriptionVideoId(null);
@@ -468,17 +451,6 @@ export function VideosFeedClient({
         }
     }, [isMuted, activeVideoId, readyVideos]);
 
-    const handleLikeClick = (videoId: string) => {
-        const isLiked = likedVideos[videoId];
-        setLikedVideos((prev) => ({ ...prev, [videoId]: !isLiked }));
-        setVideoLikes((prev) => ({
-            ...prev,
-            [videoId]: isLiked
-                ? (prev[videoId] || 0) - 1
-                : (prev[videoId] || 0) + 1,
-        }));
-    };
-
     const handleShareClick = (videoId: string) => {
         if (typeof window !== "undefined") {
             navigator.clipboard.writeText(
@@ -489,23 +461,23 @@ export function VideosFeedClient({
         }
     };
 
-    const handleCommentSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!newCommentText.trim() || !openCommentsId) return;
+    const handleAddComment = (text: string) => {
+        if (!descriptionVideoId || !text.trim()) return;
 
         const newComment = {
             id: `c_user_${Date.now()}`,
             user: "You (Pro Trader)",
-            text: newCommentText,
+            text: text.trim(),
             time: "Just now",
         };
 
         setCommentsStore((prev) => ({
             ...prev,
-            [openCommentsId]: [newComment, ...(prev[openCommentsId] || [])],
+            [descriptionVideoId]: [
+                newComment,
+                ...(prev[descriptionVideoId] || []),
+            ],
         }));
-
-        setNewCommentText("");
     };
 
     const handleDoubleClick = (
@@ -534,12 +506,17 @@ export function VideosFeedClient({
 
         if (!likedVideos[videoId]) {
             setLikedVideos((prev) => ({ ...prev, [videoId]: true }));
-            setVideoLikes((prev) => ({
-                ...prev,
-                [videoId]: (prev[videoId] || 0) + 1,
-            }));
         }
     };
+
+    // Level 2 must shrink the player into the visible top band — a full-bleed
+    // iframe under a 70% sheet only shows YouTube chrome (audio still plays).
+    const videoPaneClass =
+        descriptionLevel === 2
+            ? "absolute inset-x-0 top-0 h-0 overflow-hidden opacity-0 pointer-events-none"
+            : descriptionLevel === 1
+              ? "absolute inset-x-0 top-0 z-20 h-[30%] min-h-[30%] overflow-hidden"
+              : "relative w-full flex-1 min-h-0";
 
     return (
         <div className="relative h-full w-full flex flex-col bg-black overflow-hidden">
@@ -548,7 +525,7 @@ export function VideosFeedClient({
                 className="history-back--on-media absolute top-[max(0.75rem,env(safe-area-inset-top))] left-2 z-30"
             />
 
-            <div className="relative w-full flex-1 min-h-0">
+            <div className={videoPaneClass}>
                 <div
                     ref={containerRef}
                     className={`w-full h-full overflow-y-scroll snap-y snap-mandatory scrollbar-none ${
@@ -594,12 +571,25 @@ export function VideosFeedClient({
                                     {isActive && !failedVideos[video.id] && (
                                         <div
                                             key={`${video.id}-${embedAttempt[video.id] || 0}`}
-                                            className="absolute inset-0 overflow-hidden bg-black [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0"
+                                            className="absolute inset-0 overflow-hidden bg-black"
                                         >
+                                            {/*
+                                              Split view is a short wide band. Size the
+                                              player to 16:9 of the full width and center
+                                              it so the picture cover-crops (no side bars).
+                                            */}
                                             <div
-                                                id={`yt-slot-${video.id}`}
-                                                className="h-full w-full"
-                                            />
+                                                className={`absolute left-0 w-full [&_iframe]:h-full [&_iframe]:w-full [&_iframe]:border-0 ${
+                                                    descriptionLevel === 1
+                                                        ? "top-1/2 h-[56.25vw] min-h-full -translate-y-1/2"
+                                                        : "inset-0"
+                                                }`}
+                                            >
+                                                <div
+                                                    id={`yt-slot-${video.id}`}
+                                                    className="h-full w-full"
+                                                />
+                                            </div>
                                         </div>
                                     )}
                                     {isActive &&
@@ -651,13 +641,7 @@ export function VideosFeedClient({
                                     )}
                                     {playingStates[video.id] === false &&
                                         descriptionLevel !== 2 && (
-                                            <div
-                                                className={`absolute inset-x-0 z-20 flex flex-col items-center justify-center gap-4 pointer-events-none ${
-                                                    descriptionLevel === 1
-                                                        ? "top-0 h-[30%]"
-                                                        : "inset-0"
-                                                }`}
-                                            >
+                                            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 pointer-events-none">
                                                 <div className="w-16 h-16 bg-[var(--raised)] border border-[var(--line)] rounded-full flex items-center justify-center shadow-[var(--card-shadow)] transition-transform duration-300 scale-100">
                                                     <Play
                                                         className="text-[var(--ink)] fill-[var(--ink)] ml-1.5"
@@ -695,12 +679,10 @@ export function VideosFeedClient({
                                         )}
                                     <div
                                         onClick={() => togglePlay(video.id)}
-                                        className={`absolute inset-x-0 top-0 z-10 bg-transparent cursor-pointer ${
+                                        className={`absolute inset-0 z-10 bg-transparent cursor-pointer ${
                                             descriptionLevel === 2
-                                                ? "pointer-events-none h-0"
-                                                : descriptionLevel === 1
-                                                  ? "h-[30%] pointer-events-auto"
-                                                  : "h-full pointer-events-auto"
+                                                ? "pointer-events-none"
+                                                : "pointer-events-auto"
                                         }`}
                                     />
                                 </div>
@@ -709,76 +691,7 @@ export function VideosFeedClient({
                                     <>
                                         <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-black/15 to-transparent pointer-events-none z-10" />
 
-                                        <div className="absolute right-4 bottom-[4.75rem] flex flex-col items-center gap-5 z-20 pointer-events-auto">
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleLikeClick(video.id)
-                                                }
-                                                className="flex flex-col items-center group"
-                                            >
-                                                <div
-                                                    className={`p-3 rounded-full transition-all duration-300 backdrop-blur-sm ${
-                                                        likedVideos[video.id]
-                                                            ? "bg-white/20 text-red-400 scale-110"
-                                                            : "bg-black/40 text-white hover:bg-black/55"
-                                                    }`}
-                                                >
-                                                    <Heart
-                                                        size={20}
-                                                        fill={
-                                                            likedVideos[
-                                                                video.id
-                                                            ]
-                                                                ? "currentColor"
-                                                                : "none"
-                                                        }
-                                                    />
-                                                </div>
-                                                <span className="text-xs font-bold text-white mt-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
-                                                    {videoLikes[video.id] || 0}
-                                                </span>
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                onClick={() => {
-                                                    setDescriptionLevel(0);
-                                                    setDescriptionVideoId(
-                                                        null
-                                                    );
-                                                    setOpenCommentsId(
-                                                        video.id
-                                                    );
-                                                }}
-                                                className="flex flex-col items-center group"
-                                            >
-                                                <div className="p-3 bg-black/40 hover:bg-black/55 text-white rounded-full transition-all backdrop-blur-sm">
-                                                    <MessageCircle size={20} />
-                                                </div>
-                                                <span className="text-xs font-bold text-white mt-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
-                                                    {commentsStore[video.id]
-                                                        ?.length || 0}
-                                                </span>
-                                            </button>
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    handleShareClick(video.id)
-                                                }
-                                                className="flex flex-col items-center group"
-                                            >
-                                                <div className="p-3 bg-black/40 hover:bg-black/55 text-white rounded-full transition-all backdrop-blur-sm">
-                                                    <Share2 size={20} />
-                                                </div>
-                                                <span className="text-xs font-bold text-white mt-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
-                                                    Share
-                                                </span>
-                                            </button>
-                                        </div>
-
-                                        <div className="absolute left-4 right-24 bottom-[4.75rem] z-20 text-left pointer-events-auto max-w-2xl">
+                                        <div className="absolute left-4 right-4 bottom-[4.75rem] z-20 text-left pointer-events-auto max-w-2xl">
                                             <h4 className="font-display font-bold text-white text-[15px] leading-snug mb-1 drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)]">
                                                 {video.title}
                                             </h4>
@@ -850,6 +763,13 @@ export function VideosFeedClient({
                         sections={lessonBundle?.sections ?? []}
                         cards={lessonBundle?.cards ?? []}
                         lessonTitle={lessonBundle?.title}
+                        comments={
+                            commentsStore[activeDescriptionVideo.id] || []
+                        }
+                        onShare={() =>
+                            handleShareClick(activeDescriptionVideo.id)
+                        }
+                        onAddComment={handleAddComment}
                     />
                 ) : null}
             </AnimatePresence>
@@ -859,91 +779,6 @@ export function VideosFeedClient({
                     Link copied to clipboard!
                 </div>
             )}
-
-            <AnimatePresence>
-                {openCommentsId && (
-                    <>
-                        <div
-                            className="absolute inset-0 bg-[color-mix(in_srgb,var(--ink)_40%,transparent)] z-30 pointer-events-auto"
-                            onClick={() => setOpenCommentsId(null)}
-                        />
-                        <motion.div
-                            initial={{ y: "100%" }}
-                            animate={{ y: 0 }}
-                            exit={{ y: "100%" }}
-                            transition={{
-                                type: "spring",
-                                damping: 25,
-                                stiffness: 220,
-                            }}
-                            className="absolute bottom-0 left-0 right-0 h-[65%] bg-[var(--raised)] border-t-2 border-[var(--ink)] rounded-t-[var(--radius)] z-40 flex flex-col overflow-hidden pointer-events-auto shadow-[var(--card-shadow)]"
-                        >
-                            <div className="px-6 py-4 border-b-2 border-[var(--line)] flex items-center justify-between">
-                                <span className="font-bold text-[var(--ink)] text-sm font-display">
-                                    Comments (
-                                    {commentsStore[openCommentsId]?.length || 0}
-                                    )
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => setOpenCommentsId(null)}
-                                    className="close-x"
-                                    aria-label="Close comments"
-                                >
-                                    <X size={16} strokeWidth={3} />
-                                </button>
-                            </div>
-
-                            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 scrollbar-thin">
-                                {commentsStore[openCommentsId]?.map((c) => (
-                                    <div
-                                        key={c.id}
-                                        className="flex gap-3 text-left"
-                                    >
-                                        <div className="w-8 h-8 rounded-full bg-[var(--sunken)] border border-[var(--ink)] flex items-center justify-center font-bold text-xs text-[var(--ink)] shrink-0">
-                                            {c.user.charAt(0)}
-                                        </div>
-                                        <div className="flex-1 bg-[var(--paper)] border border-[var(--line)] rounded-[var(--radius-sm)] p-3">
-                                            <div className="flex items-center justify-between mb-1">
-                                                <span className="font-bold text-xs text-[var(--ink)]">
-                                                    {c.user}
-                                                </span>
-                                                <span className="text-[10px] text-[var(--muted)]">
-                                                    {c.time}
-                                                </span>
-                                            </div>
-                                            <p className="text-[var(--muted)] text-xs md:text-sm leading-relaxed font-reading">
-                                                {c.text}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <form
-                                onSubmit={handleCommentSubmit}
-                                className="p-3 border-t-2 border-[var(--line)] bg-[var(--paper)] flex items-center gap-2"
-                            >
-                                <input
-                                    type="text"
-                                    value={newCommentText}
-                                    onChange={(e) =>
-                                        setNewCommentText(e.target.value)
-                                    }
-                                    placeholder="Add an expert comment..."
-                                    className="flex-1 bg-[var(--raised)] hover:bg-[var(--highlighter)] focus:bg-[var(--raised)] text-[var(--ink)] rounded-lg px-3 py-2 text-xs md:text-sm border border-[var(--line)] outline-none focus:border-[var(--chalk)] transition-all font-medium"
-                                />
-                                <button
-                                    type="submit"
-                                    className="p-2 bg-[var(--highlighter)] hover:brightness-95 text-[var(--ink)] rounded-lg transition-all border border-[var(--line)]"
-                                >
-                                    <Send size={14} />
-                                </button>
-                            </form>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
         </div>
     );
 }
