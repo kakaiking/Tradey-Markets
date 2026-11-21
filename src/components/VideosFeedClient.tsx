@@ -28,14 +28,16 @@ type VideosFeedClientProps = {
 export function VideosFeedClient({
     lessonContentBySlug,
 }: VideosFeedClientProps) {
-    const [activeVideoId, setActiveVideoId] = useState<string>("v1");
+    const [activeVideoId, setActiveVideoId] = useState<string>(
+        tradingVideos[0]?.id ?? ""
+    );
     const [likedVideos, setLikedVideos] = useState<Record<string, boolean>>({});
     const [videoLikes, setVideoLikes] = useState<Record<string, number>>({
-        v1: 1543,
-        v2: 892,
-        v3: 1204,
-        v4: 765,
-        v5: 981,
+        "v-what-is-forex-trading": 1543,
+        "v-what-is-traded-in-forex": 892,
+        "v-buying-and-selling-currency-pairs": 1204,
+        "v-how-a-forex-trade-works": 765,
+        "v-forex-lingo": 981,
     });
     const [showToast, setShowToast] = useState(false);
     const [openCommentsId, setOpenCommentsId] = useState<string | null>(null);
@@ -70,11 +72,11 @@ export function VideosFeedClient({
             { id: string; user: string; text: string; time: string }[]
         >
     >({
-        v1: [
+        "v-what-is-forex-trading": [
             {
                 id: "c1",
                 user: "Alpha_Trader",
-                text: "This finally made pips make sense to me! Thank you!",
+                text: "This finally made forex make sense to me! Thank you!",
                 time: "2h ago",
             },
             {
@@ -86,63 +88,63 @@ export function VideosFeedClient({
             {
                 id: "c3",
                 user: "RiskManager",
-                text: "Is leverage really that risky for beginners? I think 1:10 is fine.",
+                text: "Clear on what the market actually is before jumping into charts.",
                 time: "6h ago",
             },
         ],
-        v2: [
+        "v-what-is-a-pip": [
             {
                 id: "c4",
                 user: "CandleStickGuru",
-                text: "Pure price action is the only way to go. Indicators just lag.",
+                text: "Pips finally clicked after this.",
                 time: "1h ago",
             },
             {
                 id: "c5",
                 user: "ScalpKing",
-                text: "What timeframe is best for this? 5m or 15m?",
+                text: "Yen pairs vs majors — that tip saved me.",
                 time: "3h ago",
             },
         ],
-        v3: [
+        "v-how-a-forex-trade-works": [
             {
                 id: "c6",
                 user: "CapitalShield",
-                text: "Risk management is indeed the holy grail. Never trade without it.",
+                text: "Direction plus lot size — simple and true.",
                 time: "30m ago",
             },
             {
                 id: "c7",
                 user: "PipsMaster",
-                text: "1% rule changed my trading life. Simple but so effective.",
+                text: "Wish I had this before my first live ticket.",
                 time: "2h ago",
             },
         ],
-        v4: [
+        "v-types-of-forex-orders": [
             {
                 id: "c8",
                 user: "MindsetFirst",
-                text: "Trading psychology is 90% of the game.",
+                text: "Limit vs stop finally makes sense.",
                 time: "10m ago",
             },
             {
                 id: "c9",
                 user: "FomoFighter",
-                text: "Handling FOMO is my biggest struggle. Excellent tips.",
+                text: "Using stops properly changed my week.",
                 time: "1h ago",
             },
         ],
-        v5: [
+        "v-forex-demo-account": [
             {
                 id: "c10",
                 user: "RevengeNoMore",
-                text: "Revenge trading ruined my last week. Never again.",
+                text: "Demo first. No shortcuts.",
                 time: "5m ago",
             },
             {
                 id: "c11",
                 user: "SafetyFirst",
-                text: "Leverage is a double-edged sword. Awesome warning.",
+                text: "Treat demo like real money or the lessons won’t stick.",
                 time: "2h ago",
             },
         ],

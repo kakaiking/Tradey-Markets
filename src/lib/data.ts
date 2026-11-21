@@ -134,41 +134,226 @@ export const curricula: Record<string, any[]> = {
     elementary: elementaryLessons,
 };
 
+/** One feed clip per curriculum lesson — title/description match the lesson; videoId is topic-specific. */
 export const tradingVideos = [
     {
-        id: "v1",
-        title: "The Ultimate Forex Trading Course (For Beginners)",
-        description: "A full beginner course: what the market is, how pairs move, and the terms you need before the first ticket.",
-        videoId: "mEyuQVy3OHc",
+        id: "v-what-is-forex-trading",
+        title: "What Is Forex Trading?",
+        description:
+            "Learn about this massively huge financial market where fiat currencies are traded.",
+        videoId: "hEhtceNp4d4",
         lessonSlug: "what-is-forex-trading",
     },
     {
-        id: "v2",
-        title: "Key Trading Terms: Pips, Lots, Leverage, and Spread",
-        description: "Definitions and examples for pips, pipettes, lot size, margin, and the spread.",
-        videoId: "aQNMF5Q5fSM",
-        lessonSlug: "forex-lingo",
+        id: "v-what-is-traded-in-forex",
+        title: "What is Traded in Forex?",
+        description:
+            "Currencies are the name of the game — buy and sell them as a short-term trade, long-term investment, or something in between.",
+        videoId: "_YVQN6_nkfs",
+        lessonSlug: "what-is-traded-in-forex",
     },
     {
-        id: "v3",
-        title: "How to Trade Forex for Beginners",
-        description: "How a buy or sell makes or loses money, from pip distance through lot size.",
+        id: "v-buying-and-selling-currency-pairs",
+        title: "Buying And Selling Currency Pairs",
+        description:
+            "Currencies are traded in pairs; you can’t buy or sell a currency without another.",
+        videoId: "z7538iNe2Pw",
+        lessonSlug: "buying-and-selling-currency-pairs",
+    },
+    {
+        id: "v-forex-market-size-and-liquidity",
+        title: "Forex Market Size and Liquidity",
+        description:
+            "The Forex market is huge — and that comes with a lot of benefits for currency traders.",
+        videoId: "mEyuQVy3OHc",
+        lessonSlug: "forex-market-size-and-liquidity",
+    },
+    {
+        id: "v-ways-to-trade-currencies",
+        title: "Ways to Trade Currencies",
+        description:
+            "Spot, futures, options, CFDs, and ETFs — the main ways traders participate in forex.",
+        videoId: "ZwL11tUfeXg",
+        lessonSlug: "ways-to-trade-currencies",
+    },
+    {
+        id: "v-how-a-forex-trade-works",
+        title: "How a Forex Trade Works",
+        description:
+            "How a buy or sell makes or loses money, from pip distance through lot size.",
         videoId: "vP9gmvxdFd8",
         lessonSlug: "how-a-forex-trade-works",
     },
     {
-        id: "v4",
-        title: "Order Types, Brokers, and Platforms",
-        description: "Market, limit, and stop orders, plus what changes when you pick a broker and a platform.",
+        id: "v-when-to-buy-or-sell",
+        title: "Know When to Buy or Sell",
+        description: "What drives the value of a currency, and how that shows up on a pair chart.",
+        videoId: "_YVQN6_nkfs",
+        lessonSlug: "when-to-buy-or-sell",
+    },
+    {
+        id: "v-what-is-a-pip",
+        title: "What Is a Pip in Forex?",
+        description:
+            "Pips, pipettes, and how their values are calculated on major and yen pairs.",
+        videoId: "vtrmhGyWfSQ",
+        lessonSlug: "what-is-a-pip",
+    },
+    {
+        id: "v-lot-size-in-forex",
+        title: "Lot Size in Forex",
+        description:
+            "Standard, mini, micro, and nano lots — how position size changes risk and reward.",
+        videoId: "aQNMF5Q5fSM",
+        lessonSlug: "lot-size-in-forex",
+    },
+    {
+        id: "v-what-is-a-spread",
+        title: "What is a Spread in Forex Trading?",
+        description:
+            "The gap between bid and ask — how “no commission” brokers get paid, measured in pips.",
+        videoId: "aQNMF5Q5fSM",
+        lessonSlug: "what-is-a-spread",
+    },
+    {
+        id: "v-bid-and-ask-price",
+        title: "Bid and Ask Price in Forex",
+        description: "Learn bid and ask prices with simple examples on a live quote.",
+        videoId: "aQNMF5Q5fSM",
+        lessonSlug: "bid-and-ask-price",
+    },
+    {
+        id: "v-forex-lingo",
+        title: "Forex Lingo",
+        description:
+            "Pips, lots, leverage, margin, and the spread — the terms you’ll hear every day.",
+        videoId: "aQNMF5Q5fSM",
+        lessonSlug: "forex-lingo",
+    },
+    {
+        id: "v-types-of-forex-orders",
+        title: "Types of Forex Orders",
+        description:
+            "Market, limit, and stop orders — and when to use each one.",
         videoId: "Era7-qY7mqg",
         lessonSlug: "types-of-forex-orders",
     },
     {
-        id: "v5",
-        title: "How to Start Forex Trading",
-        description: "A current start-to-finish walkthrough of opening a chart, placing a practice trade, and reading margin.",
+        id: "v-order-types-cheat-sheet",
+        title: "Trading Order Types Cheat Sheet",
+        description:
+            "A quick map of common order types, what they do, and the trade-offs of each.",
+        videoId: "Era7-qY7mqg",
+        lessonSlug: "order-types-cheat-sheet",
+    },
+    {
+        id: "v-forex-demo-account",
+        title: "Forex Demo Account",
+        description:
+            "Practice on demo first — get the rookie mistakes out of the way before risking live capital.",
         videoId: "ZwL11tUfeXg",
         lessonSlug: "forex-demo-account",
+    },
+    {
+        id: "v-can-you-get-rich-trading-forex",
+        title: "Can You Get Rich By Trading Forex?",
+        description:
+            "Building wealth through trading takes skill, time, and realistic expectations.",
+        videoId: "_YVQN6_nkfs",
+        lessonSlug: "can-you-get-rich-trading-forex",
+    },
+    {
+        id: "v-forex-trading-sessions",
+        title: "Forex Trading Sessions",
+        description:
+            "How the 24-hour market breaks into Tokyo, London, and New York — and which windows matter most.",
+        videoId: "b5Kj5aEXefM",
+        lessonSlug: "forex-trading-sessions",
+    },
+    {
+        id: "v-tokyo-session",
+        title: "Tokyo Session",
+        description:
+            "The Asian open: quieter ranges, JPY and AUD pairs, and how the day starts fresh.",
+        videoId: "ZpTmFRWlfwg",
+        lessonSlug: "tokyo-session",
+    },
+    {
+        id: "v-london-session",
+        title: "London Session",
+        description:
+            "The forex capital of the world — liquidity, EUR/GBP pairs, and the day’s main trend.",
+        videoId: "ZpTmFRWlfwg",
+        lessonSlug: "london-session",
+    },
+    {
+        id: "v-new-york-session",
+        title: "New York Session",
+        description:
+            "USD pairs, U.S. news, and the high-energy overlap with London.",
+        videoId: "f4jmDN_ygfw",
+        lessonSlug: "new-york-session",
+    },
+    {
+        id: "v-best-times-of-day",
+        title: "Best Times of Day to Trade Forex",
+        description:
+            "Volatility and liquidity peaks — especially the London–New York overlap.",
+        videoId: "oO0r15GuD5o",
+        lessonSlug: "best-times-of-day",
+    },
+    {
+        id: "v-best-days-of-the-week",
+        title: "Best Days of the Week to Trade Forex",
+        description:
+            "When to trade and when to sit out across the trading week.",
+        videoId: "oO0r15GuD5o",
+        lessonSlug: "best-days-of-the-week",
+    },
+    {
+        id: "v-forex-market-structure",
+        title: "Forex Market Structure",
+        description:
+            "No centralized exchange — how bank competition keeps prices tight.",
+        videoId: "_YVQN6_nkfs",
+        lessonSlug: "forex-market-structure",
+    },
+    {
+        id: "v-who-trades-forex",
+        title: "Who Trades Forex?",
+        description: "The five groups that make up the forex market.",
+        videoId: "_YVQN6_nkfs",
+        lessonSlug: "who-trades-forex",
+    },
+    {
+        id: "v-retail-forex-history",
+        title: "Know Your Retail Forex History",
+        description: "How retail forex trading started and why it matters today.",
+        videoId: "ZwL11tUfeXg",
+        lessonSlug: "retail-forex-history",
+    },
+    {
+        id: "v-what-makes-fx-unique",
+        title: "What Makes FX Trading Unique",
+        description: "Why forex is a popular starting point for beginners.",
+        videoId: "hEhtceNp4d4",
+        lessonSlug: "what-makes-fx-unique",
+    },
+    {
+        id: "v-forex-vs-stocks",
+        title: "Forex vs. Stocks: Key Differences",
+        description:
+            "Liquidity, hours, and why no single player can corner the FX market.",
+        videoId: "_YVQN6_nkfs",
+        lessonSlug: "forex-vs-stocks",
+    },
+    {
+        id: "v-forex-vs-futures",
+        title: "Forex vs. Futures",
+        description:
+            "What advantages forex holds over futures — and when each market fits.",
+        videoId: "Era7-qY7mqg",
+        lessonSlug: "forex-vs-futures",
     },
 ];
 

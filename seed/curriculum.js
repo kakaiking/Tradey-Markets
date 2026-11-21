@@ -4,12 +4,19 @@
  */
 
 const V = {
+    whatIsForex: "https://www.youtube.com/watch?v=hEhtceNp4d4",
+    pairs: "https://www.youtube.com/watch?v=z7538iNe2Pw",
     course: "https://www.youtube.com/watch?v=mEyuQVy3OHc",
     terms: "https://www.youtube.com/watch?v=aQNMF5Q5fSM",
+    pips: "https://www.youtube.com/watch?v=vtrmhGyWfSQ",
     trade: "https://www.youtube.com/watch?v=vP9gmvxdFd8",
     orders: "https://www.youtube.com/watch?v=Era7-qY7mqg",
     start: "https://www.youtube.com/watch?v=ZwL11tUfeXg",
     foundations: "https://www.youtube.com/watch?v=_YVQN6_nkfs",
+    sessions: "https://www.youtube.com/watch?v=b5Kj5aEXefM",
+    sessionDetail: "https://www.youtube.com/watch?v=ZpTmFRWlfwg",
+    bestTimes: "https://www.youtube.com/watch?v=oO0r15GuD5o",
+    nySession: "https://www.youtube.com/watch?v=f4jmDN_ygfw",
 };
 
 function card(description, question, options, correctIndex) {
@@ -40,7 +47,7 @@ const lessons = [
             ],
             "l1-intro",
             {
-                videoUrl: V.course,
+                videoUrl: V.whatIsForex,
                 questionCards: [
                     card(
                         "Forex is the worldwide market for swapping currencies. It is open around the clock on weekdays as trading passes from Asia to Europe to North America.",
@@ -112,7 +119,7 @@ const lessons = [
             ],
             "l1-pairs",
             {
-                videoUrl: V.trade,
+                videoUrl: V.pairs,
                 questionCards: [
                     card(
                         "In EUR/USD the euro is the base and the dollar is the quote. The price is how many dollars one euro is worth.",
@@ -292,7 +299,7 @@ const lessons = [
             ],
             "l2-pips-lots",
             {
-                videoUrl: V.terms,
+                videoUrl: V.pips,
                 questionCards: [
                     card(
                         "For most pairs a pip is 0.0001. The extra fifth digit, when shown, is a pipette.",
@@ -616,7 +623,7 @@ const lessons = [
             ],
             "l3-sessions",
             {
-                videoUrl: V.course,
+                videoUrl: V.sessions,
                 questionCards: [
                     card(
                         "The four centers traders watch are Sydney, Tokyo, London, and New York. They overlap instead of running as separate markets.",
@@ -652,7 +659,7 @@ const lessons = [
             ],
             "l3-sessions",
             {
-                videoUrl: V.course,
+                videoUrl: V.sessionDetail,
                 questionCards: [
                     card(
                         "Tokyo is the main Asian session and the natural home of yen pairs.",
@@ -688,7 +695,7 @@ const lessons = [
             ],
             "l3-sessions",
             {
-                videoUrl: V.trade,
+                videoUrl: V.sessionDetail,
                 questionCards: [
                     card(
                         "London is the largest FX center by turnover and the main session for euro and pound pairs.",
@@ -724,7 +731,7 @@ const lessons = [
             ],
             "l3-overlap",
             {
-                videoUrl: V.trade,
+                videoUrl: V.nySession,
                 questionCards: [
                     card(
                         "The London–New York overlap is typically the highest-volume part of the forex day.",
@@ -760,7 +767,7 @@ const lessons = [
             ],
             "l3-overlap",
             {
-                videoUrl: V.course,
+                videoUrl: V.bestTimes,
                 questionCards: [
                     card(
                         "The best window has movement and tight spreads. For a lot of intraday dollar and European pairs, that is London into the New York overlap.",
@@ -796,7 +803,7 @@ const lessons = [
             ],
             "l3-sessions",
             {
-                videoUrl: V.foundations,
+                videoUrl: V.bestTimes,
                 questionCards: [
                     card(
                         "Midweek sessions typically see the most consistent participation. Friday liquidity often fades as traders cut risk.",
@@ -940,7 +947,7 @@ const lessons = [
             ],
             "l5-liquidity",
             {
-                videoUrl: V.course,
+                videoUrl: V.whatIsForex,
                 questionCards: [
                     card(
                         "Shorting a pair is a normal order, not a special locate. Buying and selling are symmetric.",

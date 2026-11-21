@@ -105,17 +105,12 @@ export function VideoLessonSheet({
                             handleHeaderActivate();
                         }
                     }}
-                    className="flex flex-col items-center pt-2 pb-1 cursor-grab active:cursor-grabbing touch-none select-none"
+                    className="flex flex-col items-center justify-center pt-3 pb-3 cursor-grab active:cursor-grabbing touch-none select-none"
                 >
                     <div
                         className="w-10 h-1.5 rounded-full bg-[var(--muted)]/70"
                         aria-hidden
                     />
-                    <div className="w-full px-4 pt-2 pb-1 flex items-center gap-3">
-                        <span className="font-bold text-[var(--ink)] text-sm font-display min-w-0 flex-1 truncate pointer-events-none">
-                            {title}
-                        </span>
-                    </div>
                 </motion.div>
                 <div className="absolute top-2 right-3 z-10">
                     <button
@@ -135,7 +130,6 @@ export function VideoLessonSheet({
 
             <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 scrollbar-thin">
                 <section className="text-left mb-6">
-                    <p className="kicker !text-sm mb-2">Lesson</p>
                     <h3 className="font-display text-lg font-bold text-[var(--ink)] mb-3 leading-snug">
                         {lessonTitle || title}
                     </h3>
