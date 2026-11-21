@@ -153,8 +153,8 @@ function AuthShell({
                     <Image
                         src="/tradey-market-logo.png"
                         alt="Tradey Market"
-                        width={176}
-                        height={176}
+                        width={420}
+                        height={171}
                         priority
                         className="auth-brand-mark"
                     />

@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 const exploreTools: { href: string; title: string; mark: ReactNode }[] = [
     {
-        href: "/quizzes",
+        href: "/learn/videos",
         title: "Learn",
         mark: (
             <svg viewBox="0 0 48 48" className="explore-mark">

@@ -334,7 +334,18 @@ a {
 
 .brand-logo {
   display: block;
+  height: auto;
+  width: auto;
+  max-width: 100%;
   object-fit: contain;
+}
+
+/* Black wordmark needs a light flip on dark paper */
+[data-theme="night"] .brand-logo,
+[data-theme="ledger"] .brand-logo,
+[data-theme="night"] .auth-brand-mark,
+[data-theme="ledger"] .auth-brand-mark {
+  filter: invert(1) hue-rotate(180deg);
 }
 
 .brand-mark {
@@ -988,8 +999,8 @@ a {
 }
 
 .home-brand-logo {
-  width: clamp(4.5rem, 22vw, 6.5rem) !important;
-  height: clamp(4.5rem, 22vw, 6.5rem) !important;
+  width: auto !important;
+  height: clamp(2.35rem, 9vw, 2.85rem) !important;
 }
 
 .practice-money-pill {
@@ -2896,8 +2907,9 @@ select.field {
 }
 
 .auth-brand-mark {
-  width: clamp(7rem, 28vw, 11rem);
-  height: clamp(7rem, 28vw, 11rem);
+  width: auto;
+  height: clamp(2.75rem, 10vw, 4.25rem);
+  max-width: min(18rem, 80%);
   border-radius: 0;
   box-shadow: none;
   flex-shrink: 0;
@@ -3003,8 +3015,9 @@ select.field {
   }
 
   .auth-brand-mark {
-    width: 12rem;
-    height: 12rem;
+    width: auto;
+    height: 4.5rem;
+    max-width: 20rem;
     border-radius: 0;
   }
 

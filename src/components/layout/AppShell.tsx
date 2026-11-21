@@ -101,7 +101,7 @@ const schoolLinks: {
     icon: () => ReactNode;
 }[] = [
     { href: "/", label: "Home", match: isHomeActive, icon: HouseIcon },
-    { href: "/quizzes", label: "Learn", match: isLearnActive, icon: BookIcon },
+    { href: "/learn/videos", label: "Learn", match: isLearnActive, icon: BookIcon },
     { href: "/me", label: "Me", match: isMeActive, icon: UserIcon },
 ];
 
